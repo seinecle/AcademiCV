@@ -21,6 +21,8 @@ import java.util.TreeSet;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import org.primefaces.push.PushContext;
+import org.primefaces.push.PushContextFactory;
 
 /**
  *
@@ -40,12 +42,23 @@ public class TableMatchesBean implements Serializable {
     private Query<GlobalEditsCounter> updateQueryCounter;
     private UpdateOperations<GlobalEditsCounter> opsCounter;
     private boolean renderNextButton = false;
+    private int countUpdated;
+    private PushContext pushContext;
+
+    public int getCountUpdated() {
+        return countUpdated;
+    }
+
+    public void setCountUpdated(int countUpdated) {
+        this.countUpdated = countUpdated;
+    }
 
     public TableMatchesBean() {
         try {
             System.out.println("new TableMatchesBean!");
             listCloseMatchesDisplayed.clear();
             setClosematchesOriginal.clear();
+            pushContext = PushContextFactory.getDefault().getPushContext();
 
             //RETRIEVE MATCHES FROM THIS UUID
             setClosematchesOriginal.addAll(ControllerBean.ds.find(CloseMatchBean.class).field("uuid").equal(ControllerBean.uuid.toString()).asList());
@@ -119,7 +132,7 @@ public class TableMatchesBean implements Serializable {
                 updateQueryCounter = ControllerBean.ds.createQuery(GlobalEditsCounter.class);
                 opsCounter = ControllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 2);
                 ControllerBean.ds.update(updateQueryCounter, opsCounter, true);
-                ControllerBean.pushCounter();
+                pushCounter();
 
 
 
@@ -153,7 +166,7 @@ public class TableMatchesBean implements Serializable {
                 updateQueryCounter = ControllerBean.ds.createQuery(GlobalEditsCounter.class);
                 opsCounter = ControllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 2);
                 ControllerBean.ds.update(updateQueryCounter, opsCounter, true);
-                ControllerBean.pushCounter();
+                pushCounter();
 
 //                ControllerBean.ds.save(new PersistingEdit(updateQueryCounterControllerBean.getSearch().getFullname(),closeMatch.getAuthor1(),"deleted"));
 //                ControllerBean.ds.save(new PersistingEdit(ControllerBean.getSearch().getFullname(),closeMatch.getAuthor2(),"deleted"));
@@ -188,7 +201,7 @@ public class TableMatchesBean implements Serializable {
                     updateQueryCounter = ControllerBean.ds.createQuery(GlobalEditsCounter.class);
                     opsCounter = ControllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 1);
                     ControllerBean.ds.update(updateQueryCounter, opsCounter, true);
-                    ControllerBean.pushCounter();
+                    pushCounter();
 
                     System.out.println("global counter of edits after a merge: " + ControllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter());
 
@@ -205,7 +218,7 @@ public class TableMatchesBean implements Serializable {
                     updateQueryCounter = ControllerBean.ds.createQuery(GlobalEditsCounter.class);
                     opsCounter = ControllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 1);
                     ControllerBean.ds.update(updateQueryCounter, opsCounter, true);
-                    ControllerBean.pushCounter();
+                    pushCounter();
 
                     System.out.println("global counter of edits after a merge: " + ControllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter());
 
@@ -227,7 +240,7 @@ public class TableMatchesBean implements Serializable {
                 updateQueryCounter = ControllerBean.ds.createQuery(GlobalEditsCounter.class);
                 opsCounter = ControllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 2);
                 ControllerBean.ds.update(updateQueryCounter, opsCounter, true);
-                ControllerBean.pushCounter();
+                pushCounter();
 
                 System.out.println("global counter of edits after a merge: " + ControllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter());
 
@@ -240,7 +253,6 @@ public class TableMatchesBean implements Serializable {
 
 
     }
-
     public CloseMatchBean getCloseMatchBean_() {
 
         return listCloseMatchesDisplayed.get(0);
@@ -287,5 +299,14 @@ public class TableMatchesBean implements Serializable {
 
     public void setRenderNextButton(boolean renderNextButton) {
         this.renderNextButton = renderNextButton;
+    }
+
+    public synchronized void pushCounter() {
+        countUpdated = ControllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
+//        countUpdated++;
+        System.out.println("counter in pushcCounter method is:" + countUpdated);
+        
+        pushContext.push("/counter", String.valueOf(countUpdated));
+       
     }
 }
