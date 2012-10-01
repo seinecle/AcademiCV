@@ -2,7 +2,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
     <h:head>
         <h:outputStylesheet name="css/default.css" />
 
@@ -11,31 +12,33 @@
     <h:body>
         <p:layout id="idLayout" fullPage="true">
             <p:layoutUnit id="idLayoutUnit" position="center">
+
+                <p:socket channel="/counter" >
+                    <p:ajax event="message" update="editCounterId" />
+                </p:socket>
+
+                <div id ="bannerTitleBackground"></div>
+                <div id ="bannerTitle">
+                    <h:outputText  style="padding-left: 5px;" value="Rings of Scholarship">
+                        <p:effect type="pulsate" event="click" />
+                    </h:outputText>
+                </div>
+                <h:panelGroup id ="editCounterId" style="    background-color:rgba(0,0,0,0);
+                              position:fixed;
+                              top:1%;
+                              left:1%;
+                              text-align: left;
+                              font-size: 100%;
+                              margin: 0px auto;
+                              width:96%;
+                              height:80px;
+                              padding-left: 50px;
+                              padding-top: 70px;
+                              z-index: 2;
+                              ">
+                    <h:outputText  style="padding-left: 5px;" value="live counter of edits made by the community: #{controllerBean.count}" rendered ="#{controllerBean.wisdomCrowds}"/>
+                </h:panelGroup>
                 <h:form id ="formId">
-                    <p:socket channel="/counter" >
-                        <p:ajax event="message" update="editCounterId" />
-                    </p:socket>
-
-                    <div id ="bannerTitleBackground"></div>
-                    <div id ="bannerTitle">
-                        <h:outputText  style="padding-left: 5px;" value="Rings of Scholarship"/>
-                    </div>
-                    <h:panelGroup id ="editCounterId" style="    background-color:rgba(0,0,0,0);
-                                  position:fixed;
-                                  top:1%;
-                                  left:1%;
-                                  text-align: left;
-                                  font-size: 100%;
-                                  margin: 0px auto;
-                                  width:96%;
-                                  height:80px;
-                                  padding-left: 50px;
-                                  padding-top: 70px;
-                                  z-index: 2;
-                                  ">
-                        <h:outputText  style="padding-left: 5px;" value="with user-checked authors spelling, #{controllerBean.count} and counting" rendered ="#{controllerBean.wisdomCrowds}"/>
-                    </h:panelGroup>
-
                     <div id="containerOutside">
                         <h:outputText styleClass="ui-widget" style="padding-left: 5px;" value="1. Fill in the name of a researcher "/>
 
@@ -52,7 +55,7 @@
                             <h:outputText styleClass="ui-widget" style="padding-left: 5px;vertical-align:20%;" value="use the wisdom of the crowd"/>
                             <p:spacer width="10"></p:spacer>
                             <p:selectBooleanCheckbox id="wisdom" value="#{controllerBean.wisdomCrowds}">
-                                <p:ajax update="editCounterId"/>
+                                <p:ajax update=":editCounterId"/>
                             </p:selectBooleanCheckbox>
                             <br/>
                             <br/>
@@ -65,8 +68,58 @@
                     </div>
 
                 </h:form>
+
+                <p:lightBox visible ="false">
+                    <h:outputLink value="#" title="Leo Messi" >
+                        <h:outputText value="The Messiah"/>
+                    </h:outputLink>
+                    <f:facet name="inline">
+                        <h:outputText value="Rings is created by "/>
+                        <h:commandLink actionListener="http://www.clementlevallois.net">
+                            <h:outputText value="Clement Levallois" />
+                        </h:commandLink>
+                        <h:outputText value=" and is inspired by a collaboration with "/>
+                        <h:commandLink actionListener="http://www.erim.eur.nl/people/wilfred-mijnhardt/">
+                            <h:outputText value="Wilfred Minjhardt" />
+                        </h:commandLink>
+                        <p></p>
+                        <h:outputText value="Bibliographical references are provided by"/>
+                        <h:commandLink actionListener="http://www.mendeley.com">
+                            <h:outputText value="Mendeley" />
+                        </h:commandLink>
+                        <h:outputText value="."/>
+                        <p></p>
+                        <h:outputText value="The drawing of the ring is made with "/>
+                        <h:commandLink actionListener="http://processingjs.org/">
+                            <h:outputText value="Processing" />
+                        </h:commandLink>
+                        <h:outputText value=" (and was inspired by"/>
+                        <h:commandLink actionListener="http://circos.ca/">
+                            <h:outputText value="Circos" />
+                        </h:commandLink>
+                        <h:outputText value=")."/>
+                        <p></p>
+                        <h:outputText value="On the tech side:"/><br></br>
+                        <h:commandLink actionListener="http://glassfish.java.net/">
+                            <h:outputText value="Glassfish" />
+                        </h:commandLink>
+                        <h:outputText value=" (server technology)."/>
+                        <br></br>
+                        <h:commandLink actionListener="http://glassfish.java.net/">
+                            <h:outputText value="Primefaces" />
+                        </h:commandLink>
+                        <h:outputText value=" (web design)."/>
+                        <br></br>
+                        <h:commandLink actionListener="http://code.google.com/p/morphia/">
+                            <h:outputText value="MongoDB and Morphia" />
+                        </h:commandLink>
+                        <h:outputText value=" (database)."/>
+                        <p></p>
+                    </f:facet>
+                </p:lightBox>
             </p:layoutUnit>
         </p:layout>
+
     </h:body>
 </html>
 

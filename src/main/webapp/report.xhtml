@@ -78,7 +78,7 @@
     </h:head>
     <h:body>
 
-        
+        <h1>Report for #{controllerBean.forename} #{controllerBean.surname}</h1>
         <h:form id ="form">
             <h:inputHidden id="dataURL" value="#{fileDownloadController.dataURL}" />
 
@@ -87,7 +87,12 @@
                 <p:fileDownload value="#{fileDownloadController.file}" />  
             </p:commandButton>  
         </h:form>
-        <canvas id ="canvasPage" data-processing-sources="processingSketchForScreen.pde"></canvas>
+        <div id ="laius">
+            <p>#{controllerBean.forename} #{controllerBean.surname} is the author of <b>#{controllerBean.nbMendeleyDocs} papers</b>.</p>
+            <p>His or her most frequent co-author is <b>#{controllerBean.mostFrequentCoAuthor.fullname}</b>.<br></br>
+            Together, they wrote #{controllerBean.mostFrequentCoAuthor.timesMentioned} papers in the years from #{controllerBean.mostFrequentCoAuthor.yearFirstCollab} to #{controllerBean.mostFrequentCoAuthor.yearLastCollab}.</p>
+        </div>
+        <canvas id ="canvasPage" data-processing-sources="processingSketchForScreen.pde" width="300"></canvas>
         <canvas id ="canvasPDF" style="display:none" data-processing-sources="processingSketchForPDF.pde"></canvas>
 
     </h:body>

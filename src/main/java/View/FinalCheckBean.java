@@ -18,12 +18,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
 
 /**
  *
@@ -41,12 +40,15 @@ public class FinalCheckBean implements Serializable {
     private UpdateOperations<PersistingEdit> ops;
     private Query<GlobalEditsCounter> updateQueryCounter;
     private UpdateOperations<GlobalEditsCounter> opsCounter;
+    private TreeMap<String, String> mappingEditedLabels = new TreeMap();
+    private TreeMap<String, String> mappingLabelsForSegments = new TreeMap();
 
     public FinalCheckBean() {
     }
 
     @PostConstruct
     public void init() {
+        System.out.println("new FinalCheckBean!");
         Query q3 = ControllerBean.ds.createQuery(Segment.class).field("uuid").equal(ControllerBean.uuid.toString());
         ControllerBean.ds.delete(q3);
 
@@ -56,22 +58,31 @@ public class FinalCheckBean implements Serializable {
 
         //This procedure removes duplicates that were created during the solving of ambiguities in the previous page
         for (MapLabels mapLabels : listMapLabels) {
-            if (setCheckedLabels.add(mapLabels.getAuthor2().getFullnameWithComma())) {
+            if (setCheckedLabels.add(mapLabels.getLabel2())) {
 //                MapLabels newML = new MapLabels(mapLabels.getAuthor1().getFullname(), mapLabels.getAuthor2().getFullname());
 //                listCheckedLabels.add(newML);
-                listCheckedLabels.add(mapLabels);
+                listCheckedLabels.add(new MapLabels(mapLabels.getLabel2(), mapLabels.getLabel2()));
                 Collections.sort(listCheckedLabels);
 //                System.out.println("mapLabel in list: " +mapLabels.getAuthor2().getFullname());
             }
         }
     }
 
-    @PreDestroy
     public void close() {
 
+        //converts the list of edited labels into a map
+        for (MapLabels element : listCheckedLabels) {
+            mappingEditedLabels.put(element.getLabel1(), element.getLabel2());
+        }
+
+        //converts the original list of labels into a map, substituting the edited label dating from the pairc check by the one found in the final check
+        
+        for (MapLabels element : listMapLabels) {
+            mappingLabelsForSegments.put(element.getLabel1(), mappingEditedLabels.get(element.getLabel2()));
+        }
 
         //PERSIST SEGMENTS
-        segments = ConvertToSegments.convert(listCheckedLabels);
+        segments = ConvertToSegments.convert(mappingLabelsForSegments);
 //        System.out.println("segments size: "+segments.size());
         for (Segment segment : segments) {
             ControllerBean.ds.save(segment);
@@ -85,7 +96,7 @@ public class FinalCheckBean implements Serializable {
         return listCheckedLabels;
     }
 
-    public String deleteRow() {
+    public void deleteRow() {
         Iterator<MapLabels> listCheckedLabelsIterator = listCheckedLabels.iterator();
         MapLabels currMapLabels;
         while (listCheckedLabelsIterator.hasNext()) {
@@ -94,7 +105,7 @@ public class FinalCheckBean implements Serializable {
             if (currMapLabels.isDeleted()) {
                 //persisting this edit permanently
                 updateQuery = ControllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma());
-                updateQuery.field("originalForm").equal(currMapLabels.getAuthor2().getFullnameWithComma());
+                updateQuery.field("originalForm").equal(currMapLabels.getLabel2());
                 updateQuery.field("editedForm").equal("deleted");
                 ops = ControllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
                 ControllerBean.ds.update(updateQuery, ops, true);
@@ -109,7 +120,6 @@ public class FinalCheckBean implements Serializable {
             }
 
         }
-        return null;
     }
 
     public void saveedits() {
@@ -119,9 +129,9 @@ public class FinalCheckBean implements Serializable {
         }
     }
 
-    public void moveon() throws IOException {
+    public String moveon() throws IOException {
         close();
         ControllerBean.transformToJson();
-        FacesContext.getCurrentInstance().getExternalContext().redirect("processing.xhtml");
+        return "report";
     }
 }

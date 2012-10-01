@@ -6,6 +6,7 @@ package Controller;
 
 import BL.APIs.Mendeley.MendeleyAPICaller;
 import BL.APIs.Mendeley.MendeleyDoc;
+import BL.APIs.Mendeley.MendeleyDocsGetAuthors;
 import BL.Viz.Processing.ConvertToSegments;
 import BL.Viz.Processing.Segment;
 import Model.Author;
@@ -64,7 +65,10 @@ public class ControllerBean implements Serializable {
     static private ArrayList<Segment> segments;
     static String pageToNavigateTo;
     static private Search search;
-    private int count;
+    static private int count;
+    static public TreeSet<Author> authorsInMendeleyDocs;
+    static private Author mostFrequentCoAuthor;
+    static public int nbMendeleyDocs;
 
     @PostConstruct
     private void init() {
@@ -76,6 +80,7 @@ public class ControllerBean implements Serializable {
             morphia.map(MendeleyDoc.class);
             ds = morphia.createDatastore(m, "namesDB");
             count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
+            pushCounter();
 
 
         } catch (UnknownHostException ex) {
@@ -132,6 +137,7 @@ public class ControllerBean implements Serializable {
         //1
         Clock gettingMendeleyData = new Clock("calling Mendeley...");
         mendeleyDocs = MendeleyAPICaller.run(forename, surname);
+        nbMendeleyDocs = mendeleyDocs.getDocuments().size();
         gettingMendeleyData.closeAndPrintClock();
         System.out.println("phase 1 passed: API call and response are OK");
 
@@ -143,7 +149,9 @@ public class ControllerBean implements Serializable {
 
         //3
         Clock spellCheckClock = new Clock("finding possible misspellings in names");
-        atleastOneMatchFound = new SpellingDifferencesChecker(forename, surname, wisdomCrowds).doAll();
+        authorsInMendeleyDocs = new MendeleyDocsGetAuthors().countAuthors(mendeleyDocs.getDocuments(), forename, surname);
+        createAuthorsStats();
+        atleastOneMatchFound = new SpellingDifferencesChecker(forename, surname, authorsInMendeleyDocs, wisdomCrowds).doAll();
         System.out.println("phase 3 passed: potential misspellings identified");
         spellCheckClock.closeAndPrintClock();
 
@@ -151,16 +159,20 @@ public class ControllerBean implements Serializable {
 
         if (atleastOneMatchFound) {
             System.out.println("close matches found. Navigating to the spell check page");
-            pageToNavigateTo = "show";
+            pageToNavigateTo = "pairscheck";
 
         } else {
             System.out.println("No ambiguous name found. Navigating directly to the visualization");
-            List listMapLabels = ControllerBean.ds.find(MapLabels.class).field("uuid").equal(ControllerBean.uuid.toString()).asList();
-            segments = ConvertToSegments.convert(listMapLabels);
+            List<MapLabels> listMapLabels = ControllerBean.ds.find(MapLabels.class).field("uuid").equal(ControllerBean.uuid.toString()).asList();
+            TreeMap<String, String> mapLabelsAuthors = new TreeMap();
+            for (MapLabels element : listMapLabels) {
+                mapLabelsAuthors.put(element.getLabel1(), element.getLabel2());
+            }
+            segments = ConvertToSegments.convert(mapLabelsAuthors);
             segments.add(new Segment(forename + " " + surname, 1, true));
             json = new Gson().toJson(segments);
 
-            pageToNavigateTo = "processing";
+            pageToNavigateTo = "report";
         }
         return pageToNavigateTo;
     }
@@ -205,13 +217,11 @@ public class ControllerBean implements Serializable {
     }
 
     public boolean isWisdomCrowds() {
-        System.out.println("getting the boolean!");
         return wisdomCrowds;
     }
 
     public void setWisdomCrowds(boolean wisdomCrowds) {
         this.wisdomCrowds = wisdomCrowds;
-        System.out.println("setting the boolean!");
     }
 
     public int getCount() {
@@ -223,9 +233,37 @@ public class ControllerBean implements Serializable {
     }
 
     public static synchronized void pushCounter() {
-        int count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
-        System.out.println("counter in pushcCounter method is:" + count);
-        PushContext pushContext = PushContextFactory.getDefault().getPushContext();
-        pushContext.push("/counter", String.valueOf(count));
+//        int count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
+//        System.out.println("counter in pushCounter method in ControllerBean is:" + count);
+//        PushContext pushContext = PushContextFactory.getDefault().getPushContext();
+//        pushContext.push("/counter", String.valueOf(count).trim());
+//        System.out.println("string value of count: ");
+//        System.out.println("string value of count: " + String.valueOf(count).trim());
+        count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
+    }
+
+    private void createAuthorsStats() {
+        Iterator<Author> authorsInMendeleyDocsIterator = authorsInMendeleyDocs.iterator();
+        int times = 0;
+        Author currCoAuthor;
+        while (authorsInMendeleyDocsIterator.hasNext()) {
+            currCoAuthor = authorsInMendeleyDocsIterator.next();
+            if (currCoAuthor.getTimesMentioned() > times) {
+                mostFrequentCoAuthor = currCoAuthor;
+                times = currCoAuthor.getTimesMentioned();
+            }
+        }
+    }
+
+    public Author getMostFrequentCoAuthor() {
+        return mostFrequentCoAuthor;
+    }
+
+    public void setNbMendeleyDocs(int nbMendeleyDocs) {
+        ControllerBean.nbMendeleyDocs = nbMendeleyDocs;
+    }
+
+    public int getNbMendeleyDocs() {
+        return nbMendeleyDocs;
     }
 }

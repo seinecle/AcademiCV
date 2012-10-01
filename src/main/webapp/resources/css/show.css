@@ -1,18 +1,3 @@
-/* 
-    Document   : show
-    Created on : Aug 28, 2012, 9:17:21 AM
-    Author     : C. Levallois
-    Description:
-        Purpose of the stylesheet follows.
-*/
-
-body
-{
-    background-image:url('background_0.5.png');
-    background-repeat:no-repeat;
-    background-attachment:fixed;
-    background-position:right bottom;
-}
 
 
 .column1 { width: 33%; text-align: center;}

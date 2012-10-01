@@ -14,6 +14,9 @@ import java.util.UUID;
 @Entity
 public class Author extends Quidam {
 
+    private int yearFirstCollab;
+    private int yearLastCollab;
+    private int timesMentioned;
 
     public Author() {
     }
@@ -33,4 +36,30 @@ public class Author extends Quidam {
     public Author(String fullnameWithComma) {
         super(fullnameWithComma.trim());
     }
+
+    public int getYearFirstCollab() {
+        return yearFirstCollab;
+    }
+
+    public void setYearFirstCollab(int yearFirstCollab) {
+        this.yearFirstCollab = yearFirstCollab;
+    }
+
+    public int getYearLastCollab() {
+        return yearLastCollab;
+    }
+
+    public void setYearLastCollab(int yearLastCollab) {
+        this.yearLastCollab = yearLastCollab;
+    }
+
+    public int getTimesMentioned() {
+        return timesMentioned;
+    }
+
+    public void setTimesMentioned(int timesMentioned) {
+        this.timesMentioned = timesMentioned;
+    }
+    
+    
 }

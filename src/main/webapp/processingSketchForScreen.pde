@@ -109,7 +109,6 @@ void draw() {
 
         //TEXT SIZE
         textSize(12+ (SKETCH_WIDTHf-600)/100 - nbSegments/20);
-        textAlign(CENTER,BOTTOM);
 
 
         //CIRCLE SIZE
@@ -160,7 +159,10 @@ void draw() {
         
         float sw = textWidth(mainSegmentLabel);
 //        println("mainSegmentLabel: "+mainSegmentLabel);
+        textAlign(LEFT,BOTTOM);
+
         text(mainSegmentLabel, -sw + (SKETCH_CENTER_X + cos(TWO_PI * 8f / 16f) * OUTER_CIRCLE_RADIUS) - INTERSTICE_LABEL, SKETCH_CENTER_Y + (sin(TWO_PI * 8f / 16f) * OUTER_CIRCLE_RADIUS)- INTERSTICE_LABEL);
+        textAlign(CENTER,CENTER);
 
 
         // DRAWING OTHER SEGMENTS -------------
@@ -227,10 +229,10 @@ void draw() {
             //this condition orients the labels for easier read
             if (theta < minLimit | theta > maxLimit) {
                 thetaLabel = theta + PI;
-                textAlign(RIGHT,BOTTOM);
+                textAlign(RIGHT,CENTER);
             } else {
                 thetaLabel = theta;
-                textAlign(LEFT,TOP);
+                textAlign(LEFT,CENTER);
             }
 
 

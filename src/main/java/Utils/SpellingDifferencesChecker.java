@@ -1,8 +1,7 @@
 package Utils;
 
-import BL.APIs.Mendeley.MendeleyDoc;
-import Controller.ControllerBean;
 import Controller.AdminPanel;
+import Controller.ControllerBean;
 import Model.Author;
 import Model.CloseMatchBean;
 import Model.MapLabels;
@@ -23,16 +22,14 @@ import org.apache.commons.lang3.StringUtils;
 
 public class SpellingDifferencesChecker {
 
-    List<MendeleyDoc> listMendeleyDocs = Controller.ControllerBean.ds.find(MendeleyDoc.class).field("uuid").equal(ControllerBean.uuid.toString()).asList();
     TreeSet<Author> setCloseMatches = new TreeSet();
-    TreeSet<Author> setAuthors = new TreeSet();
-    Iterator<MendeleyDoc> listMendeleyDocsIterator = listMendeleyDocs.iterator();
+    TreeSet<Author> setAuthorsWithEdits = new TreeSet();
     ArrayList authorsInOneDoc;
     Author currAuth;
     String mainFirstName;
     String mainLastName;
-    boolean debug = AdminPanel.wisdomCrowdsDebugStateTrueOrFalse();
-    private TreeMap<Author, Author> mapLabels = new TreeMap();
+    boolean debug;
+    private TreeMap<String, String> mapLabels = new TreeMap();
     private boolean atLeastOneMatchFound = false;
     static private String[] arrayTermsInFullnameInAuthor1;
     static private String[] arrayTermsInFullnameInAuthor2;
@@ -45,15 +42,20 @@ public class SpellingDifferencesChecker {
     static private HashSet<String> intersectFullNamesAuthor1And2;
     static private HashMap<String, Pair<String, Integer>> mapEdits;
     static private boolean wisdomCrowd;
+    private TreeSet<Author> setAuthorsOriginal;
 
-    public SpellingDifferencesChecker(String firstname, String lastname, boolean wisdomCrowd) {
+    public SpellingDifferencesChecker(String firstname, String lastname, TreeSet<Author> setAuthorsOriginal, boolean wisdomCrowd) {
 
         this.mainFirstName = firstname.trim();
         this.mainLastName = lastname.trim();
         SpellingDifferencesChecker.wisdomCrowd = wisdomCrowd;
+        this.setAuthorsOriginal = setAuthorsOriginal;
+
     }
 
     public boolean doAll() {
+
+        debug = AdminPanel.wisdomCrowdsDebugStateTrueOrFalse();
 
         if (wisdomCrowd) {
             List<PersistingEdit> listEdits = ControllerBean.ds.find(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma()).field("counter").greaterThan(1).asList();
@@ -81,58 +83,48 @@ public class SpellingDifferencesChecker {
                 }
             }
         }
-        System.out.println(
-                "Nb Docs retrieved from storage: " + listMendeleyDocs.size());
-        MendeleyDoc currMendeleyDoc;
 
-        while (listMendeleyDocsIterator.hasNext()) {
-            currMendeleyDoc = listMendeleyDocsIterator.next();
-            if (currMendeleyDoc.getAuthors() != null) {
-                authorsInOneDoc = currMendeleyDoc.getAuthors();
+        Iterator<Author> setAuthorsOriginalIterator = setAuthorsOriginal.iterator();
+        String currAuthFirstName;
+        String currAuthLastName;
 
-                //SANITY CHECKS ON THE AUTHORS OF THE DOCS
-                Iterator<Author> authorsInOneDocIterator = authorsInOneDoc.iterator();
-                String currAuthFirstName;
-                String currAuthLastName;
-                while (authorsInOneDocIterator.hasNext()) {
-                    currAuth = authorsInOneDocIterator.next();
-                    currAuthFirstName = currAuth.getForename().trim();
-                    if (currAuthFirstName.startsWith("By ")) {
-                        currAuthFirstName = currAuthFirstName.substring(3);
-                    }
-                    currAuthLastName = currAuth.getSurname().trim();
+        while (setAuthorsOriginalIterator.hasNext()) {
+            currAuth = setAuthorsOriginalIterator.next();
+            currAuthFirstName = currAuth.getForename().trim();
+            if (currAuthFirstName.startsWith("By ")) {
+                currAuthFirstName = currAuthFirstName.substring(3);
+            }
+            currAuthLastName = currAuth.getSurname().trim();
 //                    if (currAuthFirstName.startsWith("Adrian")) {
 //                        System.out.println("firstName: " + currAuthFirstName);
 //                        System.out.println("lastName: " + currAuthLastName);
 //                    }
 
-                    currAuth.setUuid(ControllerBean.uuid.toString());
-                    currAuth.setForename(currAuthFirstName);
-                    currAuth.setSurname(currAuthLastName);
-                    if (StringUtils.stripAccents(currAuth.getFullnameWithComma()).equals(StringUtils.stripAccents(ControllerBean.getSearch().getFullnameWithComma()))) {
-                        continue;
-                    }
+            currAuth.setUuid(ControllerBean.uuid.toString());
+            currAuth.setForename(currAuthFirstName);
+            currAuth.setSurname(currAuthLastName);
+            if (StringUtils.stripAccents(currAuth.getFullname()).toLowerCase().replaceAll("-"," ").trim().equals(StringUtils.stripAccents(ControllerBean.getSearch().getFullname().toLowerCase().replaceAll("-"," ").trim()))) {
+                continue;
+            }
 
 //                    System.out.println("currAuth.fullnameWithComma: " + currAuth.getFullnameWithComma());
 //                    System.out.println("boolean exists: " + exists);
-                    if (wisdomCrowd && !debug) {
-                        boolean editAlreadyExists = mapEdits.containsKey(currAuth.getFullnameWithComma());
-                        if (editAlreadyExists) {
-                            String editedForm = mapEdits.get(currAuth.getFullnameWithComma()).getLeft();
-                            String[] terms = editedForm.split(",");
-                            currAuth = new Author(terms[1].trim(), terms[0].trim());
-                        }
-                    }
-                    currAuth.setUuid(ControllerBean.uuid.toString());
-
-                    setAuthors.add(currAuth);
-                    ControllerBean.ds.save(currAuth);
-//                    System.out.println("author added: " + currAuth.getFullname());
+            if (wisdomCrowd && !debug) {
+                boolean editAlreadyExists = mapEdits.containsKey(currAuth.getFullnameWithComma());
+                if (editAlreadyExists) {
+                    String editedForm = mapEdits.get(currAuth.getFullnameWithComma()).getLeft();
+                    String[] terms = editedForm.split(",");
+                    currAuth = new Author(terms[1].trim(), terms[0].trim());
                 }
-
             }
+            currAuth.setUuid(ControllerBean.uuid.toString());
+
+            setAuthorsWithEdits.add(currAuth);
+            ControllerBean.ds.save(currAuth);
+//                    System.out.println("author added: " + currAuth.getFullname());
         }
-        Set<Pair<Author, Author>> setPairs = getAllPairs(setAuthors);
+
+        Set<Pair<Author, Author>> setPairs = new FindAllPairs().getAllPairs(setAuthorsWithEdits);
 
 //        if (setAuthors.contains(new Author("Katy","Borner"))){
 //            System.out.println("set contains Katy Borner");
@@ -142,7 +134,7 @@ public class SpellingDifferencesChecker {
 //        }
         // ----------------------------
         System.out.println(
-                "Number of co-authors found: " + setAuthors.size());
+                "Number of co-authors found (with edits): " + setAuthorsWithEdits.size());
         System.out.println(
                 "Number of distinct pairs: " + setPairs.size());
         System.out.println();
@@ -165,10 +157,11 @@ public class SpellingDifferencesChecker {
 //                System.out.println("author2: " + author2.getFullname());
 //            }
 
-            int ld = computeLevenshteinDistance(author1.getFullnameWithComma(), author2.getFullnameWithComma());
-            float weightedLd = computeWeightedLD(ld, author1.getFullnameWithComma(), author2.getFullnameWithComma());
+            int levenDistance = StringUtils.getLevenshteinDistance(author1.getFullnameWithComma(), author2.getFullnameWithComma());
 
-            int match = thresholdLD(author1, author2, ld, weightedLd);
+            float weightedLd = computeWeightedLD(levenDistance, author1.getFullnameWithComma(), author2.getFullnameWithComma());
+
+            int match = thresholdLD(author1, author2, levenDistance, weightedLd);
 
 
             if (match != -1) {
@@ -209,7 +202,7 @@ public class SpellingDifferencesChecker {
 //                }
             }
         }
-        Iterator<Author> setAuthorsIterator = setAuthors.iterator();
+        Iterator<Author> setAuthorsIterator = setAuthorsWithEdits.iterator();
         Author currAuthor;
 
         while (setAuthorsIterator.hasNext()) {
@@ -219,23 +212,18 @@ public class SpellingDifferencesChecker {
 //                    System.out.println("unambiguous author: " + currAuthor.getFullname());
 //                    System.out.println("main Auth: " + mainFirstName + " " + mainLastName);
 
-                    mapLabels.put(currAuthor, currAuthor);
+                    mapLabels.put(currAuthor.getFullnameWithComma(), currAuthor.getFullnameWithComma());
                 }
             }
         }
 
         System.out.println(
                 "size of MapLabels (should be total nb of authors minus main author): " + mapLabels.size());
-//        if (RingSessionBean.mapCloseMatches.get(new Author("Almila", "Akdag Salah")) == new Author("Almila", "Akdag Salah")) {
-//            System.out.println("Almila Akdag Salah is mapped to Almila Akdag Salah, not good!");
-//        } else {
-//            System.out.println("Almila Akdag Salah is NOT mapped to Almila Akdag Salah, ok!");
-//        }
 
 
         //PERSIST THE MAP OF LABELS
-        Iterator<Entry<Author, Author>> mapLabelsIterator = mapLabels.entrySet().iterator();
-        Entry<Author, Author> currMapEntry;
+        Iterator<Entry<String, String>> mapLabelsIterator = mapLabels.entrySet().iterator();
+        Entry<String, String> currMapEntry;
 
         while (mapLabelsIterator.hasNext()) {
             currMapEntry = mapLabelsIterator.next();
@@ -246,58 +234,6 @@ public class SpellingDifferencesChecker {
         return atLeastOneMatchFound;
     }
 
-    private Set<Pair<Author, Author>> getAllPairs(Set<Author> setAuthorsInHere) {
-        Set<Author> setAuthorsProcessed = new TreeSet<Author>();
-        Set<Pair<Author, Author>> setPairs = new TreeSet<Pair<Author, Author>>();
-        Iterator<Author> setAuthorsIteratorA = setAuthorsInHere.iterator();
-        Iterator<Author> setAuthorsIteratorB;
-        Author currAuthorA;
-        Author currAuthorB;
-        while (setAuthorsIteratorA.hasNext()) {
-            currAuthorA = setAuthorsIteratorA.next();
-            setAuthorsIteratorB = setAuthorsInHere.iterator();
-            while (setAuthorsIteratorB.hasNext()) {
-                currAuthorB = setAuthorsIteratorB.next();
-                if (!setAuthorsProcessed.contains(currAuthorB) && currAuthorA != currAuthorB) {
-                    setPairs.add(new Pair(currAuthorA, currAuthorB));
-                }
-            }
-            setAuthorsProcessed.add(currAuthorA);
-        }
-        System.out.println("size of setAuthor after the finding all pairs operation: " + this.setAuthors.size());
-        return setPairs;
-
-    }
-
-    private static int minimum(int a, int b, int c) {
-        return Math.min(Math.min(a, b), c);
-    }
-
-    private static int computeLevenshteinDistance(CharSequence str1,
-            CharSequence str2) {
-        int[][] distance = new int[str1.length() + 1][str2.length() + 1];
-
-        for (int i = 0; i <= str1.length(); i++) {
-            distance[i][0] = i;
-        }
-        for (int j = 0; j <= str2.length(); j++) {
-            distance[0][j] = j;
-        }
-
-        for (int i = 1; i <= str1.length(); i++) {
-            for (int j = 1; j <= str2.length(); j++) {
-                distance[i][j] = minimum(
-                        distance[i - 1][j] + 1,
-                        distance[i][j - 1] + 1,
-                        distance[i - 1][j - 1]
-                        + ((str1.charAt(i - 1) == str2.charAt(j - 1)) ? 0
-                        : 1));
-            }
-        }
-
-        return distance[str1.length()][str2.length()];
-    }
-
     private static float computeWeightedLD(Integer ld, String one, String two) {
 
         return (float) ld / Math.min(one.length(), two.length());
@@ -306,11 +242,6 @@ public class SpellingDifferencesChecker {
     private static int thresholdLD(Author author1, Author author2, Integer ld, Float weightedLd) {
 
 
-//        arrayTermsInForenameInAuthor1 = author1.getForename().split(" ");
-//        arrayTermsInForenameInAuthor2 = author2.getForename().split(" ");
-//        setTermsInForenameAuthor1.addAll(Arrays.asList(arrayTermsInForenameInAuthor1));
-//        setTermsInForenameAuthor2.addAll(Arrays.asList(arrayTermsInForenameInAuthor2));
-//        setTermsInForenameAuthor1.removeAll(setTermsInForenameAuthor2);
         arrayTermsInFullnameInAuthor1 = author1.getFullname().split(" ");
         arrayTermsInFullnameInAuthor2 = author2.getFullname().split(" ");
 
@@ -349,8 +280,6 @@ public class SpellingDifferencesChecker {
             }
 
         }
-//        System.out.println("author1.getForename(): " + author1.getForename());
-//        System.out.println("author2.getForename(): " + author2.getForename());
 
         if (author1.getForename().length() == 1 & author2.getForename().length() > 2) {
             if ((author1.getForename().equals(author2.getForename().subSequence(0, 1))
@@ -367,8 +296,8 @@ public class SpellingDifferencesChecker {
         }
         if (weightedLd > 0.4) {
             return -1;
-        } else if ((computeWeightedLD(computeLevenshteinDistance(author1.getForename(), author2.getForename()), author1.getForename(), author2.getForename()) < 0.3)
-                & (computeWeightedLD(computeLevenshteinDistance(author1.getSurname(), author2.getSurname()), author1.getSurname(), author2.getSurname()) > 0.3)) {
+        } else if ((computeWeightedLD(StringUtils.getLevenshteinDistance(author1.getForename(), author2.getForename()), author1.getForename(), author2.getForename()) < 0.3)
+                & (computeWeightedLD(StringUtils.getLevenshteinDistance(author1.getSurname(), author2.getSurname()), author1.getSurname(), author2.getSurname()) > 0.3)) {
             return -1;
         } else {
             return 0;
@@ -486,7 +415,8 @@ public class SpellingDifferencesChecker {
 //        }
 
         if (suggestionMade) {
-            return author3 = new Author(suggestedForename, suggestedSurname);
+            author3 = new Author(suggestedForename, suggestedSurname);
+            return author3;
         } else {
 
             //IF WE HAVE NO SPECIFIC SUGGESTION TO MAKE, WE SUGGEST THE LONGER NAME
