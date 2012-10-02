@@ -11,12 +11,12 @@
     </h:head>
     <h:body style ="width:100%">
 
-        <script type="text/javascript">
+<!--        <script type="text/javascript">
             function handleMessage(data) {
                 console.log("in the handle function");
                 $('.testPush').html("live counter of edits made by the community: "+data);
             }
-        </script>
+        </script>-->
 
         <p:layout id="idLayout" fullPage="true">
             <p:layoutUnit id="idLayoutUnit" position="center">
@@ -38,7 +38,7 @@
                               padding-top: 70px;
                               z-index: 2;
                               ">
-                    <h:outputText  style="padding-left: 5px;" value="live counter of edits made by the community: #{controllerBean.count}" rendered ="#{controllerBean.wisdomCrowds}" styleClass="testPush"/>
+                    <h:outputText  style="padding-left: 5px;" value="counter of edits made by the community: #{controllerBean.count}" rendered ="#{controllerBean.wisdomCrowds}" styleClass="testPush"/>
 
 
                 </h:panelGroup>
@@ -46,7 +46,7 @@
 
                     <div id="containerOutside">
                         <h:outputText styleClass="ui-widget" style="padding-left: 5px;" value="3. Final step: a last chance to correct mispellings and delete irrelevant terms"/>
-                        <h:commandButton value="next" action="#{finalCheckBean.moveon}" style="width:100px;float:right;margin-top: -15px;"/>
+                        <h:commandButton value="next" title="next" action="#{finalCheckBean.moveon()}" style="width:100px;float:right;margin-top: -15px;"/>
                         <div id="containerShow">
                             <p:dataTable id ="dataId" value ="#{finalCheckBean.listCheckedLabels}" var ="m" scrollable ="true" scrollHeight="250">
 

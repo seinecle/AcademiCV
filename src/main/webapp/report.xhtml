@@ -78,6 +78,24 @@
     </h:head>
     <h:body>
 
+<!--        <div id ="bannerTitleBackground"></div>
+        <div id ="bannerTitle">
+        </div>
+        <h:panelGroup id ="editCounterId" style="    background-color:rgba(0,0,0,0);
+                      position:fixed;
+                      top:1%;
+                      left:1%;
+                      text-align: left;
+                      font-size: 100%;
+                      margin: 0px auto;
+                      width:96%;
+                      height:80px;
+                      padding-left: 50px;
+                      padding-top: 70px;
+                      z-index: 2;
+                      ">
+        </h:panelGroup>-->
+
         <h1>Report for #{controllerBean.forename} #{controllerBean.surname}</h1>
         <h:form id ="form">
             <h:inputHidden id="dataURL" value="#{fileDownloadController.dataURL}" />
@@ -90,7 +108,7 @@
         <div id ="laius">
             <p>#{controllerBean.forename} #{controllerBean.surname} is the author of <b>#{controllerBean.nbMendeleyDocs} papers</b>.</p>
             <p>His or her most frequent co-author is <b>#{controllerBean.mostFrequentCoAuthor.fullname}</b>.<br></br>
-            Together, they wrote #{controllerBean.mostFrequentCoAuthor.timesMentioned} papers in the years from #{controllerBean.mostFrequentCoAuthor.yearFirstCollab} to #{controllerBean.mostFrequentCoAuthor.yearLastCollab}.</p>
+                Together, they wrote #{controllerBean.mostFrequentCoAuthor.timesMentioned} papers in the years from #{controllerBean.mostFrequentCoAuthor.yearFirstCollab} to #{controllerBean.mostFrequentCoAuthor.yearLastCollab}.</p>
         </div>
         <canvas id ="canvasPage" data-processing-sources="processingSketchForScreen.pde" width="300"></canvas>
         <canvas id ="canvasPDF" style="display:none" data-processing-sources="processingSketchForPDF.pde"></canvas>

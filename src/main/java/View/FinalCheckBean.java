@@ -12,6 +12,7 @@ import Model.MapLabels;
 import Model.PersistingEdit;
 import com.google.code.morphia.query.Query;
 import com.google.code.morphia.query.UpdateOperations;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -44,10 +45,6 @@ public class FinalCheckBean implements Serializable {
     private TreeMap<String, String> mappingLabelsForSegments = new TreeMap();
 
     public FinalCheckBean() {
-    }
-
-    @PostConstruct
-    public void init() {
         System.out.println("new FinalCheckBean!");
         Query q3 = ControllerBean.ds.createQuery(Segment.class).field("uuid").equal(ControllerBean.uuid.toString());
         ControllerBean.ds.delete(q3);
@@ -68,7 +65,7 @@ public class FinalCheckBean implements Serializable {
         }
     }
 
-    public void close() {
+    public ArrayList<Segment> close() {
 
         //converts the list of edited labels into a map
         for (MapLabels element : listCheckedLabels) {
@@ -76,7 +73,7 @@ public class FinalCheckBean implements Serializable {
         }
 
         //converts the original list of labels into a map, substituting the edited label dating from the pairc check by the one found in the final check
-        
+
         for (MapLabels element : listMapLabels) {
             mappingLabelsForSegments.put(element.getLabel1(), mappingEditedLabels.get(element.getLabel2()));
         }
@@ -84,11 +81,11 @@ public class FinalCheckBean implements Serializable {
         //PERSIST SEGMENTS
         segments = ConvertToSegments.convert(mappingLabelsForSegments);
 //        System.out.println("segments size: "+segments.size());
-        for (Segment segment : segments) {
-            ControllerBean.ds.save(segment);
-//            System.out.println("segment persisted");
-        }
-
+//        for (Segment segment : segments) {
+//            ControllerBean.ds.save(segment);
+////            System.out.println("segment persisted");
+//        }
+        return segments;
 
     }
 
@@ -129,9 +126,24 @@ public class FinalCheckBean implements Serializable {
         }
     }
 
-    public String moveon() throws IOException {
-        close();
-        ControllerBean.transformToJson();
-        return "report";
+    public String moveon() {
+        System.out.println("next button clicked, should move to the report page");
+        for (MapLabels element : listCheckedLabels) {
+            mappingEditedLabels.put(element.getLabel1(), element.getLabel2());
+        }
+
+        //converts the original list of labels into a map, substituting the edited label dating from the pairc check by the one found in the final check
+        for (MapLabels element : listMapLabels) {
+            mappingLabelsForSegments.put(element.getLabel1(), mappingEditedLabels.get(element.getLabel2()));
+        }
+
+        //PERSIST SEGMENTS
+        segments = ConvertToSegments.convert(mappingLabelsForSegments);
+
+        segments.add(new Segment(ControllerBean.getSearch().getFullnameWithComma(), 1, true));
+        ControllerBean.setJson(new Gson().toJson(segments));
+//
+//        ControllerBean.transformToJson(segments);
+        return "report?faces-redirect=true";
     }
 }

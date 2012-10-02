@@ -80,7 +80,7 @@ public class TableMatchesBean implements Serializable {
 
     }
 
-    public String next_() throws IOException {
+    public String next_() {
 
 
 //        System.out.println("curr button selected is: " + optionChosen);
@@ -99,7 +99,7 @@ public class TableMatchesBean implements Serializable {
 
         } else {
             System.out.println("no more close Match in the set, moving to the page for final check");
-            return "finalcheck";
+            return "finalcheck?faces-redirect=true";
 
         }
 

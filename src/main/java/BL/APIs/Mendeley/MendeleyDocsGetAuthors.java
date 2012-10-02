@@ -28,6 +28,8 @@ public class MendeleyDocsGetAuthors {
         ArrayList<Author> listAuthors = new ArrayList();
         TreeSet<Author> setAuthors = new TreeSet();
         TreeSet<Author> setAuthorsOriginal = new TreeSet();
+        int minYear = 3000;
+        int maxYear = 0;
 
         if (listDocs.isEmpty()) {
             System.out.println("list of MendeleyDocs is empty");
@@ -50,6 +52,8 @@ public class MendeleyDocsGetAuthors {
                 docYearString = currDoc.getYear();
                 if (docYearString != null && !docYearString.equals("")) {
                     docYearInteger = Integer.parseInt(docYearString);
+                    minYear = Math.min(minYear,docYearInteger);
+                    maxYear = Math.max(maxYear,docYearInteger);
                 } else {
                     docYearInteger = -1;
                 }
@@ -98,6 +102,8 @@ public class MendeleyDocsGetAuthors {
             element1.setTimesMentioned(count - 1);
 //            System.out.println("count for " + element1.getFullname() + ": " + count);
             setAuthors.add(element1);
+            ControllerBean.setMinYear(minYear);
+            ControllerBean.setMaxYear(maxYear);
 
         }
         return setAuthors;

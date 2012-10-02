@@ -14,7 +14,7 @@
 
     <h:body style ="width:100%">
 
-        <script type="text/javascript">
+<!--        <script type="text/javascript">
             //<![CDATA[
             function handleMessage(data) {
                 console.log("in the handle function");
@@ -23,7 +23,7 @@
             }
             //]]>
 
-        </script>
+        </script>-->
 
         <p:layout id="idLayout" fullPage="true">
             <p:layoutUnit id="idLayoutUnit" position="center">
@@ -107,9 +107,9 @@
         </p:layout>
 
         <!--<p:socket onMessage="handleMessage" channel="/counter" />-->
-        <p:socket channel="/counter" >
+<!--        <p:socket channel="/counter" >
             <p:ajax event="message" update="idLayoutUnit" />
-        </p:socket>
+        </p:socket>-->
 
     </h:body>
 </html>

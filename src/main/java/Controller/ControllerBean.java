@@ -67,8 +67,10 @@ public class ControllerBean implements Serializable {
     static private Search search;
     static private int count;
     static public TreeSet<Author> authorsInMendeleyDocs;
-    static private Author mostFrequentCoAuthor;
+    static public Author mostFrequentCoAuthor;
     static public int nbMendeleyDocs;
+    static public int minYear;
+    static public int maxYear;
 
     @PostConstruct
     private void init() {
@@ -159,7 +161,7 @@ public class ControllerBean implements Serializable {
 
         if (atleastOneMatchFound) {
             System.out.println("close matches found. Navigating to the spell check page");
-            pageToNavigateTo = "pairscheck";
+            pageToNavigateTo = "pairscheck?faces-redirect=true";
 
         } else {
             System.out.println("No ambiguous name found. Navigating directly to the visualization");
@@ -172,16 +174,16 @@ public class ControllerBean implements Serializable {
             segments.add(new Segment(forename + " " + surname, 1, true));
             json = new Gson().toJson(segments);
 
-            pageToNavigateTo = "report";
+            pageToNavigateTo = "report?faces-redirect=true";
         }
         return pageToNavigateTo;
     }
 
-    public static void transformToJson() {
+    public static void transformToJson(ArrayList<Segment> segments) {
 
 //        System.out.println("returning json");
-        segments = (ArrayList<Segment>) ds.find(Segment.class).field("uuid").equal(uuid.toString()).asList();
-        System.out.println("returning json // segments size is: " + segments.size());
+//        segments = (ArrayList<Segment>) ds.find(Segment.class).field("uuid").equal(uuid.toString()).asList();
+//        System.out.println("returning json // segments size is: " + segments.size());
 
         segments.add(new Segment(search.getFullnameWithComma(), 1, true));
         json = new Gson().toJson(segments);
@@ -190,6 +192,10 @@ public class ControllerBean implements Serializable {
 
     public static String getJson() {
         return json;
+    }
+
+    public static void setJson(String newJson) {
+        json = newJson;
     }
 
     public static boolean isAtleastOneMatchFound() {
@@ -266,4 +272,27 @@ public class ControllerBean implements Serializable {
     public int getNbMendeleyDocs() {
         return nbMendeleyDocs;
     }
+
+    public static int getMinYear() {
+        return minYear;
+    }
+
+    public static void setMinYear(int minYear) {
+        ControllerBean.minYear = minYear;
+    }
+
+    public static int getMaxYear() {
+        return maxYear;
+    }
+
+    public static void setMaxYear(int maxYear) {
+        ControllerBean.maxYear = maxYear;
+    }
+
+    public static TreeSet<Author> getAuthorsInMendeleyDocs() {
+        return authorsInMendeleyDocs;
+    }
+    
+    
+    
 }
