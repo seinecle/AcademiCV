@@ -15,11 +15,12 @@ import javax.faces.bean.ViewScoped;
  */
 @ManagedBean
 @ViewScoped
-public class ProcessingBean implements Serializable {
+public class ReportBean implements Serializable {
 
     private String json;
+    private String nameClicked;
 
-    public ProcessingBean() {
+    public ReportBean() {
         this.json = ControllerBean.getJson();
 
     }
@@ -28,4 +29,11 @@ public class ProcessingBean implements Serializable {
         return json;
     }
 
+    public String getNameClicked() {
+        return nameClicked;
+    }
+
+    public void setNameClicked(String nameClicked) {
+        this.nameClicked = nameClicked;
+    }
 }

@@ -1,80 +1,74 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+      canvas {
+        border: 1px solid #9C9898;
+      }
+    </style>
+    <script src="kinetic-v4.0.2.min"></script>
+    <script>
 
         //COLORS
 
-        String BACKGROUND_COLOR = "#FFFFFF"; //white
-
-        color backgroundColor = color(hexToRgb(BACKGROUND_COLOR).r,hexToRgb(BACKGROUND_COLOR).g,hexToRgb(BACKGROUND_COLOR).b);
-        //color backgroundColor = (12,50,180); //random for test
-
-        int BACKGROUND_ALPHA = 255;
-        int MAXSTROKEWEIGHT = 20;
-
-
-
-
+        var BACKGROUND_COLOR = "#FFFFFF"; //white
+        var BACKGROUND_ALPHA = 255;
+        var MAXSTROKEWEIGHT = 20;
 
         //SKETCH SIZE
 
-        float SKETCH_WIDTHf = 800f;
-        float SKETCH_HEIGTHf = 800f;
-        float SKETCH_CENTER_X = SKETCH_WIDTHf / 2;
-        float SKETCH_CENTER_Y = SKETCH_HEIGTHf / 2;
-
-
-
+        var SKETCH_WIDTHf = 800;
+        var SKETCH_HEIGTHf = 800;
+        var SKETCH_CENTER_X = SKETCH_WIDTHf / 2;
+        var SKETCH_CENTER_Y = SKETCH_HEIGTHf / 2;
 
 
         //SPACE BETWEEN SEGMENTS
-        float INTERSTICE_SEGMENT = 0.2f;
+        var INTERSTICE_SEGMENT = 0.2;
 
         //SPACE BETWEEN LABELS AND CIRCLE
-        float INTERSTICE_LABEL = 7f;
+        var INTERSTICE_LABEL = 7;
 
         //SPACE BETWEEN BEZIER CURVES AND CIRCLES
-        float INTERSTICE_BEZIER = 7f;
+        var INTERSTICE_BEZIER = 7;
 
 
         //LABEL FOR MAIN SEGMENT
-        String mainSegmentLabel;
+        var mainSegmentLabel;
 
-        class Segment{
-            
-            String label;
-            int count;
-            boolean isMain;
-            
-            Segment (String label, int count, boolean isMain){
+        function Segment (label, count, isMain){
                 this.label = label;
                 this.count = count;
                 this.isMain = isMain;
                 if (isMain == true){
-                    mainSegmentLabel = label;
+                    this.mainSegmentLabel = label;
                 }
-            }
+            
 
-            String toString(){
+            function toString(){
                 return (this.label);
-            }
+            };
+        }
 
-
-       }
-
+       
        
         ArrayList segments; 
         segments = new ArrayList();
 
-       void addSegment(String label,int count,boolean isMain){
+       function addSegment(label,count,isMain){
           segments.add(new Segment(label,count,isMain));
         }
 
-       void resetSegments(){
+       function resetSegments(){
           segments = new ArrayList();
         }
 
-        Colors palette;
-        String currColor;
-
-void setup() {
+        void palette;
+        void currColor;
 
 
 
@@ -82,24 +76,15 @@ void setup() {
 
 
         background(backgroundColor, BACKGROUND_ALPHA);
-        size(SKETCH_WIDTHf, SKETCH_HEIGTHf);
-        smooth();
-        noStroke();
-        palette = new Colors();
 
-
-}
-
-
-void draw() {
 
 
         //NUMBER SEGMENTS
-        float nbSegments = (float) segments.size() - 1;
+        var nbSegments = segments.size() - 1;
 
 
         //RESIZE SKETCH ACCORDINGLY
-        SKETCH_WIDTHf = 600f + nbSegments*7;
+        SKETCH_WIDTHf = 600 + nbSegments*7;
         SKETCH_HEIGTHf = SKETCH_WIDTHf;
         SKETCH_CENTER_X = SKETCH_WIDTHf / 2;
         SKETCH_CENTER_Y = SKETCH_HEIGTHf / 2;
@@ -108,42 +93,36 @@ void draw() {
         size(SKETCH_WIDTHf, SKETCH_HEIGTHf);
 
         //TEXT SIZE
-        textSize(50);
+        textSize(12+ (SKETCH_WIDTHf-600)/100 - nbSegments/20);
 
 
         //CIRCLE SIZE
 
-        float OUTER_CIRCLE_DIAMETER = SKETCH_WIDTHf * (float)3/5;
-        float INNER_CIRCLE_DIAMETER = OUTER_CIRCLE_DIAMETER*9/10;
-        float OUTER_CIRCLE_RADIUS = OUTER_CIRCLE_DIAMETER / 2;
-        float INNER_CIRCLE_RADIUS = INNER_CIRCLE_DIAMETER / 2;
+        var OUTER_CIRCLE_DIAMETER = SKETCH_WIDTHf * 3/5;
+        var INNER_CIRCLE_DIAMETER = OUTER_CIRCLE_DIAMETER*9/10;
+        var OUTER_CIRCLE_RADIUS = OUTER_CIRCLE_DIAMETER / 2;
+        var INNER_CIRCLE_RADIUS = INNER_CIRCLE_DIAMETER / 2;
 
 
 
-        float nbBasicUnitsSegments = 0;
+        var nbBasicUnitsSegments = 0;
         for (i = 0;i<segments.size();i++){
             if (segments.get(i).isMain==true)continue;
             nbBasicUnitsSegments = nbBasicUnitsSegments+segments.get(i).count;
         }
-//        println("total number of basic units, summing all basic units of all segments: "+nbBasicUnitsSegments);
-//        println("number of segments (not counting the main one): "+nbSegments);
-
-
-
-
 
         //the segment for the author should be between 1/8 and 1/3 of a circle. Between that, it varies with the number of partners.
-        float radiusUnitAuthor = max((float) 2 / 16, min(1f / nbSegments, (float) 1 / 3));
+        var radiusUnitAuthor = max(2 / 16, min(1 / nbSegments, 1 / 3));
  //       println("radius Main is:" + radiusUnitAuthor);
 
         //WARNING this unit does not represent the size of a segment for one partner, but the atomic unit for such a size.
         // => a partner with 5 relations with the author will have a segment size of 5 x this atomic unit
 
-        float radiusUnitSegment;
+        var radiusUnitSegment;
         radiusUnitSegment = (1 - INTERSTICE_SEGMENT) * ((1 - radiusUnitAuthor) / (nbBasicUnitsSegments));
  //      println("radius Segment is: "+ radiusUnitSegment);
 
-        float interstice;
+        var interstice;
 
         interstice = (1 - (radiusUnitSegment * nbBasicUnitsSegments + radiusUnitAuthor)) / (nbSegments + radiusUnitAuthor + 1);
 
@@ -157,7 +136,7 @@ void draw() {
 
         //NAME ATTACHED TO THE MAIN SEGMENT
         
-        float sw = textWidth(mainSegmentLabel);
+        var sw = textWidth(mainSegmentLabel);
 //        println("mainSegmentLabel: "+mainSegmentLabel);
         textAlign(LEFT,BOTTOM);
 
@@ -167,25 +146,24 @@ void draw() {
 
         // DRAWING OTHER SEGMENTS -------------
 
-        float countSegments = 0f;
-        float countBasicUnits = 0f;
+        var countSegments = 0;
+        var countBasicUnits = 0;
 
-        String segmentLabel;
-        for (int i = 0; i < nbSegments; i++) {
+        var segmentLabel;
+        for (i = 0; i < nbSegments; i++) {
 
             if (segments.get(i).isMain == true) continue;
 
-            float currCountBasicUnits = (float)segments.get(i).count;
+            var currCountBasicUnits = segments.get(i).count;
 
-
-            //first the outer arc in a CUSTOM COLOR
+           //first the outer arc in a CUSTOM COLOR
            segmentColor = palette.listColors.get(round(countSegments));
            color rgb = color(hexToRgb(segmentColor).r,hexToRgb(segmentColor).g,hexToRgb(segmentColor).b);
            fill(rgb);
 
 
-            float startArc = TWO_PI * (0.5f + radiusUnitAuthor / 2f + interstice * (countSegments + 1f) + radiusUnitSegment * countBasicUnits);
-            float endArc   = TWO_PI * (0.5f + radiusUnitAuthor / 2f + interstice * (countSegments + 1f) + radiusUnitSegment * (countBasicUnits + currCountBasicUnits));
+            var startArc = TWO_PI * (0.5f + radiusUnitAuthor / 2f + interstice * (countSegments + 1f) + radiusUnitSegment * countBasicUnits);
+            var endArc   = TWO_PI * (0.5f + radiusUnitAuthor / 2f + interstice * (countSegments + 1f) + radiusUnitSegment * (countBasicUnits + currCountBasicUnits));
 //            println("nb of basic units in curr segment: "+currCountBasicUnits);
 //            println("startArc: "+startArc);
 //            println("endArc: "+endArc);
@@ -194,37 +172,37 @@ void draw() {
             arc(SKETCH_WIDTHf / 2, SKETCH_HEIGTHf / 2, OUTER_CIRCLE_DIAMETER, OUTER_CIRCLE_DIAMETER,startArc,endArc);
 
 
-            countSegments = countSegments + 1f;
+            countSegments = countSegments + 1;
             countBasicUnits = countBasicUnits + currCountBasicUnits;
 //            println("accumulated count of total basic units treated so far: " + countBasicUnits);
         }
 
-        countSegments = 0f;
-        countBasicUnits = 0f;
+        countSegments = 0;
+        countBasicUnits = 0;
 
 
 
         // DRAWING CENTER IN PLAIN COLOR
-            fill(255, 255, 255); //in WHITE
-        ellipse(SKETCH_WIDTHf/2f,SKETCH_HEIGTHf/2f,INNER_CIRCLE_DIAMETER,INNER_CIRCLE_DIAMETER);
-            fill(0, 0, 0); //restore fill color to black
+        fill(255, 255, 255); //in WHITE
+        ellipse(SKETCH_WIDTHf/2,SKETCH_HEIGTHf/2,INNER_CIRCLE_DIAMETER,INNER_CIRCLE_DIAMETER);
+        fill(0, 0, 0); //restore fill color to black
 
 
         // DRAWING LABELS FOR OTHER SEGMENTS    
 
-        for (int i = 0; i < nbSegments; i++) {
+        for (i = 0; i < nbSegments; i++) {
 
             if (segments.get(i).isMain == true) continue;
             //orientation of the label.
 
-            float theta = TWO_PI * (0.5f + radiusUnitAuthor / 2 + interstice * (countSegments + 1) + radiusUnitSegment * countBasicUnits + radiusUnitSegment * segments.get(i).count / 2);
-            float thetaLabel;
+            var theta = TWO_PI * (0.5f + radiusUnitAuthor / 2 + interstice * (countSegments + 1) + radiusUnitSegment * countBasicUnits + radiusUnitSegment * segments.get(i).count / 2);
+            var thetaLabel;
 
  //           println("theta: " + theta);
  //           println("segment: " + segments.get(i).label);
 
-            float minLimit = (3f / 4f * TWO_PI);
-            float maxLimit = (5f / 4f * TWO_PI);
+            var minLimit = (3 / 4 * TWO_PI);
+            var maxLimit = (5 / 4 * TWO_PI);
 
             //this condition orients the labels for easier read
             if (theta < minLimit | theta > maxLimit) {
@@ -237,17 +215,17 @@ void draw() {
 
 
             //COORDINATES OF THE LABEL FOR THE CURRENT SEGMENT
-            float x = (SKETCH_CENTER_X
+            var x = (SKETCH_CENTER_X
                     + cos(theta)
                     * (OUTER_CIRCLE_RADIUS + INTERSTICE_LABEL));
-            float y = SKETCH_CENTER_Y
+            var y = SKETCH_CENTER_Y
                     + sin(theta)
                     * (OUTER_CIRCLE_RADIUS + INTERSTICE_LABEL);
 
-            float x_inner = (SKETCH_CENTER_X
+            var x_inner = (SKETCH_CENTER_X
                     + cos(theta)
                     * (INNER_CIRCLE_RADIUS - INTERSTICE_BEZIER));
-            float y_inner = SKETCH_CENTER_Y
+            var y_inner = SKETCH_CENTER_Y
                     + sin(theta)
                     * (INNER_CIRCLE_RADIUS - INTERSTICE_BEZIER);
 
@@ -265,21 +243,21 @@ void draw() {
 
             // BEZIER CURVE between author and partner
 
-            float strokeThickness = (float) segments.get(i).count * MAXSTROKEWEIGHT / segments.size();
+            var strokeThickness = segments.get(i).count * MAXSTROKEWEIGHT / segments.size();
             noFill();
             stroke(255, 0, 0);
             strokeWeight(strokeThickness);
 
 
-            float x1 = SKETCH_CENTER_X + cos(PI) * (INNER_CIRCLE_RADIUS - INTERSTICE_BEZIER);
-            float y1 = SKETCH_CENTER_Y + sin(PI) * (INNER_CIRCLE_RADIUS - INTERSTICE_BEZIER);
-            float x2 = (x_inner);
-            float y2 = (y_inner);
+            var x1 = SKETCH_CENTER_X + cos(PI) * (INNER_CIRCLE_RADIUS - INTERSTICE_BEZIER);
+            var y1 = SKETCH_CENTER_Y + sin(PI) * (INNER_CIRCLE_RADIUS - INTERSTICE_BEZIER);
+            var x2 = (x_inner);
+            var y2 = (y_inner);
 
-            float hx1 = x1 + (x2 - x1) * (1f / 4f);
-            float hy1 = y1 + ((y2 - y1) / ((x2 - x1)) * (hx1 - x1)) - ((y2 - y1) / 4f);
-            float hx2 = x1 + (x2 - x1) * (4f / 5f);
-            float hy2 = (y1 + ((y2 - y1) / (x2 - x1)) * (hx2 - x1)) - ((y2 - y1) / 3f);
+            var hx1 = x1 + (x2 - x1) * (1 / 4);
+            var hy1 = y1 + ((y2 - y1) / ((x2 - x1)) * (hx1 - x1)) - ((y2 - y1) / 4);
+            var hx2 = x1 + (x2 - x1) * (4 / 5);
+            var hy2 = (y1 + ((y2 - y1) / (x2 - x1)) * (hx2 - x1)) - ((y2 - y1) / 3);
 
 //            println("hx2: " + hx2);
 //            println("hy2: " + hy2);
@@ -293,7 +271,7 @@ void draw() {
 //            println("curr i: "+i);
 //            println("curr segment is: "+segments.get(i));
 
-            countSegments = countSegments + 1f;
+            countSegments = countSegments + 1;
             countBasicUnits = countBasicUnits + segments.get(i).count;
 
         }
@@ -303,7 +281,7 @@ void draw() {
     }
 
 
-class Colors {
+function Colors (){
 
 ArrayList listColors;
 
@@ -521,3 +499,12 @@ function hexToRgb(hex) {
         b: parseInt(result[3], 16)
     } : null;
 }
+
+
+    
+    </script>
+  </head>
+  <body>
+    <div id="container"></div>
+  </body>
+</html>

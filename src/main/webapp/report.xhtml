@@ -10,41 +10,28 @@
         <title>Ring</title>
         <h:outputScript library="js" name="jquery-1.8.1.min.js" />
         <h:outputScript library="js" name="processing-1.4.1.js" />
+        <h:outputScript library="js" name="kinetic-v4.0.2.min.js" />
+        <h:outputScript library="js" name="kineticCircleJS.js" />
 
         <script type="text/javascript">
             //<![CDATA[
+
             $(function(){
-                
+
+                var json = '#{reportBean.json}';
+                addSegments(json);
+            
+
+
                 var timer = 0,
                 timeout = 3000,
-                memPage = setInterval(function () {
-                    var sketchPage = Processing.getInstanceById("canvasPage");
-                    if (sketchPage) {
-                        console.log("SKETCH PAGE HAS LOADED");
-                        clearInterval(memPage);
-                        var json = '#{processingBean.json}';
-                        var data = $.parseJSON(json);
-                        if(data) {
-                            for(i=0; i<data.length; i++) {
-                                var segment = data[i];
-                                sketchPage.addSegment(segment.label, segment.count,segment.isMain);
-                            }
-                        }
-                    } else {
-                        timer += 10;
-                        if (timer > timeout) {
-                            console.log("FAILED TO LOAD SKETCH PAGE");
-                            clearInterval(memPage);
-                        }
-                    }
-                }, 10);
 
                 memPDF = setInterval(function () {
                     var sketchPDF = Processing.getInstanceById("canvasPDF");
                     if (sketchPDF) {
                         console.log("SKETCH PDF HAS LOADED");
                         clearInterval(memPDF);
-                        var json = '#{processingBean.json}';
+                        var json = '#{reportBean.json}';
                         var data = $.parseJSON(json);
                         if(data) {
                             for(i=0; i<data.length; i++) {
@@ -60,6 +47,8 @@
                         }
                     }
                 }, 10);
+                
+                
             }); //end ready
 
             //]]>
@@ -78,25 +67,10 @@
     </h:head>
     <h:body>
 
-<!--        <div id ="bannerTitleBackground"></div>
-        <div id ="bannerTitle">
-        </div>
-        <h:panelGroup id ="editCounterId" style="    background-color:rgba(0,0,0,0);
-                      position:fixed;
-                      top:1%;
-                      left:1%;
-                      text-align: left;
-                      font-size: 100%;
-                      margin: 0px auto;
-                      width:96%;
-                      height:80px;
-                      padding-left: 50px;
-                      padding-top: 70px;
-                      z-index: 2;
-                      ">
-        </h:panelGroup>-->
+
 
         <h1>Report for #{controllerBean.forename} #{controllerBean.surname}</h1>
+
         <h:form id ="form">
             <h:inputHidden id="dataURL" value="#{fileDownloadController.dataURL}" />
 
@@ -104,14 +78,32 @@
                              icon="ui-icon-arrowthichk-s">  
                 <p:fileDownload value="#{fileDownloadController.file}" />  
             </p:commandButton>  
+
         </h:form>
+
+        <h:form id="form2">
+            <h:inputHidden id="nameClicked" value="reportBean.nameClicked"/>
+            <h:commandButton id="submitNameClicked" onclick="confirmation.show()" type="button"/>
+        </h:form>
+
         <div id ="laius">
             <p>#{controllerBean.forename} #{controllerBean.surname} is the author of <b>#{controllerBean.nbMendeleyDocs} papers</b>.</p>
             <p>His or her most frequent co-author is <b>#{controllerBean.mostFrequentCoAuthor.fullname}</b>.<br></br>
                 Together, they wrote #{controllerBean.mostFrequentCoAuthor.timesMentioned} papers in the years from #{controllerBean.mostFrequentCoAuthor.yearFirstCollab} to #{controllerBean.mostFrequentCoAuthor.yearLastCollab}.</p>
         </div>
-        <canvas id ="canvasPage" data-processing-sources="processingSketchForScreen.pde" width="300"></canvas>
+
+        <div id="container"></div>
+
+        <!--<canvas id ="canvasPage" data-processing-sources="processingSketchForScreen.pde" width="300"></canvas>-->
         <canvas id ="canvasPDF" style="display:none" data-processing-sources="processingSketchForPDF.pde"></canvas>
+
+<!--        <p:confirmDialog id="confirmDialog" message="Are you sure about destroying the world?"  
+                         header="Initiating destroy process" severity="alert" widgetVar="confirmation">  
+
+            <p:commandButton id="confirm" value="Yes Sure" update="messages" oncomplete="confirmation.hide()"/>  
+            <p:commandButton id="decline" value="Not Yet" onclick="confirmation.hide()" type="button" />   
+
+        </p:confirmDialog>  -->
 
     </h:body>
 </html>
