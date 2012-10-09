@@ -13,6 +13,10 @@ public class AdminPanel {
 //debugging    ----------------------------------------------------------------------------
     // ##### MENDELEY API CALL DEBUGGING
     static boolean mendeley_in_debugging_mode = false;
+    
+    // ##### ARXIV API CALL DEBUGGING
+    static boolean arxiv_in_debugging_mode = true;
+    
     // ##### WISDOM CROWDS DEBUGGING #################################
     static boolean wisdom_crowds_in_debugging_mode = true;
 // ------------------------------------------------------------------------------------------
@@ -32,4 +36,10 @@ public class AdminPanel {
     public static int minGlobalEdits() {
         return minEdits;
     }
+
+    public static boolean arxivDebugStateTrueOrFalse() {
+        return arxiv_in_debugging_mode;
+    }
+    
+    
 }
