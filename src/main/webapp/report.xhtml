@@ -9,6 +9,7 @@
 
         <title>Ring</title>
         <h:outputScript library="js" name="jquery-1.8.1.min.js" />
+        <h:outputScript library="js" name="jquery-ui-1.8.24.custom.min.js" />
         <h:outputScript library="js" name="processing-1.4.1.js" />
         <h:outputScript library="js" name="kinetic-v4.0.2.min.js" />
         <h:outputScript library="js" name="kineticCircleJS.js" />
@@ -68,7 +69,6 @@
     <h:body>
 
 
-
         <h1>Report for #{controllerBean.forename} #{controllerBean.surname}</h1>
 
         <h:form id ="form">
@@ -78,13 +78,25 @@
                              icon="ui-icon-arrowthichk-s">  
                 <p:fileDownload value="#{fileDownloadController.file}" />  
             </p:commandButton>  
+        </h:form>
+
+
+        <h:form id="form2" prependId="false">
+            <p:remoteCommand name="sendNameClicked" actionListener="#{reportBean.passName}"/>
+            <p:remoteCommand name="updateDialog" update="dialogBox"/>
+
+            <p:commandButton style="display: none" id="displayDialog" type="button" onclick="cd.show();"/>
+
+            <p:confirmDialog id ="dialogBox" message= "Has written #{reportBean.countDocsCurrNameClicked} document with #{controllerBean.forename} #{controllerBean.surname}"
+                             header="#{reportBean.nameClicked}"
+                             widgetVar="cd"
+                             severity="info">
+                <p:commandButton value="Draw the ring of #{reportBean.obtainFullName()}?" actionListener ="#{controllerBean.prepareNewSearch()}" action ="index?faces-redirect=true" oncomplete="cd.hide();"/>
+                <p:commandButton value="No, stay on this page" onclick="cd.hide();" type="button" />
+            </p:confirmDialog>
 
         </h:form>
 
-        <h:form id="form2">
-            <h:inputHidden id="nameClicked" value="reportBean.nameClicked"/>
-            <h:commandButton id="submitNameClicked" onclick="confirmation.show()" type="button"/>
-        </h:form>
 
         <div id ="laius">
             <p>#{controllerBean.forename} #{controllerBean.surname} is the author of <b>#{controllerBean.nbMendeleyDocs} papers</b>.</p>
@@ -92,18 +104,12 @@
                 Together, they wrote #{controllerBean.mostFrequentCoAuthor.timesMentioned} papers in the years from #{controllerBean.mostFrequentCoAuthor.yearFirstCollab} to #{controllerBean.mostFrequentCoAuthor.yearLastCollab}.</p>
         </div>
 
-        <div id="container"></div>
 
-        <!--<canvas id ="canvasPage" data-processing-sources="processingSketchForScreen.pde" width="300"></canvas>-->
+        <div id="container" style=" margin-left: auto; margin-right: auto;width:800px"></div>
+        <div style="margin-left: auto; margin-right: auto;text-align: center;width:800px">
+            <p><b>Do you spot some errors?</b> Click on the "previous page" button of your browser to make edits.</p>
+        </div>
         <canvas id ="canvasPDF" style="display:none" data-processing-sources="processingSketchForPDF.pde"></canvas>
-
-<!--        <p:confirmDialog id="confirmDialog" message="Are you sure about destroying the world?"  
-                         header="Initiating destroy process" severity="alert" widgetVar="confirmation">  
-
-            <p:commandButton id="confirm" value="Yes Sure" update="messages" oncomplete="confirmation.hide()"/>  
-            <p:commandButton id="decline" value="Not Yet" onclick="confirmation.hide()" type="button" />   
-
-        </p:confirmDialog>  -->
 
     </h:body>
 </html>

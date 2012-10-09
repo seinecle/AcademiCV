@@ -19,7 +19,7 @@ import java.util.TreeSet;
  */
 public class ConvertToSegments {
 
-    static public ArrayList<Segment> convert(TreeMap<String, String> mapLabelsFromFinalCheck) {
+    public ArrayList<Segment> convert(TreeMap<String, String> mapLabelsFromFinalCheck) {
         Clock convertingToSegmentsClock = new Clock("converting to segments");
         ArrayList<Segment> al = new ArrayList();
         TreeMap<String, String> mapAuthors = mapLabelsFromFinalCheck;

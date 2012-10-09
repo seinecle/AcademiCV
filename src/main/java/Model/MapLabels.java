@@ -47,15 +47,15 @@ public class MapLabels implements Comparable<MapLabels>, Serializable {
     }
 
     public String getLabel1() {
-        return label1;
+        return label1.trim();
     }
 
     public void setLabel1(String label1) {
-        this.label1 = label1;
+        this.label1 = label1.trim();
     }
 
     public String getLabel2() {
-        return label2;
+        return label2.trim();
     }
 
     public void setLabel2(String label2) {
@@ -71,12 +71,12 @@ public class MapLabels implements Comparable<MapLabels>, Serializable {
     }
 
     public String getLabel2Edited() {
-        return label2Edited;
+        return label2Edited.trim();
     }
 
     public void setLabel2Edited(String label2Edited) {
         System.out.println("author edited is set: " + label2Edited);
-        this.label2Edited = label2Edited;
+        this.label2Edited = label2Edited.trim();
 
         updateQuery = ControllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma());
         updateQuery.field("originalForm").equal(label2);

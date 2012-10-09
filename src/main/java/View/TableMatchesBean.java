@@ -11,7 +11,6 @@ import Model.MapLabels;
 import Model.PersistingEdit;
 import com.google.code.morphia.query.Query;
 import com.google.code.morphia.query.UpdateOperations;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -38,7 +37,7 @@ public class TableMatchesBean implements Serializable {
     private UpdateOperations<PersistingEdit> ops;
     private Query<GlobalEditsCounter> updateQueryCounter;
     private UpdateOperations<GlobalEditsCounter> opsCounter;
-    private boolean renderNextButton = false;
+    private boolean renderNextButton = true;
     private int countUpdated;
     private PushContext pushContext;
 
@@ -55,7 +54,8 @@ public class TableMatchesBean implements Serializable {
             System.out.println("new TableMatchesBean!");
             listCloseMatchesDisplayed.clear();
             setClosematchesOriginal.clear();
-
+            optionChosen = 4;
+            
 
             //RETRIEVE MATCHES FROM THIS UUID
             setClosematchesOriginal.addAll(ControllerBean.ds.find(CloseMatchBean.class).field("uuid").equal(ControllerBean.uuid.toString()).asList());
@@ -180,6 +180,8 @@ public class TableMatchesBean implements Serializable {
                 if (mergedAuthor.equals(ControllerBean.getSearch().getFullnameWithComma())) {
                     break;
                 }
+                mergedAuthor = mergedAuthor.trim();
+                mergedAuthor = mergedAuthor.replace("  "," ");
                 System.out.println("label 1: \"" + closeMatch.getAuthor1() + "\"");
                 System.out.println("label 2: \"" + closeMatch.getAuthor2() + "\"");
                 System.out.println("merged into: \"" + mergedAuthor + "\"");

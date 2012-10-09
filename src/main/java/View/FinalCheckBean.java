@@ -13,7 +13,6 @@ import Model.PersistingEdit;
 import com.google.code.morphia.query.Query;
 import com.google.code.morphia.query.UpdateOperations;
 import com.google.gson.Gson;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
@@ -46,6 +44,8 @@ public class FinalCheckBean implements Serializable {
 
     public FinalCheckBean() {
         System.out.println("new FinalCheckBean!");
+        
+        //deleting segments and labels that could be in storage due to the user landing on this page with the back button.
         Query q3 = ControllerBean.ds.createQuery(Segment.class).field("uuid").equal(ControllerBean.uuid.toString());
         ControllerBean.ds.delete(q3);
 
@@ -65,29 +65,25 @@ public class FinalCheckBean implements Serializable {
         }
     }
 
-    public ArrayList<Segment> close() {
-
-        //converts the list of edited labels into a map
-        for (MapLabels element : listCheckedLabels) {
-            mappingEditedLabels.put(element.getLabel1(), element.getLabel2());
-        }
-
-        //converts the original list of labels into a map, substituting the edited label dating from the pairc check by the one found in the final check
-
-        for (MapLabels element : listMapLabels) {
-            mappingLabelsForSegments.put(element.getLabel1(), mappingEditedLabels.get(element.getLabel2()));
-        }
-
-        //PERSIST SEGMENTS
-        segments = ConvertToSegments.convert(mappingLabelsForSegments);
-//        System.out.println("segments size: "+segments.size());
-//        for (Segment segment : segments) {
-//            ControllerBean.ds.save(segment);
-////            System.out.println("segment persisted");
+//    public ArrayList<Segment> close() {
+//
+//        //converts the list of edited labels into a map
+//        for (MapLabels element : listCheckedLabels) {
+//            mappingEditedLabels.put(element.getLabel1(), element.getLabel2());
 //        }
-        return segments;
-
-    }
+//
+//        //converts the original list of labels into a map, substituting the edited label dating from the pairc check by the one found in the final check
+//
+//        for (MapLabels element : listMapLabels) {
+//            mappingLabelsForSegments.put(element.getLabel1(), mappingEditedLabels.get(element.getLabel2()));
+//        }
+//
+//        //TURN LABELS INTO SEGMENTS
+//        segments = new ConvertToSegments().convert(mappingLabelsForSegments);
+//
+//        return segments;
+//
+//    }
 
     public List<MapLabels> getListCheckedLabels() {
         return listCheckedLabels;
@@ -132,13 +128,13 @@ public class FinalCheckBean implements Serializable {
             mappingEditedLabels.put(element.getLabel1(), element.getLabel2());
         }
 
-        //converts the original list of labels into a map, substituting the edited label dating from the pairc check by the one found in the final check
+        //converts the original list of labels into a map, substituting the edited label dating from the pair check by the one found in the final check
         for (MapLabels element : listMapLabels) {
             mappingLabelsForSegments.put(element.getLabel1(), mappingEditedLabels.get(element.getLabel2()));
         }
 
         //PERSIST SEGMENTS
-        segments = ConvertToSegments.convert(mappingLabelsForSegments);
+        segments = new ConvertToSegments().convert(mappingLabelsForSegments);
 
         segments.add(new Segment(ControllerBean.getSearch().getFullnameWithComma(), 1, true));
         ControllerBean.setJson(new Gson().toJson(segments));

@@ -29,6 +29,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -37,6 +38,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.push.PushContext;
 import org.primefaces.push.PushContextFactory;
@@ -170,7 +172,7 @@ public class ControllerBean implements Serializable {
             for (MapLabels element : listMapLabels) {
                 mapLabelsAuthors.put(element.getLabel1(), element.getLabel2());
             }
-            segments = ConvertToSegments.convert(mapLabelsAuthors);
+            segments = new ConvertToSegments().convert(mapLabelsAuthors);
             segments.add(new Segment(forename + " " + surname, 1, true));
             json = new Gson().toJson(segments);
 
@@ -292,7 +294,31 @@ public class ControllerBean implements Serializable {
     public static TreeSet<Author> getAuthorsInMendeleyDocs() {
         return authorsInMendeleyDocs;
     }
-    
-    
-    
+
+    public void prepareNewSearch() {
+        Map<String, Object> map = FacesContext.getCurrentInstance().getExternalContext().getApplicationMap();
+
+        if (!map.isEmpty()) {
+
+            String previousUUID = (String) map.get("uuid");
+            Query q1 = ds.createQuery(MendeleyDoc.class).field("uuid").equal(previousUUID);
+            Query q2 = ds.createQuery(MapLabels.class).field("uuid").equal(previousUUID);
+            Query q3 = ds.createQuery(Segment.class).field("uuid").equal(previousUUID);
+            ds.delete(q1);
+            ds.delete(q2);
+            ds.delete(q3);
+
+
+            String newSearch = (String) map.get("clickedAuthor");
+            if (newSearch.contains(",")) {
+                String[] fields = newSearch.split(",");
+                forename = fields[1].trim();
+                surname = fields[0].trim();
+            }
+            
+            map.remove("clickedAuthor");
+            map.remove("uuid");
+
+        }
+    }
 }

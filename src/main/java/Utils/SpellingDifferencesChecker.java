@@ -217,8 +217,8 @@ public class SpellingDifferencesChecker {
             }
         }
 
-        System.out.println(
-                "size of MapLabels (should be total nb of authors minus main author): " + mapLabels.size());
+//        System.out.println(
+//                "size of MapLabels (should be total nb of authors minus main author): " + mapLabels.size());
 
 
         //PERSIST THE MAP OF LABELS

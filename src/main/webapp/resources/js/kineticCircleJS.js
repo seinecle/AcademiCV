@@ -31,6 +31,9 @@ function addSegments(json){
     //PARAMETER HIGHLIGHT
     var opacityDecrease = 0.4;
     
+    //INTERACTION
+    var currClickedAuthor;
+    
     
     //LABEL FOR MAIN SEGMENT
     var mainSegmentLabel;
@@ -247,15 +250,15 @@ function addSegments(json){
 
 
     function funcDrawSegment(i) {
-//        console.log("label of the curr segment: "+segments[i].label);
+        //        console.log("label of the curr segment: "+segments[i].label);
 
         segmentColor = listColors[i];
           
 
         var startArcRadius = TWO_PI * (0.5 + radiusUnitAuthor / 2 + interstice * (countSegments + 1) + radiusUnitSegment * countBasicUnits);
         var endArcRadius   = TWO_PI * (0.5 + radiusUnitAuthor / 2 + interstice * (countSegments + 1) + radiusUnitSegment * (countBasicUnits + currCountBasicUnits));
-//        console.log("startArcRadius: "+startArcRadius);
-//        console.log("endArcRadius: "+endArcRadius);
+        //        console.log("startArcRadius: "+startArcRadius);
+        //        console.log("endArcRadius: "+endArcRadius);
 
         xLine1 = (SKETCH_CENTER_X
             + Math.cos(endArcRadius)
@@ -307,7 +310,39 @@ function addSegments(json){
 
         });
 
+        segmentsArr[i].on("click", function() {
+            currClickedAuthor = labelsArr[i].getText();
+            console.log("author clicked: "+currClickedAuthor);
+            console.log("count of docs for this co-author: "+segments[i].count);
+
+            sendNameClicked([{
+                name: 'nameClicked', 
+                value: currClickedAuthor
+            },{
+                name:'countDocs',
+                value:segments[i].count
+            }]);
+            updateDialog();
         
+            setTimeout(updateDialogJS,150);
+
+            $("#dialogTest").dialog({
+                resizable: false,
+                height:140,
+                modal: true,
+                buttons: {
+                    "Delete all items": function() {
+                        $( this ).dialog( "close" );
+                    },
+                    "Cancel": function() {
+                        $( this ).dialog( "close" );
+                    }
+                }
+            });
+            
+        });
+
+
         layerArcBandsRegular.add(segmentsArr[i]);
         
     }
@@ -349,7 +384,7 @@ function addSegments(json){
     
     function funcDrawLabel(i){
 
-//        console.log("theta: "+theta);
+        //        console.log("theta: "+theta);
         var thetaLabel;
     
         //           println("theta: " + theta);
@@ -421,17 +456,52 @@ function addSegments(json){
 
         });
 
-        //        labelsArr[i].on("click", function() {
-        //            document.getElementById('nameClicked').value = labelsArr[i].text;
-        //            document.getElementById('submitNameClicked').click();
-        //        });
+        labelsArr[i].on("click", function() {
+            currClickedAuthor = labelsArr[i].getText();
+            console.log("author clicked: "+currClickedAuthor);
+            console.log("count of docs for this co-author: "+segments[i].count);
+
+            sendNameClicked([{
+                name: 'nameClicked', 
+                value: currClickedAuthor
+            },{
+                name:'countDocs',
+                value:segments[i].count
+            }]);
+            updateDialog();
+        
+            setTimeout(updateDialogJS,150);
+
+            $("#dialogTest").dialog({
+                resizable: false,
+                height:140,
+                modal: true,
+                buttons: {
+                    "Delete all items": function() {
+                        $( this ).dialog( "close" );
+                    },
+                    "Cancel": function() {
+                        $( this ).dialog( "close" );
+                    }
+                }
+            });
+            
+        });
 
 
 
         layerLabelSegments.add(labelsArr[i]);
-    }            
+    }
+    
+    function updateDialogJS(){
+        //        document.getElementById('updateDialogButton').click();
+        document.getElementById('displayDialog').click();
+        
+    }
 
-
+    function getCurrClickedAuthor(){
+        return currClickedAuthor;
+    }
 
     function createColors(){
         listColors.push("#E78B27");
