@@ -4,6 +4,7 @@
  */
 package BL.DocumentAggregation;
 
+import Model.Author;
 import Model.Document;
 
 /**
@@ -19,7 +20,8 @@ public class DocumentMerger {
         mergedDoc.setTitle(doc1.getTitle());
 
         //set Authors
-        if (doc1.getWhereFrom() == "arxiv") {
+        // checks if one of the docs has only full names. If so, we take the other record.
+        if (doc1.getAuthors().iterator().next().getForename() ==null) {
             mergedDoc.setAuthors(doc2.getAuthors());
         } else {
             mergedDoc.setAuthors(doc1.getAuthors());

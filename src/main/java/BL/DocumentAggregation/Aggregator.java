@@ -37,8 +37,7 @@ public class Aggregator {
             Pair<Document, Document> currPair = setPairsDocsIterator.next();
             float distance = WeightedLevenstheinDistanceCalculator.compute(currPair.getLeft().getTitle(), currPair.getRight().getTitle());
             
-            //if two docs are very smilar (almost identical title, same year), keep the one from Mendeley as it has more meta info.
-            // this should be changed when more APIs will be added
+            //if two docs are very smilar (almost identical title, same year), merge the two
             if (distance > 0.95 & currPair.getLeft().getYear() == currPair.getRight().getYear()) {
                 
                 mergedDoc = DocumentMerger.merge(currPair.getLeft(), currPair.getRight());
@@ -46,6 +45,8 @@ public class Aggregator {
                 setDocs.remove(currPair.getRight());
                 setDocs.add(mergedDoc);
             }
+            
+            
 
         }
     }
