@@ -12,7 +12,7 @@ public class AdminPanel {
 
 //debugging    ----------------------------------------------------------------------------
     // ##### MENDELEY API CALL DEBUGGING
-    static boolean mendeley_in_debugging_mode = false;
+    static boolean mendeley_in_debugging_mode = true;
     
     // ##### ARXIV API CALL DEBUGGING
     static boolean arxiv_in_debugging_mode = true;

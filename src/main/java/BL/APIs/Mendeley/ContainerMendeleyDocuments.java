@@ -2,9 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package Model;
+package BL.APIs.Mendeley;
 
-import BL.APIs.Mendeley.MendeleyDoc;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
@@ -22,24 +21,24 @@ import javax.faces.bean.ViewScoped;
 
 @ManagedBean
 @ViewScoped
-public class DocumentBean implements Serializable {
+public class ContainerMendeleyDocuments implements Serializable {
 
-    private List<MendeleyDoc> documents;
-    private MendeleyDoc selectedDocument;
+    private List<MendeleyDocument> documents;
+    private MendeleyDocument selectedDocument;
 
-    public List<MendeleyDoc> getDocuments() {
+    public List<MendeleyDocument> getDocuments() {
         return documents;
     }
 
-    public void setDocuments(List<MendeleyDoc> documents) {
+    public void setDocuments(List<MendeleyDocument> documents) {
         this.documents = documents;
     }
 
-    public MendeleyDoc getSelectedDocument() {
+    public MendeleyDocument getSelectedDocument() {
         return selectedDocument;
     }
 
-    public void setSelectedDocument(MendeleyDoc selectedDocument) {
+    public void setSelectedDocument(MendeleyDocument selectedDocument) {
         this.selectedDocument = selectedDocument;
     }
 
@@ -49,9 +48,9 @@ public class DocumentBean implements Serializable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        Iterator<MendeleyDoc> containerIterator = documents.iterator();
+        Iterator<MendeleyDocument> containerIterator = documents.iterator();
         while (containerIterator.hasNext()) {
-            MendeleyDoc currDoc = containerIterator.next();
+            MendeleyDocument currDoc = containerIterator.next();
             sb.append(currDoc.toString()).append("\n");
         }
         return sb.toString();

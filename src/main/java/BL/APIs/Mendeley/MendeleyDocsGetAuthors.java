@@ -4,11 +4,14 @@
  */
 package BL.APIs.Mendeley;
 
+import Model.Document;
 import Controller.ControllerBean;
 import Model.Author;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,12 +24,11 @@ public class MendeleyDocsGetAuthors {
     public MendeleyDocsGetAuthors() {
     }
 
-    public TreeSet<Author> countAuthors(List<MendeleyDoc> listDocs, String forename, String surname) {
+    public HashSet<Author> countAuthors(List<Document> listDocs, String forename, String surname) {
 
         String search = surname + ", " + forename;
         String search2 = forename + " " + surname;
-        ArrayList<Author> listAuthors = new ArrayList();
-        TreeSet<Author> setAuthors = new TreeSet();
+        HashSet<Author> setAuthors = new HashSet();
         TreeSet<Author> setAuthorsOriginal = new TreeSet();
         int minYear = 3000;
         int maxYear = 0;
@@ -34,39 +36,37 @@ public class MendeleyDocsGetAuthors {
         if (listDocs.isEmpty()) {
             System.out.println("list of MendeleyDocs is empty");
         }
-        Iterator<MendeleyDoc> listDocsIterator = listDocs.iterator();
+        Iterator<Document> listDocsIterator = listDocs.iterator();
         Iterator<Author> setAuthorsOriginalIterator;
-        List<Author> arrayAuthorsInCurrDoc;
-        int docYearInteger;
-        String docYearString;
+        Set<Author> setAuthorsInCurrDoc;
+        Integer docYear;
 
         ControllerBean.nbMendeleyDocs = listDocs.size();
 
 
         while (listDocsIterator.hasNext()) {
 
-            MendeleyDoc currDoc = listDocsIterator.next();
+            Document currDoc = listDocsIterator.next();
 
             if (currDoc.getAuthors() != null) {
-                arrayAuthorsInCurrDoc = currDoc.getAuthors();
-                docYearString = currDoc.getYear();
-                if (docYearString != null && !docYearString.equals("")) {
-                    docYearInteger = Integer.parseInt(docYearString);
-                    minYear = Math.min(minYear,docYearInteger);
-                    maxYear = Math.max(maxYear,docYearInteger);
+                setAuthorsInCurrDoc = currDoc.getAuthors();
+                docYear = currDoc.getYear();
+                if (docYear != null) {
+                    minYear = Math.min(minYear,docYear);
+                    maxYear = Math.max(maxYear,docYear);
                 } else {
-                    docYearInteger = -1;
+                    docYear = -1;
                 }
-                for (Author coauthor : arrayAuthorsInCurrDoc) {
+                for (Author coauthor : setAuthorsInCurrDoc) {
                     System.out.println("coauthor: \"" + coauthor.getFullnameWithComma() + "\"");
                     if (!StringUtils.stripAccents(coauthor.getFullname().toLowerCase().replaceAll("-", " ")).trim().equals(StringUtils.stripAccents(search2.toLowerCase().replaceAll("-", " ").trim()))) {
 //                        if (coauthor.getForename().startsWith("Krz")) {
 //                            System.out.println("Christophe found");
 //                            System.out.println("YEAR IS: " + docYearInteger);
 //                        }
-                        coauthor.setYearFirstCollab(docYearInteger);
-                        coauthor.setYearLastCollab(docYearInteger);
-                        listAuthors.add(coauthor);
+                        coauthor.setYearFirstCollab(docYear);
+                        coauthor.setYearLastCollab(docYear);
+                        setAuthors.add(coauthor);
                         setAuthorsOriginal.add(coauthor);
                     }
                 }
@@ -80,7 +80,9 @@ public class MendeleyDocsGetAuthors {
             int endYearElement1 = element1.getYearLastCollab();
             int count = 1;
 
-            for (Author element2 : listAuthors) {
+            Iterator<Author> setAuthorsIterator = setAuthors.iterator();
+            while (setAuthorsIterator.hasNext()) {
+                Author element2 = setAuthorsIterator.next();
                 if (element1.getFullnameWithComma().equals(element2.getFullnameWithComma())) {
 //                    System.out.println("same element detected!");
                     count++;

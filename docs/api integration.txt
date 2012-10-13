@@ -1,0 +1,50 @@
+1. Persist returns from several APIs
+
+	for each doc, create a DOC document
+		- parse title doc (string)
+		- parse year (int)
+		- parse source (string) 
+		- parse co-authors (Author)
+		- write API source (string)
+		
+2. Check for similarity between docs, keep the one from the most favorable API.
+
+	find each pair of docs in the container of docs
+	if titles similarity > very high threshold (0.95?) and year is the same
+		check one of the 2 docs is more complete
+			if so,
+				delete the least complete one
+			else,
+				delete the one that makes no distinction between first name and surname
+			else,
+				delete any of the two
+				
+	else if the similarity is equal to 1 but the year is different
+			keep the most recent one.
+
+3. Extract a set of Authors from the set of documents
+
+4. Apply heuristics to distinguish first and last names in Authors that just have a name
+	for each Author with just a name,
+		compare to all others with a first name / last name distinction
+		retain the one that has the highest similarity (algo could stop looping when a similarity of 1 is found)
+		
+		if similarity is perfect,
+			fill the first name and last name fields of the author with just a name, with the first and last names of the other
+		else if number of terms is the same
+			find where the name is cut off in the distinguished name, and apply the same cut off to the undistinguished name
+			* example *
+			"jose luis sanche" is close to "(first name)jose luis (last name)sanchez"
+			=> in this case, cut at (first name)jose luis (last name) sanche
+		else (meaning case when number of terms is different)
+			if similarity is very, very high
+				*probably means that a middle initial was dropped
+				if (nb of terms - nb of family terms in matching other >0)
+					cut off to keep the same number of family names as in the matching author, leaving the others to the first names
+				else
+					keep just the last for the family name, the rest for the first names
+			if similarity is not that high
+				keep last term as family name, leave first ones as first names [should add a condition about del, van, de, von, etc. that should stay with the last name)
+
+5. Run the detection of similarities between Authors
+	this step should conclude with each Author having an original first name, last name, fullname, and suggested name (if there were matches). [OR NOT]				

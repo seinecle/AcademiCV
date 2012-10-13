@@ -5,6 +5,7 @@
 package Model;
 
 import com.google.code.morphia.annotations.Entity;
+import java.util.HashSet;
 import java.util.UUID;
 
 /**
@@ -35,6 +36,10 @@ public class Author extends Quidam {
 
     public Author(String fullnameWithComma) {
         super(fullnameWithComma.trim());
+    }
+
+    public Author(String fullname, Affiliation affiliation, UUID uuid) {
+        super(fullname,affiliation,uuid);
     }
 
     public int getYearFirstCollab() {

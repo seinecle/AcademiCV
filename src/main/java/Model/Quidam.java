@@ -1,11 +1,13 @@
 package Model;
 
+import BL.APIs.Mendeley.ContainerMendeleyDocuments;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.UUID;
 import org.bson.types.ObjectId;
 
@@ -20,8 +22,9 @@ public class Quidam implements Comparable<Quidam>, Serializable {
     private String fullname;
     private String fullnameWithComma;
     private ArrayList<Quidam> ld;
-    private DocumentBean container;
+    private ContainerMendeleyDocuments container;
     private String uuid;
+    private HashSet<Affiliation> setAffiliations = new HashSet();
 
     public Quidam() {
     }
@@ -37,9 +40,15 @@ public class Quidam implements Comparable<Quidam>, Serializable {
         this.uuid = uuid.toString();
     }
 
-    public Quidam(String fullnameWithComma, UUID uuid) {
-        this.fullnameWithComma = fullnameWithComma.trim();
+    public Quidam(String fullname, UUID uuid) {
+        this.fullname = fullname.trim();
         this.uuid = uuid.toString();
+    }
+
+    public Quidam(String fullname, Affiliation affiliation, UUID uuid) {
+        this.fullname = fullname.trim();
+        this.uuid = uuid.toString();
+        this.setAffiliations.add(affiliation);
     }
 
     public Quidam(String fullnameWithComma) {
@@ -127,6 +136,12 @@ public class Quidam implements Comparable<Quidam>, Serializable {
         if ((this.fullnameWithComma == null) ? (other.fullnameWithComma != null) : !this.fullnameWithComma.equals(other.fullnameWithComma)) {
             return false;
         }
+        if (this.fullnameWithComma == null & other.fullnameWithComma == null) {
+            if ((this.fullname == null) ? (other.fullname != null) : !this.fullname.equals(other.fullname)) {
+                return false;
+            }
+            return true;
+        }
         return true;
     }
 
@@ -166,11 +181,11 @@ public class Quidam implements Comparable<Quidam>, Serializable {
         return result;
     }
 
-    public DocumentBean getContainer() {
+    public ContainerMendeleyDocuments getContainer() {
         return container;
     }
 
-    public void setContainer(DocumentBean container) {
+    public void setContainer(ContainerMendeleyDocuments container) {
         this.container = container;
     }
 }

@@ -4,14 +4,18 @@
  */
 package Controller;
 
+import BL.APIs.Arxiv.ArxivAPICaller;
+import BL.APIs.Arxiv.ArxivAPIresponseParser;
 import BL.APIs.Mendeley.MendeleyAPICaller;
-import BL.APIs.Mendeley.MendeleyDoc;
+import Model.Document;
 import BL.APIs.Mendeley.MendeleyDocsGetAuthors;
 import BL.Viz.Processing.ConvertToSegments;
 import BL.Viz.Processing.Segment;
 import Model.Author;
 import Model.CloseMatchBean;
-import Model.DocumentBean;
+import BL.APIs.Mendeley.ContainerMendeleyDocuments;
+import BL.APIs.Mendeley.MendeleyAPIresponseParser;
+import BL.DocumentAggregation.Aggregator;
 import Model.GlobalEditsCounter;
 import Model.MapLabels;
 import Model.Search;
@@ -24,9 +28,11 @@ import com.google.gson.Gson;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
+import java.io.BufferedReader;
 import java.io.Serializable;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +62,7 @@ public class ControllerBean implements Serializable {
     static public Datastore ds;
     static public TreeSet<CloseMatchBean> setCloseMatches;
     List<CloseMatchBean> listCloseMatches;
-    static public DocumentBean mendeleyDocs;
+    static public ContainerMendeleyDocuments mendeleyDocs;
     public static TreeMap<Author, Author> mapCloseMatches = new TreeMap();
     private String forename;
     private String surname;
@@ -73,6 +79,8 @@ public class ControllerBean implements Serializable {
     static public int nbMendeleyDocs;
     static public int minYear;
     static public int maxYear;
+    static public HashSet<Document> setDocumentsUnFiltered = new HashSet();
+    BufferedReader readerArxivResults;
 
     @PostConstruct
     private void init() {
@@ -81,7 +89,7 @@ public class ControllerBean implements Serializable {
             m = new Mongo();
             Morphia morphia = new Morphia();
             morphia.map(Author.class);
-            morphia.map(MendeleyDoc.class);
+            morphia.map(Document.class);
             ds = morphia.createDatastore(m, "namesDB");
             count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
             pushCounter();
@@ -94,19 +102,6 @@ public class ControllerBean implements Serializable {
         }
     }
 
-    public void persistDocsToMorphia(List<MendeleyDoc> mendeleyDocs) {
-        Iterator<MendeleyDoc> mendeleyDocsIterator = mendeleyDocs.iterator();
-        int docCount = 0;
-        MendeleyDoc currDoc;
-        while (mendeleyDocsIterator.hasNext()) {
-            docCount++;
-            currDoc = mendeleyDocsIterator.next();
-            currDoc.setUuid(ControllerBean.uuid);
-            ds.save(currDoc);
-        }
-        System.out.println(docCount + " documents persisted with Morphia.");
-
-    }
 
     public String launchNewSearch() throws Exception {
 
@@ -120,7 +115,7 @@ public class ControllerBean implements Serializable {
 
 
         //DELETING RECORDS CONNECTED TO THIS UUID;
-        Query q1 = ds.createQuery(MendeleyDoc.class).field("uuid").equal(uuid.toString());
+        Query q1 = ds.createQuery(Document.class).field("uuid").equal(uuid.toString());
         Query q2 = ds.createQuery(MapLabels.class).field("uuid").equal(uuid.toString());
         Query q3 = ds.createQuery(Segment.class).field("uuid").equal(uuid.toString());
         ds.delete(q1);
@@ -137,23 +132,33 @@ public class ControllerBean implements Serializable {
         search = ds.find(Search.class).field("uuid").equal(uuid.toString()).get();
 
 
+        //0
+        // Calling the Arxiv database and persisting the docs in a standardized form
+        Clock gettingArxivData = new Clock("calling Arxiv...");
+        if (AdminPanel.arxivDebugStateTrueOrFalse()) {
+            new ArxivAPIresponseParser().parse();
+        } else {
+            readerArxivResults = ArxivAPICaller.run(forename, surname);
+            new ArxivAPIresponseParser(readerArxivResults).parse();
+        }
+        gettingArxivData.closeAndPrintClock();
+
 
         //1
+        // Calling the Mendeley database and persisting the docs in a standardized form
         Clock gettingMendeleyData = new Clock("calling Mendeley...");
+
         mendeleyDocs = MendeleyAPICaller.run(forename, surname);
-        nbMendeleyDocs = mendeleyDocs.getDocuments().size();
+        new MendeleyAPIresponseParser(mendeleyDocs).parse();
+
         gettingMendeleyData.closeAndPrintClock();
-        System.out.println("phase 1 passed: API call and response are OK");
 
         //2
-        Clock persistDocsMorphia = new Clock("persisting docs to Morphia");
-        persistDocsToMorphia(mendeleyDocs.getDocuments());
-        System.out.println("phase 2 passed: API response is persisted");
-        persistDocsMorphia.closeAndPrintClock();
+        Aggregator.aggregate();
 
         //3
         Clock spellCheckClock = new Clock("finding possible misspellings in names");
-        authorsInMendeleyDocs = new MendeleyDocsGetAuthors().countAuthors(mendeleyDocs.getDocuments(), forename, surname);
+        //authorsInMendeleyDocs = new MendeleyDocsGetAuthors().countAuthors(mendeleyDocs.getDocuments(), forename, surname);
         createAuthorsStats();
         atleastOneMatchFound = new SpellingDifferencesChecker(forename, surname, authorsInMendeleyDocs, wisdomCrowds).doAll();
         System.out.println("phase 3 passed: potential misspellings identified");
@@ -301,7 +306,7 @@ public class ControllerBean implements Serializable {
         if (!map.isEmpty()) {
 
             String previousUUID = (String) map.get("uuid");
-            Query q1 = ds.createQuery(MendeleyDoc.class).field("uuid").equal(previousUUID);
+            Query q1 = ds.createQuery(Document.class).field("uuid").equal(previousUUID);
             Query q2 = ds.createQuery(MapLabels.class).field("uuid").equal(previousUUID);
             Query q3 = ds.createQuery(Segment.class).field("uuid").equal(previousUUID);
             ds.delete(q1);
@@ -315,7 +320,7 @@ public class ControllerBean implements Serializable {
                 forename = fields[1].trim();
                 surname = fields[0].trim();
             }
-            
+
             map.remove("clickedAuthor");
             map.remove("uuid");
 
