@@ -24,15 +24,16 @@ public class ConvertToSegments {
         ArrayList<Segment> al = new ArrayList();
         TreeMap<String, String> mapAuthors = mapLabelsFromFinalCheck;
         TreeMultiset<String> ms = TreeMultiset.create();
-        TreeSet<Author> authorsInMendeleyDocs = ControllerBean.authorsInMendeleyDocs;
+        TreeSet<Author> setAuthors = new TreeSet();
+        setAuthors.addAll(ControllerBean.setAuthors);
         Author currAuthor;
         String spellCheckedAuthor;
         String currElement;
 
-        Iterator<Author> setMendeleyAuthorsIterator = authorsInMendeleyDocs.iterator();
-        while (setMendeleyAuthorsIterator.hasNext()) {
+        Iterator<Author> setAuthorsIterator = setAuthors.iterator();
+        while (setAuthorsIterator.hasNext()) {
 
-            currAuthor = setMendeleyAuthorsIterator.next();
+            currAuthor = setAuthorsIterator.next();
             System.out.println("currAuthor in convertSegment: \"" + currAuthor.getFullnameWithComma() + "\"");
             spellCheckedAuthor = mapAuthors.get(currAuthor.getFullnameWithComma());
             System.out.println("spellCheckedAUthor in convertSegment: \"" + spellCheckedAuthor + "\"");

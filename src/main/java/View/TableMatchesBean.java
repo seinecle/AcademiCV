@@ -83,7 +83,8 @@ public class TableMatchesBean implements Serializable {
     public String next_() {
 
 
-//        System.out.println("curr button selected is: " + optionChosen);
+        System.out.println("curr button selected is: " + optionChosen);
+        System.out.println("curr value of the suggestion field is: " + mergedAuthor);
         save(listCloseMatchesDisplayed.get(0));
         listCloseMatchesDisplayed.clear();
 
@@ -269,7 +270,7 @@ public class TableMatchesBean implements Serializable {
 
     public void setMergedAuthor(String inputMergedAuthor) {
         this.mergedAuthor = inputMergedAuthor;
-//        System.out.println("mergedAuthor set to: " + this.mergedAuthor);
+        System.out.println("mergedAuthor set to: " + this.mergedAuthor);
     }
 
     public Integer getOptionChosen() {

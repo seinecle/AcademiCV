@@ -1,4 +1,4 @@
-package Utils;
+package BL.NameDisambiguation;
 
 import Controller.AdminPanel;
 import Controller.ControllerBean;
@@ -6,6 +6,9 @@ import Model.Author;
 import Model.CloseMatchBean;
 import Model.MapLabels;
 import Model.PersistingEdit;
+import Utils.DiffSpelling;
+import Utils.FindAllPairs;
+import Utils.Pair;
 import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,12 +45,12 @@ public class SpellingDifferencesChecker {
     static private HashSet<String> intersectFullNamesAuthor1And2;
     static private HashMap<String, Pair<String, Integer>> mapEdits;
     static private boolean wisdomCrowd;
-    private TreeSet<Author> setAuthorsOriginal;
+    private Set<Author> setAuthorsOriginal;
 
-    public SpellingDifferencesChecker(String firstname, String lastname, TreeSet<Author> setAuthorsOriginal, boolean wisdomCrowd) {
+    public SpellingDifferencesChecker(Set<Author> setAuthorsOriginal, boolean wisdomCrowd) {
 
-        this.mainFirstName = firstname.trim();
-        this.mainLastName = lastname.trim();
+        this.mainFirstName = ControllerBean.getSearch().getForename().trim();
+        this.mainLastName = ControllerBean.getSearch().getSurname().trim();
         SpellingDifferencesChecker.wisdomCrowd = wisdomCrowd;
         this.setAuthorsOriginal = setAuthorsOriginal;
 
@@ -56,6 +59,9 @@ public class SpellingDifferencesChecker {
     public boolean doAll() {
 
         debug = AdminPanel.wisdomCrowdsDebugStateTrueOrFalse();
+
+        //if the user has selected the wisdom of the crowds in the UI
+        //retrieve the persisted edits corresponding to the author currently being searched
 
         if (wisdomCrowd) {
             List<PersistingEdit> listEdits = ControllerBean.ds.find(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma()).field("counter").greaterThan(1).asList();
@@ -85,42 +91,39 @@ public class SpellingDifferencesChecker {
         }
 
         Iterator<Author> setAuthorsOriginalIterator = setAuthorsOriginal.iterator();
-        String currAuthFirstName;
-        String currAuthLastName;
+//        String currAuthFirstName;
+//        String currAuthLastName;
 
         while (setAuthorsOriginalIterator.hasNext()) {
             currAuth = setAuthorsOriginalIterator.next();
-            currAuthFirstName = currAuth.getForename().trim();
-            if (currAuthFirstName.startsWith("By ")) {
-                currAuthFirstName = currAuthFirstName.substring(3);
-            }
-            currAuthLastName = currAuth.getSurname().trim();
-//                    if (currAuthFirstName.startsWith("Adrian")) {
-//                        System.out.println("firstName: " + currAuthFirstName);
-//                        System.out.println("lastName: " + currAuthLastName);
-//                    }
+//            currAuthFirstName = currAuth.getForename();
+//            currAuthLastName = currAuth.getSurname();
+//            if (currAuth.getForename().startsWith("Katy")) {
+//                System.out.println("Katy found: " + currAuth.getFullnameWithComma());
+//            }
 
-            currAuth.setUuid(ControllerBean.uuid.toString());
-            currAuth.setForename(currAuthFirstName);
-            currAuth.setSurname(currAuthLastName);
-            if (StringUtils.stripAccents(currAuth.getFullname()).toLowerCase().replaceAll("-"," ").trim().equals(StringUtils.stripAccents(ControllerBean.getSearch().getFullname().toLowerCase().replaceAll("-"," ").trim()))) {
-                continue;
-            }
+//            currAuth.setUuid(ControllerBean.uuid.toString());
+//            currAuth.setForename(currAuthFirstName);
+//            currAuth.setSurname(currAuthLastName);
 
 //                    System.out.println("currAuth.fullnameWithComma: " + currAuth.getFullnameWithComma());
 //                    System.out.println("boolean exists: " + exists);
+
+
             if (wisdomCrowd && !debug) {
                 boolean editAlreadyExists = mapEdits.containsKey(currAuth.getFullnameWithComma());
                 if (editAlreadyExists) {
                     String editedForm = mapEdits.get(currAuth.getFullnameWithComma()).getLeft();
                     String[] terms = editedForm.split(",");
-                    currAuth = new Author(terms[1].trim(), terms[0].trim());
+                    currAuth.setForename(terms[0].trim());
+                    currAuth.setSurname(terms[1].trim());
+                    currAuth.setFullname(terms[0].trim() + " " + terms[1].trim());
                 }
             }
-            currAuth.setUuid(ControllerBean.uuid.toString());
+//            currAuth.setUuid(ControllerBean.uuid.toString());
 
             setAuthorsWithEdits.add(currAuth);
-            ControllerBean.ds.save(currAuth);
+//            ControllerBean.ds.save(currAuth);
 //                    System.out.println("author added: " + currAuth.getFullname());
         }
 
@@ -152,10 +155,11 @@ public class SpellingDifferencesChecker {
             author1 = currPair.getLeft();
             author2 = currPair.getRight();
 
-//            if ("Katy".equals(author1.getForename()) & "Katy".equals(author2.getForename())) {
+            if ("Katy".equals(author1.getForename()) & "Katy".equals(author2.getForename())) {
 //                System.out.println("author1: " + author1.getFullname());
 //                System.out.println("author2: " + author2.getFullname());
-//            }
+//                System.out.println(computeWeightedLD(StringUtils.getLevenshteinDistance(author1.getSurname(), author2.getSurname()), author1.getSurname(), author2.getSurname()) > 0.3);
+            }
 
             int levenDistance = StringUtils.getLevenshteinDistance(author1.getFullnameWithComma(), author2.getFullnameWithComma());
 
@@ -230,7 +234,9 @@ public class SpellingDifferencesChecker {
 //            System.out.println("persisted in mapLabels: " + currMapEntry.getKey() + ", " + currMapEntry.getValue());
             ControllerBean.ds.save(new MapLabels(currMapEntry.getKey(), currMapEntry.getValue(), ControllerBean.uuid.toString()));
         }
-        //      return setCloseMatches;
+
+        ControllerBean.setAuthors = setAuthorsWithEdits;
+
         return atLeastOneMatchFound;
     }
 
@@ -294,10 +300,10 @@ public class SpellingDifferencesChecker {
             }
 
         }
-        if (weightedLd > 0.4) {
+        if (weightedLd > 0.45) {
             return -1;
         } else if ((computeWeightedLD(StringUtils.getLevenshteinDistance(author1.getForename(), author2.getForename()), author1.getForename(), author2.getForename()) < 0.3)
-                & (computeWeightedLD(StringUtils.getLevenshteinDistance(author1.getSurname(), author2.getSurname()), author1.getSurname(), author2.getSurname()) > 0.3)) {
+                & (computeWeightedLD(StringUtils.getLevenshteinDistance(author1.getSurname(), author2.getSurname()), author1.getSurname(), author2.getSurname()) > 0.35)) {
             return -1;
         } else {
             return 0;

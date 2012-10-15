@@ -8,22 +8,27 @@ import BL.APIs.Arxiv.ArxivAPICaller;
 import BL.APIs.Arxiv.ArxivAPIresponseParser;
 import BL.APIs.Mendeley.MendeleyAPICaller;
 import Model.Document;
-import BL.APIs.Mendeley.MendeleyDocsGetAuthors;
 import BL.Viz.Processing.ConvertToSegments;
 import BL.Viz.Processing.Segment;
 import Model.Author;
 import Model.CloseMatchBean;
 import BL.APIs.Mendeley.ContainerMendeleyDocuments;
 import BL.APIs.Mendeley.MendeleyAPIresponseParser;
-import BL.DocumentAggregation.Aggregator;
+import BL.DocumentHandling.AuthorNamesCleaner;
+import BL.DocumentHandling.AuthorStatsHandler;
+import BL.DocumentHandling.DocumentAggregator;
+import BL.DocumentHandling.AuthorsExtractor;
+import BL.DocumentHandling.DocsStatsHandler;
 import Model.GlobalEditsCounter;
 import Model.MapLabels;
 import Model.Search;
+import BL.NameDisambiguation.FullNameInvestigator;
 import Utils.Clock;
-import Utils.SpellingDifferencesChecker;
+import BL.NameDisambiguation.SpellingDifferencesChecker;
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
 import com.google.code.morphia.query.Query;
+import com.google.common.collect.HashMultiset;
 import com.google.gson.Gson;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
@@ -33,9 +38,9 @@ import java.io.Serializable;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -46,8 +51,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import org.apache.commons.lang3.StringUtils;
-import org.primefaces.push.PushContext;
-import org.primefaces.push.PushContextFactory;
 
 /**
  *
@@ -76,11 +79,14 @@ public class ControllerBean implements Serializable {
     static private int count;
     static public TreeSet<Author> authorsInMendeleyDocs;
     static public Author mostFrequentCoAuthor;
-    static public int nbMendeleyDocs;
+    static public int nbDocs;
     static public int minYear;
     static public int maxYear;
     static public HashSet<Document> setDocumentsUnFiltered = new HashSet();
     BufferedReader readerArxivResults;
+    static public HashMultiset<Author> multisetAuthors;
+    static public Set<Author> setAuthors;
+    static public Set<Document> setDocs;
 
     @PostConstruct
     private void init() {
@@ -101,7 +107,6 @@ public class ControllerBean implements Serializable {
             Logger.getLogger(ControllerBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
 
     public String launchNewSearch() throws Exception {
 
@@ -154,13 +159,43 @@ public class ControllerBean implements Serializable {
         gettingMendeleyData.closeAndPrintClock();
 
         //2
-        Aggregator.aggregate();
+        // aggregating documents from differen API source: removing duplicates and incomplete records
+        Clock aggregatorClock = new Clock("aggregating docs from different APIs into one single set");
+        setDocs = DocumentAggregator.aggregate();
+        aggregatorClock.closeAndPrintClock();
 
         //3
+        // extract a set of authors from the set of docs
+        Clock authorExtractorClock = new Clock("extracting authors from the set of docs");
+        multisetAuthors = AuthorsExtractor.extractFromSetDocs(setDocs);
+        authorExtractorClock.closeAndPrintClock();
+
+        //4
+        //generate descriptive stats
+        Clock generateStats = new Clock("generating descriptive stats on the set of authors just collected");
+        setAuthors = AuthorStatsHandler.findTimesCited(multisetAuthors);
+        DocsStatsHandler.computeNumberDocs();
+        generateStats.closeAndPrintClock();
+
+
+
+        //5
+        //finds first and last names when they are missing
+        Clock findFirstLastNamesClock = new Clock("finds first and last names in the frequent case when they are missing");
+        setAuthors = FullNameInvestigator.investigate(setAuthors);
+        findFirstLastNamesClock.closeAndPrintClock();
+
+
+        //6
+        // cleans the authors names (deletes dots, etc.)
+        Clock authorCleanerClock = new Clock("cleaning authors names");
+        setAuthors = AuthorNamesCleaner.clean(setAuthors);
+        authorCleanerClock.closeAndPrintClock();
+
+
+        //7
         Clock spellCheckClock = new Clock("finding possible misspellings in names");
-        //authorsInMendeleyDocs = new MendeleyDocsGetAuthors().countAuthors(mendeleyDocs.getDocuments(), forename, surname);
-        createAuthorsStats();
-        atleastOneMatchFound = new SpellingDifferencesChecker(forename, surname, authorsInMendeleyDocs, wisdomCrowds).doAll();
+        atleastOneMatchFound = new SpellingDifferencesChecker(setAuthors, wisdomCrowds).doAll();
         System.out.println("phase 3 passed: potential misspellings identified");
         spellCheckClock.closeAndPrintClock();
 
@@ -255,29 +290,16 @@ public class ControllerBean implements Serializable {
         count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
     }
 
-    private void createAuthorsStats() {
-        Iterator<Author> authorsInMendeleyDocsIterator = authorsInMendeleyDocs.iterator();
-        int times = 0;
-        Author currCoAuthor;
-        while (authorsInMendeleyDocsIterator.hasNext()) {
-            currCoAuthor = authorsInMendeleyDocsIterator.next();
-            if (currCoAuthor.getTimesMentioned() > times) {
-                mostFrequentCoAuthor = currCoAuthor;
-                times = currCoAuthor.getTimesMentioned();
-            }
-        }
-    }
-
     public Author getMostFrequentCoAuthor() {
         return mostFrequentCoAuthor;
     }
 
-    public void setNbMendeleyDocs(int nbMendeleyDocs) {
-        ControllerBean.nbMendeleyDocs = nbMendeleyDocs;
+    public void setNbDocs(int nbDocs) {
+        ControllerBean.nbDocs = nbDocs;
     }
 
-    public int getNbMendeleyDocs() {
-        return nbMendeleyDocs;
+    public int getNbDocs() {
+        return nbDocs;
     }
 
     public static int getMinYear() {

@@ -33,8 +33,6 @@ public class Document implements Comparable<Document>, Serializable {
     private String doi;
     private DateTime creationDateTime;
     private String topicArxiv;
-    
-    @Embedded
     private HashSet<Author> authors;
 
     public Document() {
@@ -123,8 +121,6 @@ public class Document implements Comparable<Document>, Serializable {
         this.topicArxiv = topicArxiv;
     }
 
-    
-    
     @Override
     public String toString() {
         String toPrint;

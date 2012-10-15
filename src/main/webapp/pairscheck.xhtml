@@ -14,16 +14,16 @@
 
     <h:body style ="width:100%">
 
-<!--        <script type="text/javascript">
-            //<![CDATA[
-            function handleMessage(data) {
-                console.log("in the handle function");
-                console.log(data);
-                $('.testPush').html("live counter of edits made by the community: "+data);
-            }
-            //]]>
-
-        </script>-->
+        <!--        <script type="text/javascript">
+                    //<![CDATA[
+                    function handleMessage(data) {
+                        console.log("in the handle function");
+                        console.log(data);
+                        $('.testPush').html("live counter of edits made by the community: "+data);
+                    }
+                    //]]>
+        
+                </script>-->
 
         <p:layout id="idLayout" fullPage="true">
             <p:layoutUnit id="idLayoutUnit" position="center">
@@ -73,7 +73,9 @@
                             <h:panelGrid columns="3" style="margin-bottom:10px; margin-left: auto; margin-right: auto;" cellpadding="5">
                                 <h:panelGrid id="outer">
                                     <h:outputText styleClass="ui-widget" rendered="#{tableMatchesBean.renderInputMerge}" value="our suggestion:  "  style ="margin-left: auto; margin-right: auto"/> 
-                                    <h:inputText styleClass="ui-widget" rendered="#{tableMatchesBean.renderInputMerge}" id ="testinput" size="50" value="#{tableMatchesBean.mergedAuthor}"/>
+                                    <p:inputText styleClass="ui-widget" rendered="#{tableMatchesBean.renderInputMerge}" id ="testinput" size="50" value="#{tableMatchesBean.mergedAuthor}">
+                                        <p:ajax update="@form" />
+                                    </p:inputText>
                                 </h:panelGrid>    
 
                                 <br></br>
@@ -107,9 +109,9 @@
         </p:layout>
 
         <!--<p:socket onMessage="handleMessage" channel="/counter" />-->
-<!--        <p:socket channel="/counter" >
-            <p:ajax event="message" update="idLayoutUnit" />
-        </p:socket>-->
+        <!--        <p:socket channel="/counter" >
+                    <p:ajax event="message" update="idLayoutUnit" />
+                </p:socket>-->
 
     </h:body>
 </html>

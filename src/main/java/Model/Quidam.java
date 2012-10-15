@@ -3,8 +3,6 @@ package Model;
 import BL.APIs.Mendeley.ContainerMendeleyDocuments;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,6 +35,7 @@ public class Quidam implements Comparable<Quidam>, Serializable {
     public Quidam(String forename, String surname, UUID uuid) {
         this.forename = forename.trim();
         this.surname = surname.trim();
+        this.fullname = forename.trim() + " " + surname.trim();
         this.uuid = uuid.toString();
     }
 
@@ -117,6 +116,14 @@ public class Quidam implements Comparable<Quidam>, Serializable {
         this.ld = ld;
     }
 
+    public HashSet<Affiliation> getSetAffiliations() {
+        return setAffiliations;
+    }
+
+    public void setSetAffiliations(HashSet<Affiliation> setAffiliations) {
+        this.setAffiliations = setAffiliations;
+    }
+
     @Override
     public int hashCode() {
         int hash = 3;
@@ -133,16 +140,16 @@ public class Quidam implements Comparable<Quidam>, Serializable {
             return false;
         }
         final Quidam other = (Quidam) obj;
-        if ((this.fullnameWithComma == null) ? (other.fullnameWithComma != null) : !this.fullnameWithComma.equals(other.fullnameWithComma)) {
-            return false;
-        }
-        if (this.fullnameWithComma == null & other.fullnameWithComma == null) {
-            if ((this.fullname == null) ? (other.fullname != null) : !this.fullname.equals(other.fullname)) {
+
+        if (this.fullname.equals(other.fullname)) {
+            if (this.forename == other.forename & this.surname == other.surname) {
+                return true;
+            } else {
                 return false;
             }
-            return true;
+        } else {
+            return false;
         }
-        return true;
     }
 
     public String[] toArray() {
@@ -150,24 +157,6 @@ public class Quidam implements Comparable<Quidam>, Serializable {
         args[0] = forename;
         args[1] = surname;
         return args;
-    }
-
-    public BasicDBObject toDBObject() {
-        BasicDBObject doc = new BasicDBObject();
-
-        doc.put("forename", forename);
-        doc.put("surname", surname);
-
-        return doc;
-    }
-
-    public static Quidam fromDBObject(DBObject doc) {
-        Quidam quidam = new Quidam();
-
-        quidam.forename = (String) doc.get("forename");
-        quidam.surname = (String) doc.get("surname");
-
-        return quidam;
     }
 
     @Override

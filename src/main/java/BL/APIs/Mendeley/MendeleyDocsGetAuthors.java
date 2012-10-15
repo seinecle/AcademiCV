@@ -4,16 +4,14 @@
  */
 package BL.APIs.Mendeley;
 
-import Model.Document;
 import Controller.ControllerBean;
 import Model.Author;
-import java.util.ArrayList;
+import Model.Document;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -41,7 +39,7 @@ public class MendeleyDocsGetAuthors {
         Set<Author> setAuthorsInCurrDoc;
         Integer docYear;
 
-        ControllerBean.nbMendeleyDocs = listDocs.size();
+        ControllerBean.nbDocs = listDocs.size();
 
 
         while (listDocsIterator.hasNext()) {
@@ -59,7 +57,6 @@ public class MendeleyDocsGetAuthors {
                 }
                 for (Author coauthor : setAuthorsInCurrDoc) {
                     System.out.println("coauthor: \"" + coauthor.getFullnameWithComma() + "\"");
-                    if (!StringUtils.stripAccents(coauthor.getFullname().toLowerCase().replaceAll("-", " ")).trim().equals(StringUtils.stripAccents(search2.toLowerCase().replaceAll("-", " ").trim()))) {
 //                        if (coauthor.getForename().startsWith("Krz")) {
 //                            System.out.println("Christophe found");
 //                            System.out.println("YEAR IS: " + docYearInteger);
@@ -68,7 +65,6 @@ public class MendeleyDocsGetAuthors {
                         coauthor.setYearLastCollab(docYear);
                         setAuthors.add(coauthor);
                         setAuthorsOriginal.add(coauthor);
-                    }
                 }
             }
         }

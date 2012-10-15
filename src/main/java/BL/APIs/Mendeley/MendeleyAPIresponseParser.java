@@ -45,9 +45,13 @@ public class MendeleyAPIresponseParser {
 
             currDocAuthorsIterator = currDoc.getAuthors().iterator();
             setcurrAuthors = new HashSet();
+            author currauthor;
+
             while (currDocAuthorsIterator.hasNext()) {
-                author currauthor = currDocAuthorsIterator.next();
+                currauthor = currDocAuthorsIterator.next();
                 setcurrAuthors.add(new Author(currauthor.forename, currauthor.surname, ControllerBean.uuid));
+//                System.out.println("currauthor.forename in Mendeley parser: " + currauthor.getForename());
+//                System.out.println("currauthor.surname in Mendeley parser: " + currauthor.getSurname());
             }
             newDoc.setAuthors(setcurrAuthors);
 
@@ -57,6 +61,8 @@ public class MendeleyAPIresponseParser {
             newDoc.setPublication_outlet(currDoc.getPublication_outlet());
             newDoc.setUuid(ControllerBean.uuid);
             newDoc.setWhereFrom("mendeley");
+            newDoc.setYear(Integer.parseInt(currDoc.getYear()));
+
 
             ControllerBean.ds.save(newDoc);
 

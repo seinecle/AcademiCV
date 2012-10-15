@@ -2,9 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package BL.DocumentAggregation;
+package BL.DocumentHandling;
 
-import Model.Author;
 import Model.Document;
 
 /**
@@ -20,10 +19,13 @@ public class DocumentMerger {
         mergedDoc.setTitle(doc1.getTitle());
 
         //set Authors
-        // checks if one of the docs has only full names. If so, we take the other record.
+        // checks if one of the docs has only full names. If so, we take the autors from the other record.
         if (doc1.getAuthors().iterator().next().getForename() ==null) {
+            System.out.println("we take the doc with Authors that just have a full name");
             mergedDoc.setAuthors(doc2.getAuthors());
         } else {
+            System.out.println("we take the doc with Authors that have a first name / last name distinction");
+
             mergedDoc.setAuthors(doc1.getAuthors());
         }
 
