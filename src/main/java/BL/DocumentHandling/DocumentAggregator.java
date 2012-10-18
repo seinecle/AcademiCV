@@ -4,7 +4,6 @@
  */
 package BL.DocumentHandling;
 
-import Controller.ControllerBean;
 import Model.Author;
 import Model.Document;
 import Utils.FindAllPairs;
@@ -27,9 +26,7 @@ public class DocumentAggregator {
     DocumentAggregator() {
     }
 
-    public static Set<Document> aggregate() {
-        setDocs = new HashSet();
-        setDocs.addAll(ControllerBean.ds.find(Document.class).field("uuid").equal(ControllerBean.uuid.toString()).asList());
+    public static Set<Document> aggregate(Set<Document> setDocs) {
 
 
 //        for (Document currDoc : setDocs) {
@@ -56,18 +53,24 @@ public class DocumentAggregator {
 
             //if two docs are very smilar (almost identical title, same year), merge the two
             if (distance < 0.10f && currPair.getLeft().getYear() == currPair.getRight().getYear()) {
-                System.out.println("similar titles spotted, with same year");
-                System.out.println("title 1:" + currPair.getLeft().getTitle());
-                System.out.println("title 2:" + currPair.getRight().getTitle());
+//                System.out.println("similar titles spotted, with same year");
+//                System.out.println("title 1:" + currPair.getLeft().getTitle());
+//                System.out.println("title 2:" + currPair.getRight().getTitle());
 
                 mergedDoc = DocumentMerger.merge(currPair.getLeft(), currPair.getRight());
                 setDocs.remove(currPair.getLeft());
                 setDocs.remove(currPair.getRight());
                 setDocs.add(mergedDoc);
-            } else if (distance < 0.10f && (currPair.getLeft().getYear() != currPair.getRight().getYear())) {
-                System.out.println("similar titles spotted, with different year");
-                System.out.println("title 1:" + currPair.getLeft().getTitle());
-                System.out.println("title 2:" + currPair.getRight().getTitle());
+
+                
+                
+            } 
+
+            //if two docs are very smilar but with different years, take the most recent one
+            else if (distance < 0.10f && (currPair.getLeft().getYear() != currPair.getRight().getYear())) {
+//                System.out.println("similar titles spotted, with different year");
+//                System.out.println("title 1:" + currPair.getLeft().getTitle());
+//                System.out.println("title 2:" + currPair.getRight().getTitle());
 
                 if (currPair.getLeft().getYear() > currPair.getRight().getYear()) {
                     setDocs.remove(currPair.getRight());

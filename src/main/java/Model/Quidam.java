@@ -104,8 +104,12 @@ public class Quidam implements Comparable<Quidam>, Serializable {
         return fullnameWithCommaToReturn;
     }
 
-    public void setFullnameWithComma(String fullnameWithComma) {
-        this.fullnameWithComma = fullnameWithComma;
+    public void setFullnameWithComma(String newFullnameWithComma) {
+        String[] arrayTerms = newFullnameWithComma.split(",");
+        this.fullnameWithComma = newFullnameWithComma;
+        this.forename = arrayTerms[1].trim();
+        this.surname = arrayTerms[0].trim();
+        this.fullname = arrayTerms[1].trim() + " " + arrayTerms[0].trim();
     }
 
     public String getLd() {
@@ -126,8 +130,10 @@ public class Quidam implements Comparable<Quidam>, Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 29 * hash + (this.fullnameWithComma != null ? this.fullnameWithComma.hashCode() : 0);
+        int hash = 7;
+        hash = 53 * hash + (this.forename != null ? this.forename.hashCode() : 0);
+        hash = 53 * hash + (this.surname != null ? this.surname.hashCode() : 0);
+        hash = 53 * hash + (this.fullname != null ? this.fullname.hashCode() : 0);
         return hash;
     }
 
@@ -140,17 +146,19 @@ public class Quidam implements Comparable<Quidam>, Serializable {
             return false;
         }
         final Quidam other = (Quidam) obj;
-
-        if (this.fullname.equals(other.fullname)) {
-            if (this.forename == other.forename & this.surname == other.surname) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
+        if ((this.forename == null) ? (other.forename != null) : !this.forename.equals(other.forename)) {
             return false;
         }
+        if ((this.surname == null) ? (other.surname != null) : !this.surname.equals(other.surname)) {
+            return false;
+        }
+        if ((this.fullname == null) ? (other.fullname != null) : !this.fullname.equals(other.fullname)) {
+            return false;
+        }
+        return true;
     }
+
+
 
     public String[] toArray() {
         String[] args = new String[2];

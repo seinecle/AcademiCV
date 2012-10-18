@@ -1,0 +1,41 @@
+we have a map 1 of (author full name, pair(start date, end date)
+
+we have a multiset of authors. 
+
+we have a map 2 of (original author name, correct author name)
+
+we have a map 3 of (correct fullname, corresponding correct author);
+
+for each original author in map 2,
+	create a set of strings
+	add the full name of the curr original author
+	finds its correct value if it is in map 1
+	add the keys corresponding to this value if they are in map 1
+	
+	for each string in this set
+		loop through their start dates in map 1, take the lowest
+		loop through their end dates in map 1, take the highest
+		
+	get(correct value of fullname in map 3), which is an author
+	udpate its start and end dates,
+	put it in a new result set.	
+		
+	
+	
+	
+
+OR
+
+Create a map of all documents retrievable by Id: mapDocs(idDoc,Doc)
+Create an empty  map of (fullNameWithComma, Pair<int,int)
+Iterate through all ids
+for each doc,
+	for each author,
+		substitute their fullNameWithComma by the fullNameWithComma in the map of Labels.
+		retrieve the Pair of int corresponding to this new fullNameWithComma
+		check max min for start and and date, put new values in the map
+		reinput the doc in the map of Docs
+		
+Extract a Multiset of Authors from the map of Docs, create a map (idAuthor, Author)
+	Update them with the map of <int,int>
+	Update them with how many of them

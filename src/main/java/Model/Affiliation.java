@@ -31,4 +31,30 @@ public class Affiliation {
         this.organizationLevel2 = organizationLevel2;
         this.organizationLevel3 = organizationLevel3;
     }
+
+    public String getOrganizationLevel1() {
+        return organizationLevel1;
+    }
+
+    public void setOrganizationLevel1(String organizationLevel1) {
+        this.organizationLevel1 = organizationLevel1;
+    }
+
+    public String getOrganizationLevel2() {
+        return organizationLevel2;
+    }
+
+    public void setOrganizationLevel2(String organizationLevel2) {
+        this.organizationLevel2 = organizationLevel2;
+    }
+
+    public String getOrganizationLevel3() {
+        return organizationLevel3;
+    }
+
+    public void setOrganizationLevel3(String organizationLevel3) {
+        this.organizationLevel3 = organizationLevel3;
+    }
+    
+    
 }

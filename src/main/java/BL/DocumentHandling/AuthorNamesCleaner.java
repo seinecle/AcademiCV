@@ -6,6 +6,7 @@ package BL.DocumentHandling;
 
 import Controller.ControllerBean;
 import Model.Author;
+import com.google.common.collect.HashMultiset;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -17,8 +18,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class AuthorNamesCleaner {
 
-    public static HashSet<Author> clean(Set<Author> setAuthors) {
-        HashSet<Author> returnedSet = new HashSet();
+    public static HashMultiset<Author> clean(HashMultiset<Author> setAuthors) {
+        HashMultiset<Author> returnedSet = HashMultiset.create();
 
         Iterator<Author> setAuthorsIterator = setAuthors.iterator();
         Author currAuthor;
@@ -30,9 +31,65 @@ public class AuthorNamesCleaner {
             if (currAuthor.getForename().startsWith("By ")) {
                 currAuthor.setForename(currAuthor.getForename().substring(3));
             }
-            
+
             //we don't keep in the set of authors the badly spelled versions of the author's name
-            
+
+            if (StringUtils.stripAccents(currAuthor.getFullname()).toLowerCase().replaceAll("-", " ").trim().equals(StringUtils.stripAccents(ControllerBean.getSearch().getFullname().toLowerCase().replaceAll("-", " ").trim()))) {
+                continue;
+            }
+
+
+            returnedSet.add(currAuthor);
+        }
+
+        return returnedSet;
+
+    }
+
+    public static HashMultiset<Author> cleanFullNameWithComma(HashMultiset<Author> setAuthors) {
+        HashMultiset<Author> returnedSet = HashMultiset.create();
+
+        Iterator<Author> setAuthorsIterator = setAuthors.iterator();
+        Author currAuthor;
+        while (setAuthorsIterator.hasNext()) {
+            currAuthor = setAuthorsIterator.next();
+            currAuthor.setFullnameWithComma(currAuthor.getFullnameWithComma().replace(".", ""));
+            currAuthor.setFullnameWithComma(currAuthor.getFullnameWithComma().replace("By ", ""));
+
+            //we don't keep in the set of authors the badly spelled versions of the author's name
+            if (StringUtils.stripAccents(currAuthor.getFullname()).toLowerCase().replaceAll("-", " ").trim().equals(StringUtils.stripAccents(ControllerBean.getSearch().getFullname().toLowerCase().replaceAll("-", " ").trim()))) {
+                continue;
+            }
+
+
+            returnedSet.add(currAuthor);
+        }
+
+        return returnedSet;
+
+    }
+
+    public static HashMultiset<Author> cleanFullName(HashMultiset<Author> setAuthors) {
+        HashMultiset<Author> returnedSet = HashMultiset.create();
+
+        Iterator<Author> setAuthorsIterator = setAuthors.iterator();
+        Author currAuthor;
+        while (setAuthorsIterator.hasNext()) {
+            currAuthor = setAuthorsIterator.next();
+            currAuthor.setFullname(currAuthor.getFullname().replace(".", ""));
+            currAuthor.setFullname(currAuthor.getFullname().replace("By ", ""));
+
+            if (currAuthor.getForename() != null) {
+                currAuthor.setForename(currAuthor.getForename().replace(".", ""));
+                currAuthor.setForename(currAuthor.getForename().replace("By ", ""));
+            }
+
+            if (currAuthor.getSurname() != null) {
+                currAuthor.setSurname(currAuthor.getSurname().replace(".", ""));
+                currAuthor.setSurname(currAuthor.getSurname().replace("By ", ""));
+            }
+
+            //we don't keep in the set of authors the badly spelled versions of the author's name
             if (StringUtils.stripAccents(currAuthor.getFullname()).toLowerCase().replaceAll("-", " ").trim().equals(StringUtils.stripAccents(ControllerBean.getSearch().getFullname().toLowerCase().replaceAll("-", " ").trim()))) {
                 continue;
             }

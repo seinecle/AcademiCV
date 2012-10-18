@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -56,12 +55,14 @@ public class SpellingDifferencesChecker {
 
     }
 
-    public boolean doAll() {
+    public boolean check() {
 
         debug = AdminPanel.wisdomCrowdsDebugStateTrueOrFalse();
 
+        //***********
         //if the user has selected the wisdom of the crowds in the UI
         //retrieve the persisted edits corresponding to the author currently being searched
+        //***********
 
         if (wisdomCrowd) {
             List<PersistingEdit> listEdits = ControllerBean.ds.find(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma()).field("counter").greaterThan(1).asList();
@@ -90,26 +91,15 @@ public class SpellingDifferencesChecker {
             }
         }
 
-        Iterator<Author> setAuthorsOriginalIterator = setAuthorsOriginal.iterator();
-//        String currAuthFirstName;
-//        String currAuthLastName;
 
+
+        //***********
+        // makes the necessary edits, retrieved in the step before from the database, to the set of Authors
+        //***********
+
+        Iterator<Author> setAuthorsOriginalIterator = setAuthorsOriginal.iterator();
         while (setAuthorsOriginalIterator.hasNext()) {
             currAuth = setAuthorsOriginalIterator.next();
-//            currAuthFirstName = currAuth.getForename();
-//            currAuthLastName = currAuth.getSurname();
-//            if (currAuth.getForename().startsWith("Katy")) {
-//                System.out.println("Katy found: " + currAuth.getFullnameWithComma());
-//            }
-
-//            currAuth.setUuid(ControllerBean.uuid.toString());
-//            currAuth.setForename(currAuthFirstName);
-//            currAuth.setSurname(currAuthLastName);
-
-//                    System.out.println("currAuth.fullnameWithComma: " + currAuth.getFullnameWithComma());
-//                    System.out.println("boolean exists: " + exists);
-
-
             if (wisdomCrowd && !debug) {
                 boolean editAlreadyExists = mapEdits.containsKey(currAuth.getFullnameWithComma());
                 if (editAlreadyExists) {
@@ -120,28 +110,18 @@ public class SpellingDifferencesChecker {
                     currAuth.setFullname(terms[0].trim() + " " + terms[1].trim());
                 }
             }
-//            currAuth.setUuid(ControllerBean.uuid.toString());
 
             setAuthorsWithEdits.add(currAuth);
-//            ControllerBean.ds.save(currAuth);
-//                    System.out.println("author added: " + currAuth.getFullname());
         }
+        ControllerBean.setAuthors = setAuthorsWithEdits;
+
+
+
+        //***********
+        // finds all pairs of authors ans starts the detection of near homonyms
+        //***********
 
         Set<Pair<Author, Author>> setPairs = new FindAllPairs().getAllPairs(setAuthorsWithEdits);
-
-//        if (setAuthors.contains(new Author("Katy","Borner"))){
-//            System.out.println("set contains Katy Borner");
-//        }
-//        if (setAuthors.contains(new Author("Katy","Boerner"))){
-//            System.out.println("set contains Katy Boerner");
-//        }
-        // ----------------------------
-        System.out.println(
-                "Number of co-authors found (with edits): " + setAuthorsWithEdits.size());
-        System.out.println(
-                "Number of distinct pairs: " + setPairs.size());
-        System.out.println();
-        // ----------------------------
         Iterator<Pair<Author, Author>> setPairsIterator = setPairs.iterator();
         Author author1;
         Author author2;
@@ -155,11 +135,11 @@ public class SpellingDifferencesChecker {
             author1 = currPair.getLeft();
             author2 = currPair.getRight();
 
-            if ("Katy".equals(author1.getForename()) & "Katy".equals(author2.getForename())) {
+//            if ("Katy".equals(author1.getForename()) & "Katy".equals(author2.getForename())) {
 //                System.out.println("author1: " + author1.getFullname());
 //                System.out.println("author2: " + author2.getFullname());
 //                System.out.println(computeWeightedLD(StringUtils.getLevenshteinDistance(author1.getSurname(), author2.getSurname()), author1.getSurname(), author2.getSurname()) > 0.3);
-            }
+//            }
 
             int levenDistance = StringUtils.getLevenshteinDistance(author1.getFullnameWithComma(), author2.getFullnameWithComma());
 
@@ -172,13 +152,6 @@ public class SpellingDifferencesChecker {
 
                 atLeastOneMatchFound = true;
                 // ----------------------------
-//                System.out.println(author1.toString() + " compared to " + author2.toString());
-//                System.out.println("Levenshtein distance is: " + ld);
-//                System.out.println("Weighted Levenshtein distance is: " + weightedLd);
-//                System.out.println();
-//                // ----------------------------
-
-
 
                 author3 = getSuggestion(author1, author2, match);
 
@@ -198,14 +171,18 @@ public class SpellingDifferencesChecker {
                 //PERSIST CLOSE MATCHES
                 ControllerBean.ds.save(cmb);
 
-//                if (!author3.getFullname().trim().equals(mainFirstName + " " + mainLastName)) {
-//                    System.out.println("ambiguous name detected: " + author1.getFullname());
-//                    System.out.println("pairing with: " + author2.getFullname());
-//                    System.out.println("proposal for merger: " + author3.getFullname());
-//                    System.out.println("both ambiguous names added to mapLabels");
-//                }
             }
         }
+
+
+        //***********
+        // persist a map of labels
+        // this is a map of the form ("original form of the author spelling in the set of Authors", "corrected form of this Author following user input")
+        // this map is useful to keep a connection between original form an subsequent modifications
+        // here, this map is populated with only the others that were not found to be similar to another.
+        // this map will be modified in the paircheck and finalcheck webpages, with user input.
+        //***********        
+
         Iterator<Author> setAuthorsIterator = setAuthorsWithEdits.iterator();
         Author currAuthor;
 
@@ -216,26 +193,12 @@ public class SpellingDifferencesChecker {
 //                    System.out.println("unambiguous author: " + currAuthor.getFullname());
 //                    System.out.println("main Auth: " + mainFirstName + " " + mainLastName);
 
-                    mapLabels.put(currAuthor.getFullnameWithComma(), currAuthor.getFullnameWithComma());
+                    ControllerBean.setMapLabels.add(new MapLabels(currAuthor.getFullnameWithComma(), currAuthor.getFullnameWithComma()));
                 }
             }
         }
 
-//        System.out.println(
-//                "size of MapLabels (should be total nb of authors minus main author): " + mapLabels.size());
 
-
-        //PERSIST THE MAP OF LABELS
-        Iterator<Entry<String, String>> mapLabelsIterator = mapLabels.entrySet().iterator();
-        Entry<String, String> currMapEntry;
-
-        while (mapLabelsIterator.hasNext()) {
-            currMapEntry = mapLabelsIterator.next();
-//            System.out.println("persisted in mapLabels: " + currMapEntry.getKey() + ", " + currMapEntry.getValue());
-            ControllerBean.ds.save(new MapLabels(currMapEntry.getKey(), currMapEntry.getValue(), ControllerBean.uuid.toString()));
-        }
-
-        ControllerBean.setAuthors = setAuthorsWithEdits;
 
         return atLeastOneMatchFound;
     }

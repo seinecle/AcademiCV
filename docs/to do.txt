@@ -1,0 +1,9 @@
+bug fixes
+- when drawing a second ring, the set of Authors from the previous rings are not erased
+
+minor features
+
+major features
+- mobile version
+- support for IE7 and IE8
+- support for ORCID

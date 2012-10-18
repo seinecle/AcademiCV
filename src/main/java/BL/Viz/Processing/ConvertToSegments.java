@@ -6,6 +6,7 @@ package BL.Viz.Processing;
 
 import Controller.ControllerBean;
 import Model.Author;
+import Model.MapLabels;
 import Utils.Clock;
 import com.google.common.collect.TreeMultiset;
 import java.util.ArrayList;
@@ -19,24 +20,33 @@ import java.util.TreeSet;
  */
 public class ConvertToSegments {
 
-    public ArrayList<Segment> convert(TreeMap<String, String> mapLabelsFromFinalCheck) {
+    public ArrayList<Segment> convert() {
         Clock convertingToSegmentsClock = new Clock("converting to segments");
         ArrayList<Segment> al = new ArrayList();
-        TreeMap<String, String> mapAuthors = mapLabelsFromFinalCheck;
+        TreeMap<String,String> mapOfCorrectedNames = new TreeMap();
         TreeMultiset<String> ms = TreeMultiset.create();
         TreeSet<Author> setAuthors = new TreeSet();
         setAuthors.addAll(ControllerBean.setAuthors);
         Author currAuthor;
         String spellCheckedAuthor;
         String currElement;
+        
+        //converts the set of MapLabels into a simpler map<String, String>
+        Iterator<MapLabels> setMapLabelsIterator = ControllerBean.setMapLabels.iterator();
+        MapLabels currMapLabels;
+        while (setMapLabelsIterator.hasNext()){
+            currMapLabels = setMapLabelsIterator.next();
+            mapOfCorrectedNames.put(currMapLabels.getLabel1(), currMapLabels.getLabel2());
+        }
 
         Iterator<Author> setAuthorsIterator = setAuthors.iterator();
         while (setAuthorsIterator.hasNext()) {
+            
 
             currAuthor = setAuthorsIterator.next();
-            System.out.println("currAuthor in convertSegment: \"" + currAuthor.getFullnameWithComma() + "\"");
-            spellCheckedAuthor = mapAuthors.get(currAuthor.getFullnameWithComma());
-            System.out.println("spellCheckedAUthor in convertSegment: \"" + spellCheckedAuthor + "\"");
+//            System.out.println("currAuthor in convertSegment: \"" + currAuthor.getFullnameWithComma() + "\"");
+            spellCheckedAuthor = mapOfCorrectedNames.get(currAuthor.getFullnameWithComma());
+//            System.out.println("spellCheckedAUthor in convertSegment: \"" + spellCheckedAuthor + "\"");
 
 
             try {

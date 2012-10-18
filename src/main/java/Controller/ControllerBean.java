@@ -6,25 +6,26 @@ package Controller;
 
 import BL.APIs.Arxiv.ArxivAPICaller;
 import BL.APIs.Arxiv.ArxivAPIresponseParser;
+import BL.APIs.Mendeley.ContainerMendeleyDocuments;
 import BL.APIs.Mendeley.MendeleyAPICaller;
-import Model.Document;
+import BL.APIs.Mendeley.MendeleyAPIresponseParser;
+import BL.DocumentHandling.AuthorNamesCleaner;
+import BL.DocumentHandling.AuthorStatsHandler;
+import BL.DocumentHandling.AuthorsExtractor;
+import BL.DocumentHandling.DocsStatsHandler;
+import BL.DocumentHandling.DocumentAggregator;
+import BL.NameDisambiguation.FullNameInvestigator;
+import BL.NameDisambiguation.SpellingDifferencesChecker;
 import BL.Viz.Processing.ConvertToSegments;
 import BL.Viz.Processing.Segment;
 import Model.Author;
 import Model.CloseMatchBean;
-import BL.APIs.Mendeley.ContainerMendeleyDocuments;
-import BL.APIs.Mendeley.MendeleyAPIresponseParser;
-import BL.DocumentHandling.AuthorNamesCleaner;
-import BL.DocumentHandling.AuthorStatsHandler;
-import BL.DocumentHandling.DocumentAggregator;
-import BL.DocumentHandling.AuthorsExtractor;
-import BL.DocumentHandling.DocsStatsHandler;
+import Model.Document;
 import Model.GlobalEditsCounter;
 import Model.MapLabels;
 import Model.Search;
-import BL.NameDisambiguation.FullNameInvestigator;
 import Utils.Clock;
-import BL.NameDisambiguation.SpellingDifferencesChecker;
+import Utils.Pair;
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
 import com.google.code.morphia.query.Query;
@@ -37,6 +38,7 @@ import java.io.BufferedReader;
 import java.io.Serializable;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -82,11 +84,13 @@ public class ControllerBean implements Serializable {
     static public int nbDocs;
     static public int minYear;
     static public int maxYear;
-    static public HashSet<Document> setDocumentsUnFiltered = new HashSet();
     BufferedReader readerArxivResults;
     static public HashMultiset<Author> multisetAuthors;
     static public Set<Author> setAuthors;
+    static public HashSet<Document> setDocumentsUnFiltered;
     static public Set<Document> setDocs;
+    static public TreeSet<MapLabels> setMapLabels;
+    static public HashMap<String, Pair<Integer, Integer>> mapAuthorToDates;
 
     @PostConstruct
     private void init() {
@@ -110,6 +114,13 @@ public class ControllerBean implements Serializable {
 
     public String launchNewSearch() throws Exception {
 
+        multisetAuthors = HashMultiset.create();
+        setAuthors = new HashSet();
+        setDocumentsUnFiltered = new HashSet();
+        setDocs = new HashSet();
+        setMapLabels = new TreeSet();
+
+
         System.out.println("forename: " + forename);
         System.out.println("surname: " + surname);
 
@@ -118,14 +129,6 @@ public class ControllerBean implements Serializable {
         surname = surname.replaceAll("-\\.", " ").trim();
         uuid = UUID.randomUUID();
 
-
-        //DELETING RECORDS CONNECTED TO THIS UUID;
-        Query q1 = ds.createQuery(Document.class).field("uuid").equal(uuid.toString());
-        Query q2 = ds.createQuery(MapLabels.class).field("uuid").equal(uuid.toString());
-        Query q3 = ds.createQuery(Segment.class).field("uuid").equal(uuid.toString());
-        ds.delete(q1);
-        ds.delete(q2);
-        ds.delete(q3);
 
         //PERSISTING THE MAIN FORENAME AND SURNAME;
         search = new Search();
@@ -152,16 +155,14 @@ public class ControllerBean implements Serializable {
         //1
         // Calling the Mendeley database and persisting the docs in a standardized form
         Clock gettingMendeleyData = new Clock("calling Mendeley...");
-
         mendeleyDocs = MendeleyAPICaller.run(forename, surname);
         new MendeleyAPIresponseParser(mendeleyDocs).parse();
-
         gettingMendeleyData.closeAndPrintClock();
 
         //2
-        // aggregating documents from differen API source: removing duplicates and incomplete records
+        // aggregating documents from different API source: removing duplicates and incomplete records
         Clock aggregatorClock = new Clock("aggregating docs from different APIs into one single set");
-        setDocs = DocumentAggregator.aggregate();
+        setDocs = DocumentAggregator.aggregate(setDocs);
         aggregatorClock.closeAndPrintClock();
 
         //3
@@ -170,55 +171,59 @@ public class ControllerBean implements Serializable {
         multisetAuthors = AuthorsExtractor.extractFromSetDocs(setDocs);
         authorExtractorClock.closeAndPrintClock();
 
-        //4
-        //generate descriptive stats
-        Clock generateStats = new Clock("generating descriptive stats on the set of authors just collected");
-        setAuthors = AuthorStatsHandler.findTimesCited(multisetAuthors);
-        DocsStatsHandler.computeNumberDocs();
-        generateStats.closeAndPrintClock();
 
+        //4
+        // cleans the authors names (deletes dots, etc.)
+        Clock authorCleanerClock = new Clock("cleaning authors names");
+        multisetAuthors = AuthorNamesCleaner.cleanFullName(multisetAuthors);
+        authorCleanerClock.closeAndPrintClock();
 
 
         //5
         //finds first and last names when they are missing
         Clock findFirstLastNamesClock = new Clock("finds first and last names in the frequent case when they are missing");
-        setAuthors = FullNameInvestigator.investigate(setAuthors);
+        setAuthors = FullNameInvestigator.investigate(multisetAuthors.elementSet());
         findFirstLastNamesClock.closeAndPrintClock();
 
 
-        //6
-        // cleans the authors names (deletes dots, etc.)
-        Clock authorCleanerClock = new Clock("cleaning authors names");
-        setAuthors = AuthorNamesCleaner.clean(setAuthors);
-        authorCleanerClock.closeAndPrintClock();
-
-
         //7
+        //Detects pairs of names which are probably the same person, with different spellings / misspellings
         Clock spellCheckClock = new Clock("finding possible misspellings in names");
-        atleastOneMatchFound = new SpellingDifferencesChecker(setAuthors, wisdomCrowds).doAll();
-        System.out.println("phase 3 passed: potential misspellings identified");
+        atleastOneMatchFound = new SpellingDifferencesChecker(setAuthors, wisdomCrowds).check();
         spellCheckClock.closeAndPrintClock();
 
 
 
         if (atleastOneMatchFound) {
-            System.out.println("close matches found. Navigating to the spell check page");
+            System.out.println("similar names found. Navigating to the spell check page");
             pageToNavigateTo = "pairscheck?faces-redirect=true";
 
         } else {
             System.out.println("No ambiguous name found. Navigating directly to the visualization");
-            List<MapLabels> listMapLabels = ControllerBean.ds.find(MapLabels.class).field("uuid").equal(ControllerBean.uuid.toString()).asList();
-            TreeMap<String, String> mapLabelsAuthors = new TreeMap();
-            for (MapLabels element : listMapLabels) {
-                mapLabelsAuthors.put(element.getLabel1(), element.getLabel2());
-            }
-            segments = new ConvertToSegments().convert(mapLabelsAuthors);
+            segments = new ConvertToSegments().convert();
             segments.add(new Segment(forename + " " + surname, 1, true));
             json = new Gson().toJson(segments);
 
             pageToNavigateTo = "report?faces-redirect=true";
         }
         return pageToNavigateTo;
+    }
+
+    public static void computationsBeforeReport() {
+
+        //1
+        //generate descriptive stats at this stage
+        Clock generateStats = new Clock("generating descriptive stats on the set of authors after user input");
+        setAuthors = AuthorStatsHandler.updateAuthorNamesAfterUserInput();
+        DocsStatsHandler.computeNumberDocs();
+        generateStats.closeAndPrintClock();
+
+
+
+        //PERSIST SEGMENTS
+        segments = new ConvertToSegments().convert();
+        segments.add(new Segment(getSearch().getFullnameWithComma(), 1, true));
+        setJson(new Gson().toJson(segments));
     }
 
     public static void transformToJson(ArrayList<Segment> segments) {

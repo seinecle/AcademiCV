@@ -1,7 +1,6 @@
 package Model;
 
 import Controller.ControllerBean;
-import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
 import java.io.Serializable;
@@ -25,6 +24,7 @@ public class Document implements Comparable<Document>, Serializable {
     @Id
     private ObjectId id;
     private String uuid;
+    private Integer docId;
     private String title;
     private String publication_outlet;
     private Integer year;
@@ -120,6 +120,16 @@ public class Document implements Comparable<Document>, Serializable {
     public void setTopicArxiv(String topicArxiv) {
         this.topicArxiv = topicArxiv;
     }
+
+    public Integer getDocId() {
+        return docId;
+    }
+
+    public void setDocId(Integer docId) {
+        this.docId = docId;
+    }
+    
+    
 
     @Override
     public String toString() {

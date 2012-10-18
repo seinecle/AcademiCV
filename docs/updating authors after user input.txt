@@ -1,0 +1,18 @@
+We have a multiset of authors with just full names
+
+We have a map of (fullnames with comma, corrected fullnames with comma)
+
+Loop through the values of the map (the corrected names)
+	for each of the corresponding key (the uncorrected names),
+		take its count in the multiset,
+		take its affiliation
+		create a new author corresponding to these informations
+		add this author to a new set (not multi).
+		
+		
+loop through the multiset of authors,
+			update their names by looking up the correct value in the map
+			
+loop through this multiset again,
+			extract a simple set with count to "times cited"
+			

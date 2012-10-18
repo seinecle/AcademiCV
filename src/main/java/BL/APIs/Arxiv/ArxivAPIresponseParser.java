@@ -194,7 +194,7 @@ public class ArxivAPIresponseParser extends DefaultHandler {
             currDocument.setTopicArxiv(currDocPrimaryCategory);
 //            currDocument.setCreationDateTime(new DateTime());
             if (currDocSetAuthors != null & currDocTitle != null & currDocYearPublished != null) {
-                ControllerBean.ds.save(currDocument);
+                ControllerBean.setDocs.add(currDocument);
             }
             newEntry = false;
 //            System.out.println("currDoc is: " + currDocument.toString());

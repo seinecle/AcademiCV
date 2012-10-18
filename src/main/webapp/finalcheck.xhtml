@@ -61,7 +61,7 @@
 
                                 <p:column headerText="Name of researcher" width="220" style="font-size: 50%;">
                                     <h:panelGroup id="authorCol"  >
-                                        <p:inputText value="#{m.label2Edited}" style="font-size: 200%;" rendered="#{m.editable}" size="40"/>
+                                        <p:inputText value="#{m.label3}" style="font-size: 200%;" rendered="#{m.editable}" size="40"/>
                                         <h:outputText value="#{m.label2}" style="font-size: 200%;text-align: center;" rendered="#{not m.editable}"/>
                                         <p:commandButton value="save edits" style="font-size: 180%;width:150px;" rendered="#{m.editable}" action ="#{finalCheckBean.saveedits()}" update="@form :editCounterId">
                                         </p:commandButton>

@@ -21,7 +21,8 @@ public class MapLabels implements Comparable<MapLabels>, Serializable {
 
     private String label1;
     private String label2;
-    private String label2Edited;
+    private String label2frozen;
+    private String label3;
     private String uuid;
     private boolean editable;
     private Query<PersistingEdit> updateQuery;
@@ -36,14 +37,14 @@ public class MapLabels implements Comparable<MapLabels>, Serializable {
     public MapLabels(String label1, String label2, String uuid) {
         this.label1 = label1;
         this.label2 = label2;
-        this.label2Edited = label2;
+        this.label3 = label2;
         this.uuid = uuid;
     }
 
     public MapLabels(String label1, String label2) {
         this.label1 = label1;
         this.label2 = label2;
-        this.label2Edited = label2;
+        this.label3 = label2;
     }
 
     public String getLabel1() {
@@ -62,6 +63,16 @@ public class MapLabels implements Comparable<MapLabels>, Serializable {
         this.label2 = label2;
     }
 
+    public String getLabel2frozen() {
+        return label2frozen;
+    }
+
+    public void setLabel2frozen(String label2frozen) {
+        this.label2frozen = label2frozen;
+    }
+
+    
+    
     public void setUuid(String Uuid) {
         this.uuid = Uuid;
     }
@@ -70,17 +81,17 @@ public class MapLabels implements Comparable<MapLabels>, Serializable {
         return uuid;
     }
 
-    public String getLabel2Edited() {
-        return label2Edited.trim();
+    public String getLabel3() {
+        return label3.trim();
     }
 
-    public void setLabel2Edited(String label2Edited) {
-        System.out.println("author edited is set: " + label2Edited);
-        this.label2Edited = label2Edited.trim();
+    public void setLabel3(String label3) {
+        System.out.println("author edited is set: " + label3);
+        this.label3 = label3.trim();
 
         updateQuery = ControllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma());
         updateQuery.field("originalForm").equal(label2);
-        updateQuery.field("editedForm").equal(label2Edited);
+        updateQuery.field("editedForm").equal(label3);
         ops = ControllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
         ControllerBean.ds.update(updateQuery, ops, true);
 
@@ -89,7 +100,7 @@ public class MapLabels implements Comparable<MapLabels>, Serializable {
         ControllerBean.ds.update(updateQueryCounter, opsCounter, true);
         ControllerBean.pushCounter();
 
-        this.label2 = label2Edited;
+        this.label2 = label3;
 
     }
 
@@ -112,6 +123,30 @@ public class MapLabels implements Comparable<MapLabels>, Serializable {
     @Override
     public int compareTo(MapLabels o) {
 //        return this.author2displayed.compareTo(o.getAuthor2displayed());
-        return this.label2.compareTo(o.getLabel2());
+        return this.label1.compareTo(o.getLabel1());
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + (this.label1 != null ? this.label1.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final MapLabels other = (MapLabels) obj;
+        if ((this.label1 == null) ? (other.label1 != null) : !this.label1.equals(other.label1)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 }

@@ -55,7 +55,7 @@ public class TableMatchesBean implements Serializable {
             listCloseMatchesDisplayed.clear();
             setClosematchesOriginal.clear();
             optionChosen = 4;
-            
+
 
             //RETRIEVE MATCHES FROM THIS UUID
             setClosematchesOriginal.addAll(ControllerBean.ds.find(CloseMatchBean.class).field("uuid").equal(ControllerBean.uuid.toString()).asList());
@@ -115,8 +115,8 @@ public class TableMatchesBean implements Serializable {
 
             case 1: // keep both
 //                System.out.println("we keep both");
-                ControllerBean.ds.save(new MapLabels(closeMatch.getAuthor1(), closeMatch.getAuthor1(), ControllerBean.uuid.toString()));
-                ControllerBean.ds.save(new MapLabels(closeMatch.getAuthor2(), closeMatch.getAuthor2(), ControllerBean.uuid.toString()));
+                ControllerBean.setMapLabels.add(new MapLabels(closeMatch.getAuthor1(), closeMatch.getAuthor1()));
+                ControllerBean.setMapLabels.add(new MapLabels(closeMatch.getAuthor2(), closeMatch.getAuthor2()));
 
                 //persisting these edits permanently
                 updateQuery = ControllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma());
@@ -145,8 +145,6 @@ public class TableMatchesBean implements Serializable {
                         + ControllerBean.ds.find(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma())
                         .field("originalForm").equal(closeMatch.getAuthor1())
                         .field("editedForm").equal(closeMatch.getAuthor1()).get().getCounter());
-//                ControllerBean.ds.save(new PersistingEdit(ControllerBean.getSearch().getFullname(),closeMatch.getAuthor1(),closeMatch.getAuthor1()));
-//                ControllerBean.ds.save(new PersistingEdit(ControllerBean.getSearch().getFullname(),closeMatch.getAuthor2(),closeMatch.getAuthor2()));
 
                 break;
 
@@ -171,8 +169,6 @@ public class TableMatchesBean implements Serializable {
                 ControllerBean.ds.update(updateQueryCounter, opsCounter, true);
                 ControllerBean.pushCounter();
 
-//                ControllerBean.ds.save(new PersistingEdit(updateQueryCounterControllerBean.getSearch().getFullname(),closeMatch.getAuthor1(),"deleted"));
-//                ControllerBean.ds.save(new PersistingEdit(ControllerBean.getSearch().getFullname(),closeMatch.getAuthor2(),"deleted"));
 
                 break;
 
@@ -181,17 +177,13 @@ public class TableMatchesBean implements Serializable {
                 if (mergedAuthor.equals(ControllerBean.getSearch().getFullnameWithComma())) {
                     break;
                 }
-                mergedAuthor = mergedAuthor.trim();
-                mergedAuthor = mergedAuthor.replace("  "," ");
+                mergedAuthor = mergedAuthor.replace("  ", " ");
                 System.out.println("label 1: \"" + closeMatch.getAuthor1() + "\"");
                 System.out.println("label 2: \"" + closeMatch.getAuthor2() + "\"");
                 System.out.println("merged into: \"" + mergedAuthor + "\"");
 
-                MapLabels mapTerms;
-                mapTerms = new MapLabels(closeMatch.getAuthor2(), mergedAuthor, ControllerBean.uuid.toString());
-                ControllerBean.ds.save(mapTerms);
-                mapTerms = new MapLabels(closeMatch.getAuthor1(), mergedAuthor, ControllerBean.uuid.toString());
-                ControllerBean.ds.save(mapTerms);
+                ControllerBean.setMapLabels.add(new MapLabels(closeMatch.getAuthor1(), mergedAuthor));
+                ControllerBean.setMapLabels.add(new MapLabels(closeMatch.getAuthor2(), mergedAuthor));
 
                 //persisting these edits permanently
                 //we persist only the edits if the merged solution is different from the original.
@@ -247,9 +239,18 @@ public class TableMatchesBean implements Serializable {
                 ControllerBean.ds.update(updateQueryCounter, opsCounter, true);
                 ControllerBean.pushCounter();
 
-                System.out.println("global counter of edits after a merge: " + ControllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter());
+//                System.out.println("global counter of edits after a merge: " + ControllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter());
 
 
+
+                break;
+
+            case 4: //merge them the two, but don't persist them.
+
+                ControllerBean.setMapLabels.add(new MapLabels(closeMatch.getAuthor1(), mergedAuthor));
+                System.out.println("mapLabel added: " + closeMatch.getAuthor1() + ", " + mergedAuthor);
+                ControllerBean.setMapLabels.add(new MapLabels(closeMatch.getAuthor2(), mergedAuthor));
+                System.out.println("mapLabel added: " + closeMatch.getAuthor2() + ", " + mergedAuthor);
 
                 break;
 
@@ -269,8 +270,8 @@ public class TableMatchesBean implements Serializable {
     }
 
     public void setMergedAuthor(String inputMergedAuthor) {
-        this.mergedAuthor = inputMergedAuthor;
-        System.out.println("mergedAuthor set to: " + this.mergedAuthor);
+        this.mergedAuthor = inputMergedAuthor.trim();
+//        System.out.println("mergedAuthor set to: " + this.mergedAuthor);
     }
 
     public Integer getOptionChosen() {
@@ -306,7 +307,6 @@ public class TableMatchesBean implements Serializable {
     public void setRenderNextButton(boolean renderNextButton) {
         this.renderNextButton = renderNextButton;
     }
-
 //    public synchronized boolean pushCounter() {
 //        countUpdated = ControllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
 ////        countUpdated++;

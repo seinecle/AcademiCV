@@ -64,7 +64,7 @@ public class MendeleyAPIresponseParser {
             newDoc.setYear(Integer.parseInt(currDoc.getYear()));
 
 
-            ControllerBean.ds.save(newDoc);
+            ControllerBean.setDocs.add(newDoc);
 
         }
     }

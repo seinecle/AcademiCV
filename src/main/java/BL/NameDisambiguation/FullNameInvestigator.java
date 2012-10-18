@@ -1,7 +1,6 @@
 package BL.NameDisambiguation;
 
 import Model.Author;
-import Utils.Pair;
 import Utils.WeightedLevenstheinDistanceCalculator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -74,10 +73,10 @@ public class FullNameInvestigator {
                 if (distance == 0) {
                     currAuthorWithJustFullName.setForename(currAuthorWithFirstnandLastName.getForename());
                     currAuthorWithJustFullName.setSurname(currAuthorWithFirstnandLastName.getSurname());
-                    System.out.println("perfect match found");
-                    System.out.println("author added, first name is: " + currAuthorWithFirstnandLastName.getForename() + ", last name is: " + currAuthorWithFirstnandLastName.getSurname());
-                    System.out.println("original fullname was: " + currFullName);
-                    System.out.println("-----------");
+//                    System.out.println("perfect match found");
+//                    System.out.println("author added, first name is: " + currAuthorWithFirstnandLastName.getForename() + ", last name is: " + currAuthorWithFirstnandLastName.getSurname());
+//                    System.out.println("original fullname was: " + currFullName);
+//                    System.out.println("-----------");
 
                     setAuthors.add(currAuthorWithJustFullName);
 
@@ -105,11 +104,11 @@ public class FullNameInvestigator {
                 }
                 currAuthorWithJustFullName.setForename(newFirstName.trim());
                 currAuthorWithJustFullName.setSurname(newLastName.trim());
-                System.out.println(
-                        "no perfect match found but still very similar");
-                System.out.println("author added, first name is: " + newFirstName.trim() + ", last name is: " + newLastName.trim());
-                System.out.println("original fullname was: " + currFullName);
-                System.out.println("-----------");
+//                System.out.println(
+//                        "no perfect match found but still very similar");
+//                System.out.println("author added, first name is: " + newFirstName.trim() + ", last name is: " + newLastName.trim());
+//                System.out.println("original fullname was: " + currFullName);
+//                System.out.println("-----------");
                 setAuthors.add(currAuthorWithJustFullName);
 
                 continue;
@@ -136,9 +135,9 @@ public class FullNameInvestigator {
                 currAuthorWithJustFullName.setForename(newFirstName.trim());
                 currAuthorWithJustFullName.setSurname(newLastName.trim());
                 setAuthors.add(currAuthorWithJustFullName);
-                System.out.println("author added, first name is: " + newFirstName.trim() + ", last name is: " + newLastName.trim());
-                System.out.println("original fullname was: " + currFullName);
-                System.out.println("-----------");
+//                System.out.println("author added, first name is: " + newFirstName.trim() + ", last name is: " + newLastName.trim());
+//                System.out.println("original fullname was: " + currFullName);
+//                System.out.println("-----------");
 
                 continue;
 
@@ -152,10 +151,10 @@ public class FullNameInvestigator {
             newLastName = newLastName.concat(allTerms[allTerms.length - 1]);
             currAuthorWithJustFullName.setForename(newFirstName.trim());
             currAuthorWithJustFullName.setSurname(newLastName.trim());
-            System.out.println("no similarity found, simple heuristic applied");
-            System.out.println("author added, first name is: " + newFirstName.trim() + ", last name is: " + newLastName.trim());
-            System.out.println("original fullname was: " + currFullName);
-            System.out.println("-----------");
+//            System.out.println("no similarity found, simple heuristic applied");
+//            System.out.println("author added, first name is: " + newFirstName.trim() + ", last name is: " + newLastName.trim());
+//            System.out.println("original fullname was: " + currFullName);
+//            System.out.println("-----------");
 
             setAuthors.add(currAuthorWithJustFullName);
 
