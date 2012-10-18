@@ -87,10 +87,11 @@
 
             <p:commandButton style="display: none" id="displayDialog" type="button" onclick="cd.show();"/>
 
-            <p:confirmDialog id ="dialogBox" message= "Has written #{reportBean.countDocsCurrNameClicked} document with #{controllerBean.forename} #{controllerBean.surname}"
+            <p:confirmDialog id ="dialogBox" message= "#{reportBean.getClickedAuthorLaius()}"
                              header="#{reportBean.nameClicked}"
                              widgetVar="cd"
                              severity="info">
+                <h:outputText styleClass="ui-widget"  value="" escape="false" />
                 <p:commandButton value="Draw the ring of #{reportBean.obtainFullName()}?" actionListener ="#{controllerBean.prepareNewSearch()}" action ="index?faces-redirect=true" oncomplete="cd.hide();"/>
                 <p:commandButton value="No, stay on this page" onclick="cd.hide();" type="button" />
             </p:confirmDialog>
@@ -99,13 +100,13 @@
 
 
         <div id ="laius">
-            <p>#{controllerBean.forename} #{controllerBean.surname} is the author of <b>#{controllerBean.nbDocs} papers</b>.</p>
-            <p>His or her most frequent co-author is <b>#{controllerBean.mostFrequentCoAuthor.fullname}</b>.<br></br>
-                Together, they wrote #{controllerBean.mostFrequentCoAuthor.timesMentioned} papers in the years from #{controllerBean.mostFrequentCoAuthor.yearFirstCollab} to #{controllerBean.mostFrequentCoAuthor.yearLastCollab}.</p>
+            <p></p>
+            <h:outputText styleClass="ui-widget"  value="#{reportBean.getGeneralLaius()}" escape="false" />
+            <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentCoAuthors()}" escape="false" />
         </div>
 
 
-        <div id="container" style=" margin-left: auto; margin-right: auto;width:800px"></div>
+        <div id="container" style=" margin-left: auto; margin-right: auto;width:900px"></div>
         <div style="margin-left: auto; margin-right: auto;text-align: center;width:800px">
             <p><b>Do you spot some errors?</b> Click on the "previous page" button of your browser to make edits.</p>
         </div>

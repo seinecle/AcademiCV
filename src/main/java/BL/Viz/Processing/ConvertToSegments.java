@@ -51,7 +51,7 @@ public class ConvertToSegments {
 
             try {
                 ms.add(spellCheckedAuthor, currAuthor.getTimesMentioned());
-                System.out.println("this spellCheckedAuthor is added in x times: " + currAuthor.getTimesMentioned());
+//                System.out.println("this spellCheckedAuthor is added in x times: " + currAuthor.getTimesMentioned());
 
             } catch (NullPointerException e) {
 //                        System.out.println("NPE caught in Convert To Segment");
@@ -63,7 +63,7 @@ public class ConvertToSegments {
         while (msIterator.hasNext()) {
             currElement = msIterator.next();
             al.add(new Segment(currElement, ms.count(currElement), false, ControllerBean.uuid.toString()));
-            System.out.println("segment added to the list of segments");
+//            System.out.println("segment added to the list of segments");
         }
 
         convertingToSegmentsClock.closeAndPrintClock();

@@ -50,6 +50,7 @@ public class ArxivAPIresponseParser extends DefaultHandler {
     private String currDocCurrAuthorAffiliation;
     private Document currDocument;
     private InputSource is;
+    private int nbArxivDocs = 0;
 
     public ArxivAPIresponseParser(BufferedReader br) {
         this.is = new InputSource(br);
@@ -73,6 +74,8 @@ public class ArxivAPIresponseParser extends DefaultHandler {
 
             //parse the file and also register this class for call backs
             sp.parse(is, this);
+
+            ControllerBean.nbArxivDocs = nbArxivDocs;
 
         } catch (SAXException se) {
         } catch (ParserConfigurationException pce) {
@@ -197,6 +200,7 @@ public class ArxivAPIresponseParser extends DefaultHandler {
                 ControllerBean.setDocs.add(currDocument);
             }
             newEntry = false;
+            nbArxivDocs++;
 //            System.out.println("currDoc is: " + currDocument.toString());
 
         }

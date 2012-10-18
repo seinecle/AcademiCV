@@ -40,6 +40,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -79,11 +80,12 @@ public class ControllerBean implements Serializable {
     static String pageToNavigateTo;
     static private Search search;
     static private int count;
-    static public TreeSet<Author> authorsInMendeleyDocs;
-    static public Author mostFrequentCoAuthor;
+    static public HashSet<Author> mostFrequentCoAuthors;
     static public int nbDocs;
     static public int minYear;
     static public int maxYear;
+    static public int nbArxivDocs = 0;
+    static public int nbMendeleyDocs = 0;
     BufferedReader readerArxivResults;
     static public HashMultiset<Author> multisetAuthors;
     static public Set<Author> setAuthors;
@@ -295,9 +297,6 @@ public class ControllerBean implements Serializable {
         count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
     }
 
-    public Author getMostFrequentCoAuthor() {
-        return mostFrequentCoAuthor;
-    }
 
     public void setNbDocs(int nbDocs) {
         ControllerBean.nbDocs = nbDocs;
@@ -323,9 +322,6 @@ public class ControllerBean implements Serializable {
         ControllerBean.maxYear = maxYear;
     }
 
-    public static TreeSet<Author> getAuthorsInMendeleyDocs() {
-        return authorsInMendeleyDocs;
-    }
 
     public void prepareNewSearch() {
         Map<String, Object> map = FacesContext.getCurrentInstance().getExternalContext().getApplicationMap();
@@ -336,20 +332,25 @@ public class ControllerBean implements Serializable {
             Query q1 = ds.createQuery(Document.class).field("uuid").equal(previousUUID);
             Query q2 = ds.createQuery(MapLabels.class).field("uuid").equal(previousUUID);
             Query q3 = ds.createQuery(Segment.class).field("uuid").equal(previousUUID);
+
             ds.delete(q1);
+
             ds.delete(q2);
+
             ds.delete(q3);
-
-
             String newSearch = (String) map.get("clickedAuthor");
-            if (newSearch.contains(",")) {
+
+            if (newSearch.contains(
+                    ",")) {
                 String[] fields = newSearch.split(",");
                 forename = fields[1].trim();
                 surname = fields[0].trim();
             }
 
-            map.remove("clickedAuthor");
-            map.remove("uuid");
+            map.remove(
+                    "clickedAuthor");
+            map.remove(
+                    "uuid");
 
         }
     }

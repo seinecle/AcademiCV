@@ -61,11 +61,11 @@ public class FinalCheckBean implements Serializable {
         //I use "label2frozen" to keep a trace of the label2 even if it will be edited by the user (into label2 and label3, see the MapLabels class)
         MapLabels currMapLabels;
         for (MapLabels mapLabels : ControllerBean.setMapLabels) {
-            System.out.println("currMapLabel is: ");
-            System.out.println(mapLabels.getLabel1() + ", " + mapLabels.getLabel2());
+//            System.out.println("currMapLabel is: ");
+//            System.out.println(mapLabels.getLabel1() + ", " + mapLabels.getLabel2());
             if (setCheckedLabels.add(mapLabels.getLabel2())) {
-                System.out.println("currMapLabel included in the final check page: ");
-                System.out.println(mapLabels.getLabel1() + ", " + mapLabels.getLabel2());
+//                System.out.println("currMapLabel included in the final check page: ");
+//                System.out.println(mapLabels.getLabel1() + ", " + mapLabels.getLabel2());
                 currMapLabels = new MapLabels(mapLabels.getLabel1(), mapLabels.getLabel2());
                 currMapLabels.setLabel2frozen(currMapLabels.getLabel2());
                 listCheckedLabels.add(currMapLabels);
@@ -135,9 +135,9 @@ public class FinalCheckBean implements Serializable {
         String currLabel2;
         for (MapLabels element : setLabelsToBeReinjected) {
             currLabel1 = element.getLabel1();
-            System.out.println("currLabel1: " + currLabel1);
+//            System.out.println("currLabel1: " + currLabel1);
             currLabel2 = bufferMap.get(element.getLabel2());
-            System.out.println("currLabel2: " + currLabel2);
+//            System.out.println("currLabel2: " + currLabel2);
 
             ControllerBean.setMapLabels.add(new MapLabels(currLabel1, currLabel2));
         }

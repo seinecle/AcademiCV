@@ -324,7 +324,7 @@ function addSegments(json){
             }]);
             updateDialog();
         
-            setTimeout(updateDialogJS,150);
+            setTimeout(displayDialogJS,150);
 
             $("#dialogTest").dialog({
                 resizable: false,
@@ -461,6 +461,7 @@ function addSegments(json){
             console.log("author clicked: "+currClickedAuthor);
             console.log("count of docs for this co-author: "+segments[i].count);
 
+            
             sendNameClicked([{
                 name: 'nameClicked', 
                 value: currClickedAuthor
@@ -470,21 +471,7 @@ function addSegments(json){
             }]);
             updateDialog();
         
-            setTimeout(updateDialogJS,150);
-
-            $("#dialogTest").dialog({
-                resizable: false,
-                height:140,
-                modal: true,
-                buttons: {
-                    "Delete all items": function() {
-                        $( this ).dialog( "close" );
-                    },
-                    "Cancel": function() {
-                        $( this ).dialog( "close" );
-                    }
-                }
-            });
+            setTimeout(displayDialogJS,150);
             
         });
 
@@ -493,10 +480,8 @@ function addSegments(json){
         layerLabelSegments.add(labelsArr[i]);
     }
     
-    function updateDialogJS(){
-        //        document.getElementById('updateDialogButton').click();
+    function displayDialogJS(){
         document.getElementById('displayDialog').click();
-        
     }
 
     function getCurrClickedAuthor(){

@@ -32,6 +32,7 @@ public class MendeleyAPIresponseParser {
         Document newDoc;
         MendeleyDocument currDoc;
         HashSet<Author> setcurrAuthors;
+        ControllerBean.nbMendeleyDocs = currList.size();
         while (currListIterator.hasNext()) {
 
 

@@ -33,6 +33,7 @@ public class AuthorStatsHandler {
         HashMultiset<Author> multisetAuthors;
         Iterator<Author> multisetAuthorsIterator;
         HashSet<Author> setAuthors;
+        Iterator<Author> setAuthorsIterator;
 
 
 
@@ -72,8 +73,8 @@ public class AuthorStatsHandler {
             currMapLabels = setMapLabelsIterator.next();
             terms = currMapLabels.getLabel1().split(",");
             currOriginalFullname = terms[1].trim() + " " + terms[0].trim();
-            System.out.println("currOriginalFullname" + currOriginalFullname);
-            System.out.println("currMapLabels.getLabel2(): \"" + currMapLabels.getLabel2() + "\"");
+//            System.out.println("currOriginalFullname" + currOriginalFullname);
+//            System.out.println("currMapLabels.getLabel2(): \"" + currMapLabels.getLabel2() + "\"");
             mapIncorrectToCorrect.put(currOriginalFullname, currMapLabels.getLabel2());
         }
 
@@ -99,15 +100,23 @@ public class AuthorStatsHandler {
                 if (currAuthor.getFullname().equals(ControllerBean.getSearch().getFullname())) {
                     continue;
                 }
-                System.out.println("currAuthor fullname with comma is: " + currAuthor.getFullname());
-                System.out.println("correct version is: " + mapIncorrectToCorrect.get(currAuthor.getFullname()));
+//                System.out.println("currAuthor fullname with comma is: " + currAuthor.getFullname());
+//                System.out.println("correct version is: " + mapIncorrectToCorrect.get(currAuthor.getFullname()));
+//                System.out.println("doc year is: " + currDoc.getYear());
                 currAuthor.setFullnameWithComma(mapIncorrectToCorrect.get(currAuthor.getFullname()));
                 if (mapAuthorNameToDates.containsKey(currAuthor.getFullname())) {
-                    currStart = Math.min(mapAuthorNameToDates.get(currAuthor.getFullname()).getLeft(), currAuthor.getYearFirstCollab());
-                    currEnd = Math.max(mapAuthorNameToDates.get(currAuthor.getFullname()).getRight(), currAuthor.getYearLastCollab());
+//                    System.out.println("we are in the modif of an existing key / value pair");
+//                    System.out.println("currStart before: " + mapAuthorNameToDates.get(currAuthor.getFullname()).getLeft());
+//                    System.out.println("currEnd before: " + mapAuthorNameToDates.get(currAuthor.getFullname()).getRight());
+
+                    currStart = Math.min(mapAuthorNameToDates.get(currAuthor.getFullname()).getLeft(), currDoc.getYear());
+                    currEnd = Math.max(mapAuthorNameToDates.get(currAuthor.getFullname()).getRight(), currDoc.getYear());
+//                    System.out.println("currStart: " + currStart);
+//                    System.out.println("currEnd: " + currEnd);
+
                     mapAuthorNameToDates.put(currAuthor.getFullname(), new Pair(currStart, currEnd));
                 } else {
-                    mapAuthorNameToDates.put(currAuthor.getFullname(), new Pair(currAuthor.getYearFirstCollab(), currAuthor.getYearLastCollab()));
+                    mapAuthorNameToDates.put(currAuthor.getFullname(), new Pair(currDoc.getYear(), currDoc.getYear()));
                 }
                 bufferSetAuthor.add(currAuthor);
             }
@@ -145,10 +154,58 @@ public class AuthorStatsHandler {
         while (multisetAuthorsIterator.hasNext()) {
             currAuthor = multisetAuthorsIterator.next();
             currAuthor.setYearFirstCollab(mapAuthorNameToDates.get(currAuthor.getFullname()).getLeft());
-            currAuthor.setYearLastCollab(mapAuthorNameToDates.get(currAuthor.getFullname()).getLeft());
+            currAuthor.setYearLastCollab(mapAuthorNameToDates.get(currAuthor.getFullname()).getRight());
             currAuthor.setTimesMentioned(multisetAuthors.count(currAuthor));
             setAuthors.add(currAuthor);
         }
+
+        //-----------------------------------------------------------------------------------------------------------------------------
+        // end of the aggregation work on authors. The following extracts features
+        //-----------------------------------------------------------------------------------------------------------------------------
+
+
+        //find most frequent co-author
+        setAuthorsIterator = setAuthors.iterator();
+        HashSet<Author> setMostFrequentCoAuthors = new HashSet();
+        Iterator<Author> setMostFrequentCoAuthorsIterator;
+        int maxSharedWorks = 0;
+        while (setAuthorsIterator.hasNext()) {
+
+            currAuthor = setAuthorsIterator.next();
+            if (currAuthor.getTimesMentioned() >= maxSharedWorks) {
+                maxSharedWorks = currAuthor.getTimesMentioned();
+                setMostFrequentCoAuthors.add(currAuthor);
+            }
+        }
+
+        setMostFrequentCoAuthorsIterator = setMostFrequentCoAuthors.iterator();
+        while (setMostFrequentCoAuthorsIterator.hasNext()) {
+            if (setMostFrequentCoAuthorsIterator.next().getTimesMentioned() < maxSharedWorks) {
+                setMostFrequentCoAuthorsIterator.remove();
+            }
+        }
+        ControllerBean.mostFrequentCoAuthors = setMostFrequentCoAuthors;
+
+
+        //find earliest and latest dates of publication
+        setAuthorsIterator = setAuthors.iterator();
+        int earliest = 3000;
+        int latest = 0;
+        while (setAuthorsIterator.hasNext()) {
+
+            currAuthor = setAuthorsIterator.next();
+            if (currAuthor.getYearFirstCollab() < earliest) {
+                earliest = currAuthor.getYearFirstCollab();
+            }
+            if (currAuthor.getYearLastCollab() > latest) {
+                latest = currAuthor.getYearLastCollab();
+            }
+        }
+        ControllerBean.minYear = earliest;
+        ControllerBean.maxYear = latest;
+
+
+
 
         return setAuthors;
     }
