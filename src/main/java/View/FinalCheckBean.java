@@ -104,6 +104,7 @@ public class FinalCheckBean implements Serializable {
 
 
                 listCheckedLabelsIterator.remove();
+                ControllerBean.setMapLabels.remove(currMapLabels);
             }
 
         }

@@ -1,7 +1,18 @@
 bug fixes
-- when drawing a second ring, the set of Authors from the previous rings are not erased
+- suppress double quotes in search fields (in case a user would put them)
+- Daniel W Drumm
 
 minor features
+- page for credits
+- improve the name suggestion for Wouter De Nooy and such
+- add journal where the author most published
+
+not so minor features
+- progress bar in the first page
+- add info about disciplines
+- add info about adfiliations
+- add 
+
 
 major features
 - mobile version

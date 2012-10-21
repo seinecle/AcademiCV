@@ -8,6 +8,7 @@ import BL.APIs.Mendeley.MendeleyDocument.author;
 import Controller.ControllerBean;
 import Model.Author;
 import Model.Document;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -25,8 +26,16 @@ public class MendeleyAPIresponseParser {
     }
 
     public void parse() {
+        List<MendeleyDocument> currList;
 
-        List<MendeleyDocument> currList = container.getDocuments();
+        // this if else deals with the case when the container of Mendeley docs is empty, bc the Mendeley API was unresponsive
+        // if the container is null, just create an empty list
+        if (container != null) {
+            currList = container.getDocuments();
+        } else {
+            currList = new ArrayList();
+
+        }
         Iterator<MendeleyDocument> currListIterator = currList.iterator();
         Iterator<author> currDocAuthorsIterator;
         Document newDoc;
@@ -50,6 +59,12 @@ public class MendeleyAPIresponseParser {
 
             while (currDocAuthorsIterator.hasNext()) {
                 currauthor = currDocAuthorsIterator.next();
+                if ("".equals(currauthor.forename.trim()) || "".equals(currauthor.surname.trim())) {
+                    continue;
+                }
+                if (ControllerBean.getSearch().getForename().equals(currauthor.forename.trim()) && ControllerBean.getSearch().getSurname().equals(currauthor.surname.trim())) {
+                    continue;
+                }
                 setcurrAuthors.add(new Author(currauthor.forename, currauthor.surname, ControllerBean.uuid));
 //                System.out.println("currauthor.forename in Mendeley parser: " + currauthor.getForename());
 //                System.out.println("currauthor.surname in Mendeley parser: " + currauthor.getSurname());

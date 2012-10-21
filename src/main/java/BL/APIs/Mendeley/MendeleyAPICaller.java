@@ -43,10 +43,11 @@ public class MendeleyAPICaller {
                         mc.getInputStream()));
             } catch (java.net.ConnectException e) {
                 System.out.println("connection to API failed");
-                System.exit(-1);
             } catch (IOException e) {
+                
                 System.err.println("Caught IOException: " + e.getMessage());
-                System.exit(-1);
+                System.out.println("Mendeley API was unavailable, 0 docs returned");
+                return container;
             }
 
             currLine = APIresult.readLine();

@@ -104,10 +104,20 @@ public class ReportBean implements Serializable {
         StringBuilder toReturn = new StringBuilder();
         toReturn.append("This researcher has written ");
         toReturn.append(ControllerBean.nbDocs);
-        toReturn.append(" documents between ");
-        toReturn.append(ControllerBean.minYear);
-        toReturn.append(" and ");
-        toReturn.append(ControllerBean.maxYear);
+        if (ControllerBean.nbDocs == 1) {
+            toReturn.append(" document in ");
+            toReturn.append(ControllerBean.minYear);
+
+        } else if (ControllerBean.minYear == ControllerBean.maxYear) {
+            toReturn.append(" documents in ");
+            toReturn.append(ControllerBean.minYear);
+        } else {
+            toReturn.append(" documents between ");
+            toReturn.append(ControllerBean.minYear);
+            toReturn.append(" and ");
+            toReturn.append(ControllerBean.maxYear);
+        }
+
         toReturn.append(", with a total of ");
         toReturn.append(ControllerBean.setAuthors.size());
         toReturn.append(" co-authors.");
@@ -134,7 +144,7 @@ public class ReportBean implements Serializable {
             } else {
                 toReturn.append(" documents");
             }
-            if (nbCollab == 1) {
+            if (ControllerBean.minYear == ControllerBean.maxYear) {
                 toReturn.append(" in  ");
                 toReturn.append(mostFrequentCoAuthor.getYearFirstCollab());
             } else {
@@ -164,10 +174,15 @@ public class ReportBean implements Serializable {
                     toReturn.append(currAuthor.getFullname());
                     toReturn.append("</b>, with ");
                     toReturn.append(currAuthor.getTimesMentioned());
-                    toReturn.append(" shared publications from ");
-                    toReturn.append(currAuthor.getYearFirstCollab());
-                    toReturn.append(" to ");
-                    toReturn.append(currAuthor.getYearLastCollab());
+                    if (currAuthor.getYearFirstCollab() == currAuthor.getYearLastCollab()) {
+                        toReturn.append(" shared publications in ");
+                        toReturn.append(currAuthor.getYearFirstCollab());
+                    } else {
+                        toReturn.append(" shared publications from ");
+                        toReturn.append(currAuthor.getYearFirstCollab());
+                        toReturn.append(" to ");
+                        toReturn.append(currAuthor.getYearLastCollab());
+                    }
                     toReturn.append(". <br>");
                     System.out.println("toReturn: " + toReturn.toString());
 

@@ -96,7 +96,7 @@ function addSegments(json){
     
     
     //RESIZE SKETCH ACCORDINGLY
-    SKETCH_WIDTHf = 600 + nbSegments*7;
+    SKETCH_WIDTHf = 700 + nbSegments*7;
     SKETCH_HEIGTHf = SKETCH_WIDTHf;
     SKETCH_CENTER_X = SKETCH_WIDTHf / 2;
     SKETCH_CENTER_Y = SKETCH_HEIGTHf / 2;
@@ -121,12 +121,12 @@ function addSegments(json){
     console.log("kinetic layers successfully instantiated");
     
     //TEXT SIZE
-    var textSize = 12+ (SKETCH_WIDTHf-600)/100 - nbSegments/20;
+    var textSize = 10+ (SKETCH_WIDTHf-600)/100 - nbSegments/20;
     
     
     //CIRCLE SIZE
     
-    var OUTER_CIRCLE_DIAMETER = SKETCH_WIDTHf * 3/5;
+    var OUTER_CIRCLE_DIAMETER = SKETCH_WIDTHf * 0.5;
     var INNER_CIRCLE_DIAMETER = OUTER_CIRCLE_DIAMETER*9/10;
     var OUTER_CIRCLE_RADIUS = OUTER_CIRCLE_DIAMETER / 2;
     var INNER_CIRCLE_RADIUS = INNER_CIRCLE_DIAMETER / 2;

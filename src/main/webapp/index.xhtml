@@ -22,6 +22,8 @@
                     <h:outputText  style="padding-left: 5px;" value="Rings of Scholarship">
                         <p:effect type="pulsate" event="click" />
                     </h:outputText>
+                    <br></br>
+
                 </div>
                 <h:panelGroup id ="editCounterId" style="    background-color:rgba(0,0,0,0);
                               position:fixed;
@@ -38,7 +40,9 @@
                               ">
                     <h:outputText  style="padding-left: 5px;" value="counter of edits made by the community: #{controllerBean.count}" rendered ="#{controllerBean.wisdomCrowds}"/>
                 </h:panelGroup>
+
                 <h:form id ="formId">
+
                     <div id="containerOutside">
                         <h:outputText styleClass="ui-widget" style="padding-left: 5px;" value="1. Fill in the name of a researcher "/>
 
@@ -65,60 +69,102 @@
                                              value="create ring of scholarship"
                                              ajax="false"/>
                         </div>
+
+
+                    </div>
+                    <div id="credits">
+                        <p:commandLink onclick="cd.show()">
+                            <h:outputText style="left:25%;top:510px;" value="  credits" />
+                        </p:commandLink>
                     </div>
 
                 </h:form>
 
-<!--                <p:lightBox visible ="false">
-                    <h:outputLink value="#" title="Leo Messi" >
-                        <h:outputText value="The Messiah"/>
-                    </h:outputLink>
-                    <f:facet name="inline">
-                        <h:outputText value="Rings is created by "/>
-                        <h:commandLink actionListener="http://www.clementlevallois.net">
-                            <h:outputText value="Clement Levallois" />
-                        </h:commandLink>
-                        <h:outputText value=" and is inspired by a collaboration with "/>
-                        <h:commandLink actionListener="http://www.erim.eur.nl/people/wilfred-mijnhardt/">
-                            <h:outputText value="Wilfred Minjhardt" />
-                        </h:commandLink>
-                        <p></p>
-                        <h:outputText value="Bibliographical references are provided by"/>
-                        <h:commandLink actionListener="http://www.mendeley.com">
-                            <h:outputText value="Mendeley" />
-                        </h:commandLink>
-                        <h:outputText value="."/>
-                        <p></p>
-                        <h:outputText value="The drawing of the ring is made with "/>
-                        <h:commandLink actionListener="http://processingjs.org/">
-                            <h:outputText value="Processing" />
-                        </h:commandLink>
-                        <h:outputText value=" (and was inspired by"/>
-                        <h:commandLink actionListener="http://circos.ca/">
-                            <h:outputText value="Circos" />
-                        </h:commandLink>
-                        <h:outputText value=")."/>
-                        <p></p>
-                        <h:outputText value="On the tech side:"/><br></br>
-                        <h:commandLink actionListener="http://glassfish.java.net/">
-                            <h:outputText value="Glassfish" />
-                        </h:commandLink>
-                        <h:outputText value=" (server technology)."/>
-                        <br></br>
-                        <h:commandLink actionListener="http://glassfish.java.net/">
-                            <h:outputText value="Primefaces" />
-                        </h:commandLink>
-                        <h:outputText value=" (web design)."/>
-                        <br></br>
-                        <h:commandLink actionListener="http://code.google.com/p/morphia/">
-                            <h:outputText value="MongoDB and Morphia" />
-                        </h:commandLink>
-                        <h:outputText value=" (database)."/>
-                        <p></p>
-                    </f:facet>
-                </p:lightBox>-->
+                <!--                <p:lightBox visible ="false">
+                                    <h:outputLink value="#" title="Leo Messi" >
+                                        <h:outputText value="The Messiah"/>
+                                    </h:outputLink>
+                                    <f:facet name="inline">
+                                        <h:outputText value="Rings is created by "/>
+                                        <h:commandLink actionListener="http://www.clementlevallois.net">
+                                            <h:outputText value="Clement Levallois" />
+                                        </h:commandLink>
+                                        <h:outputText value=" and is inspired by a collaboration with "/>
+                                        <h:commandLink actionListener="http://www.erim.eur.nl/people/wilfred-mijnhardt/">
+                                            <h:outputText value="Wilfred Minjhardt" />
+                                        </h:commandLink>
+                                        <p></p>
+                                        <h:outputText value="Bibliographical references are provided by"/>
+                                        <h:commandLink actionListener="http://www.mendeley.com">
+                                            <h:outputText value="Mendeley" />
+                                        </h:commandLink>
+                                        <h:outputText value="."/>
+                                        <p></p>
+                                        <h:outputText value="The drawing of the ring is made with "/>
+                                        <h:commandLink actionListener="http://processingjs.org/">
+                                            <h:outputText value="Processing" />
+                                        </h:commandLink>
+                                        <h:outputText value=" (and was inspired by"/>
+                                        <h:commandLink actionListener="http://circos.ca/">
+                                            <h:outputText value="Circos" />
+                                        </h:commandLink>
+                                        <h:outputText value=")."/>
+                                        <p></p>
+                                        <h:outputText value="On the tech side:"/><br></br>
+                                        <h:commandLink actionListener="http://glassfish.java.net/">
+                                            <h:outputText value="Glassfish" />
+                                        </h:commandLink>
+                                        <h:outputText value=" (server technology)."/>
+                                        <br></br>
+                                        <h:commandLink actionListener="http://glassfish.java.net/">
+                                            <h:outputText value="Primefaces" />
+                                        </h:commandLink>
+                                        <h:outputText value=" (web design)."/>
+                                        <br></br>
+                                        <h:commandLink actionListener="http://code.google.com/p/morphia/">
+                                            <h:outputText value="MongoDB and Morphia" />
+                                        </h:commandLink>
+                                        <h:outputText value=" (database)."/>
+                                        <p></p>
+                                    </f:facet>
+                                </p:lightBox>-->
+
             </p:layoutUnit>
+
         </p:layout>
+        <h:form>
+            <p:confirmDialog id ="dialogBox" message= ""
+                             header="credits"
+                             widgetVar="cd"
+                             severity="info">
+                <h:outputText value="Conception: "/>
+                <h:commandLink actionListener="http://www.clementlevallois.net">
+                    <h:outputText value="Clement Levallois" />
+                </h:commandLink>
+                <h:outputText value=" and "/>
+                <h:commandLink actionListener="http://www.erim.eur.nl/people/wilfred-mijnhardt/">
+                    <h:outputText value="Wilfred Minjhardt." />
+                </h:commandLink>
+                <p></p>
+                <h:outputText value="Realization: "/>
+                <h:commandLink actionListener="http://www.clementlevallois.net">
+                    <h:outputText value="Clement Levallois." />
+                </h:commandLink>
+                <p></p>
+                <h:outputText value="Data sources: "/>
+                <h:commandLink actionListener="http://www.mendeley.com">
+                    <h:outputText value="Mendeley" />
+                </h:commandLink>
+                <h:outputText value=" and "/>
+                <h:commandLink actionListener="http://www.arxiv.org">
+                    <h:outputText value="Arxiv" />
+                </h:commandLink>
+                <h:outputText value="."/>
+                <p></p>
+                <p></p>
+                <p:commandButton value="close" onclick="cd.hide();" type="button" />
+            </p:confirmDialog>
+        </h:form>
 
     </h:body>
 </html>

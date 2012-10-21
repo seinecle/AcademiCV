@@ -20,7 +20,6 @@ import java.util.TreeSet;
  */
 public class DocumentAggregator {
 
-    private static HashSet<Document> setDocs;
     private static Set<Pair<Document, Document>> setPairsDocs;
 
     DocumentAggregator() {

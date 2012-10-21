@@ -103,6 +103,13 @@ public class AuthorStatsHandler {
 //                System.out.println("currAuthor fullname with comma is: " + currAuthor.getFullname());
 //                System.out.println("correct version is: " + mapIncorrectToCorrect.get(currAuthor.getFullname()));
 //                System.out.println("doc year is: " + currDoc.getYear());
+
+                //this deals with the case when an author from docs has been deleted by the user. It won't be found in the mapIncorrectToCorrect
+                //so a NPE will be thrown. Here, we prevent that and just skip this author.
+
+                if (mapIncorrectToCorrect.get(currAuthor.getFullname()) == null) {
+                    continue;
+                }
                 currAuthor.setFullnameWithComma(mapIncorrectToCorrect.get(currAuthor.getFullname()));
                 if (mapAuthorNameToDates.containsKey(currAuthor.getFullname())) {
 //                    System.out.println("we are in the modif of an existing key / value pair");

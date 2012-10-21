@@ -49,7 +49,7 @@ public class FullNameInvestigator {
         Iterator<Author> setAuthorsWithJustAFullnameIterator = setAuthorsWithJustAFullname.iterator();
         Iterator<Author> setAuthorsWithFirstAndLastNameIterator;
         Author currAuthorWithJustFullName;
-        Author currAuthorWithFirstnandLastName = null;
+        Author currAuthorWithFirstnandLastName;
         Author authorWithFirstnandLastNameMostSimilar = null;
         String currFullName;
         String newLastName;
@@ -87,6 +87,18 @@ public class FullNameInvestigator {
                     authorWithFirstnandLastNameMostSimilar = currAuthorWithFirstnandLastName;
                 }
             }
+            if (authorWithFirstnandLastNameMostSimilar == null) {
+                for (int i = 0; i < allTerms.length - 1; i++) {
+                    newFirstName = newFirstName.concat(allTerms[i]).concat(" ");
+                }
+                newLastName = newLastName.concat(allTerms[allTerms.length - 1]);
+                currAuthorWithJustFullName.setForename(newFirstName.trim());
+                currAuthorWithJustFullName.setSurname(newLastName.trim());
+                setAuthors.add(currAuthorWithJustFullName);
+
+                continue;
+            }
+
             int nbTermsFullNameWithFirstAndLastName = authorWithFirstnandLastNameMostSimilar.getFullname().split(" ").length;
             int nbTermsFullNameWithJustFullName = allTerms.length;
 

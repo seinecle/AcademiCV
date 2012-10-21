@@ -80,6 +80,18 @@
             </p:commandButton>  
         </h:form>
 
+        <div id ="laius">
+            <p></p>
+            <h:outputText styleClass="ui-widget"  value="#{reportBean.getGeneralLaius()}" escape="false" />
+            <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentCoAuthors()}" escape="false" />
+        </div>
+
+
+        <div id="container" style=" margin-left: auto; margin-right: auto;width:900px"></div>
+        <div style="margin-left: auto; margin-right: auto;text-align: center;width:800px">
+            <p><b>Do you spot some errors?</b> Click on the "previous page" button of your browser to make edits.</p>
+        </div>
+
 
         <h:form id="form2" prependId="false">
             <p:remoteCommand name="sendNameClicked" actionListener="#{reportBean.passName}"/>
@@ -99,18 +111,11 @@
         </h:form>
 
 
-        <div id ="laius">
-            <p></p>
-            <h:outputText styleClass="ui-widget"  value="#{reportBean.getGeneralLaius()}" escape="false" />
-            <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentCoAuthors()}" escape="false" />
-        </div>
 
 
-        <div id="container" style=" margin-left: auto; margin-right: auto;width:900px"></div>
-        <div style="margin-left: auto; margin-right: auto;text-align: center;width:800px">
-            <p><b>Do you spot some errors?</b> Click on the "previous page" button of your browser to make edits.</p>
-        </div>
         <canvas id ="canvasPDF" style="display:none" data-processing-sources="processingSketchForPDF.pde"></canvas>
+
+
 
     </h:body>
 </html>

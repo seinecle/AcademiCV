@@ -40,7 +40,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -121,14 +120,18 @@ public class ControllerBean implements Serializable {
         setDocumentsUnFiltered = new HashSet();
         setDocs = new HashSet();
         setMapLabels = new TreeSet();
+        setCloseMatches = new TreeSet();
+        mapAuthorToDates = new HashMap();
+        setDocumentsUnFiltered = new HashSet();
+        segments = new ArrayList();
 
 
         System.out.println("forename: " + forename);
         System.out.println("surname: " + surname);
 
         //Cleans a bit the user input
-        forename = forename.replaceAll("-\\.", " ").trim();
-        surname = surname.replaceAll("-\\.", " ").trim();
+        forename = forename.replaceAll("\\.\"", " ").trim();
+        surname = surname.replaceAll("\\.\"", " ").trim();
         uuid = UUID.randomUUID();
 
 
@@ -165,6 +168,10 @@ public class ControllerBean implements Serializable {
         // aggregating documents from different API source: removing duplicates and incomplete records
         Clock aggregatorClock = new Clock("aggregating docs from different APIs into one single set");
         setDocs = DocumentAggregator.aggregate(setDocs);
+        if (setDocs.isEmpty()) {
+            return pageToNavigateTo = "noDocFound?faces-redirect=true";
+
+        }
         aggregatorClock.closeAndPrintClock();
 
         //3
@@ -202,6 +209,8 @@ public class ControllerBean implements Serializable {
 
         } else {
             System.out.println("No ambiguous name found. Navigating directly to the visualization");
+            DocsStatsHandler.computeNumberDocs();
+            AuthorStatsHandler.updateAuthorNamesAfterUserInput();
             segments = new ConvertToSegments().convert();
             segments.add(new Segment(forename + " " + surname, 1, true));
             json = new Gson().toJson(segments);
@@ -297,7 +306,6 @@ public class ControllerBean implements Serializable {
         count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
     }
 
-
     public void setNbDocs(int nbDocs) {
         ControllerBean.nbDocs = nbDocs;
     }
@@ -321,7 +329,6 @@ public class ControllerBean implements Serializable {
     public static void setMaxYear(int maxYear) {
         ControllerBean.maxYear = maxYear;
     }
-
 
     public void prepareNewSearch() {
         Map<String, Object> map = FacesContext.getCurrentInstance().getExternalContext().getApplicationMap();
