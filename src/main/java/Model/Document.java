@@ -158,9 +158,11 @@ public class Document implements Comparable<Document>, Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 23 * hash + (this.title != null ? this.title.hashCode() : 0);
-        hash = 23 * hash + (this.year != null ? this.year.hashCode() : 0);
+        int hash = 5;
+        hash = 19 * hash + (this.title != null ? this.title.hashCode() : 0);
+        hash = 19 * hash + (this.publication_outlet != null ? this.publication_outlet.hashCode() : 0);
+        hash = 19 * hash + (this.year != null ? this.year.hashCode() : 0);
+        hash = 19 * hash + (this.authors != null ? this.authors.hashCode() : 0);
         return hash;
     }
 
@@ -176,11 +178,18 @@ public class Document implements Comparable<Document>, Serializable {
         if ((this.title == null) ? (other.title != null) : !this.title.equals(other.title)) {
             return false;
         }
+        if ((this.publication_outlet == null) ? (other.publication_outlet != null) : !this.publication_outlet.equals(other.publication_outlet)) {
+            return false;
+        }
         if (this.year != other.year && (this.year == null || !this.year.equals(other.year))) {
+            return false;
+        }
+        if (this.authors != other.authors && (this.authors == null || !this.authors.equals(other.authors))) {
             return false;
         }
         return true;
     }
+
 
     @Override
     public int compareTo(Document other) {

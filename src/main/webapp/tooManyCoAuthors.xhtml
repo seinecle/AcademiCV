@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <h:outputStylesheet name="css/default.css" />
+        <title>Rings - end of road</title>
+    </h:head>
+    <h:body>
+        <p:layout id="idLayout" fullPage="true">
+            <p:layoutUnit id="idLayoutUnit" position="center">
+                <div id ="bannerTitleBackground"></div>
+                <div id ="bannerTitle">
+                    <h:outputText  style="padding-left: 5px;" value="Rings of Scholarship">
+                        <p:effect type="pulsate" event="click" />
+                    </h:outputText>
+                    <br></br>
+
+                </div>
+                <h:panelGroup id ="editCounterId" style="    background-color:rgba(0,0,0,0);
+                              position:fixed;
+                              top:1%;
+                              left:1%;
+                              text-align: left;
+                              font-size: 100%;
+                              margin: 0px auto;
+                              width:96%;
+                              height:80px;
+                              padding-left: 50px;
+                              padding-top: 70px;
+                              z-index: 2;
+                              ">
+                    <h:outputText  style="padding-left: 5px;" value="More than 300 co-authors were found. At the moment, this is above the capacity we can analyze. Click on the &quot;previous page&quot; button of your browser and try another name."/>
+                </h:panelGroup>
+
+            </p:layoutUnit>
+        </p:layout>
+
+
+    </h:body>
+</html>
+

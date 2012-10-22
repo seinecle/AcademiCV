@@ -70,6 +70,7 @@
 
 
         <h1>Report for #{controllerBean.forename} #{controllerBean.surname}</h1>
+        <p>#{controllerBean.getCurrSearch().mostRecentAffiliation}</p>
 
         <h:form id ="form">
             <h:inputHidden id="dataURL" value="#{fileDownloadController.dataURL}" />
@@ -80,17 +81,22 @@
             </p:commandButton>  
         </h:form>
 
-        <div id ="laius">
-            <p></p>
-            <h:outputText styleClass="ui-widget"  value="#{reportBean.getGeneralLaius()}" escape="false" />
-            <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentCoAuthors()}" escape="false" />
-        </div>
-
-
         <div id="container" style=" margin-left: auto; margin-right: auto;width:900px"></div>
         <div style="margin-left: auto; margin-right: auto;text-align: center;width:800px">
             <p><b>Do you spot some errors?</b> Click on the "previous page" button of your browser to make edits.</p>
         </div>
+
+
+        <div id ="laius">
+            <p></p>
+            <h:outputText styleClass="ui-widget"  value="#{reportBean.getGeneralLaius()}" escape="false" /><br></br>
+            <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentSource()}" escape="false" />
+            <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentCoAuthors()}" escape="false" />
+            <h:outputText styleClass="ui-widget"  value="#{reportBean.NYTLaius}" escape="false" />
+
+        </div>
+
+
 
 
         <h:form id="form2" prependId="false">
@@ -100,7 +106,7 @@
             <p:commandButton style="display: none" id="displayDialog" type="button" onclick="cd.show();"/>
 
             <p:confirmDialog id ="dialogBox" message= "#{reportBean.getClickedAuthorLaius()}"
-                             header="#{reportBean.nameClicked}"
+                             header="#{reportBean.nameClicked}, #{reportBean.authorClicked.mostRecentAffiliation}"
                              widgetVar="cd"
                              severity="info">
                 <h:outputText styleClass="ui-widget"  value="" escape="false" />

@@ -6,6 +6,7 @@ import com.google.code.morphia.annotations.Id;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.UUID;
 import org.bson.types.ObjectId;
 
@@ -128,12 +129,27 @@ public class Quidam implements Comparable<Quidam>, Serializable {
         this.setAffiliations = setAffiliations;
     }
 
+    public String getMostRecentAffiliation() {
+        Iterator<Affiliation> setAffiliationsIterator = setAffiliations.iterator();
+        Affiliation currAffiliation;
+        int maxYear = 0;
+        String mostCurrentAffiliation = "";
+        while (setAffiliationsIterator.hasNext()) {
+            currAffiliation = setAffiliationsIterator.next();
+            if (currAffiliation.getYear() > maxYear) {
+                mostCurrentAffiliation = currAffiliation.toString();
+            }
+        }
+        return mostCurrentAffiliation;
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;
         hash = 53 * hash + (this.forename != null ? this.forename.hashCode() : 0);
         hash = 53 * hash + (this.surname != null ? this.surname.hashCode() : 0);
         hash = 53 * hash + (this.fullname != null ? this.fullname.hashCode() : 0);
+        hash = 53 * hash + (this.setAffiliations != null ? this.setAffiliations.hashCode() : 0);
         return hash;
     }
 
@@ -155,10 +171,11 @@ public class Quidam implements Comparable<Quidam>, Serializable {
         if ((this.fullname == null) ? (other.fullname != null) : !this.fullname.equals(other.fullname)) {
             return false;
         }
+        if ((this.setAffiliations == null) ? (other.setAffiliations != null) : !this.setAffiliations.equals(other.setAffiliations)) {
+            return false;
+        }
         return true;
     }
-
-
 
     public String[] toArray() {
         String[] args = new String[2];

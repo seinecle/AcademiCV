@@ -17,6 +17,9 @@ public class AdminPanel {
     // ##### ARXIV API CALL DEBUGGING
     static boolean arxiv_in_debugging_mode = false;
     
+    // ##### NEW YORK TIMES API CALL DEBUGGING
+    static boolean nyt_in_debugging_mode = false;
+    
     // ##### WISDOM CROWDS DEBUGGING #################################
     static boolean wisdom_crowds_in_debugging_mode = true;
 // ------------------------------------------------------------------------------------------
@@ -39,6 +42,10 @@ public class AdminPanel {
 
     public static boolean arxivDebugStateTrueOrFalse() {
         return arxiv_in_debugging_mode;
+    }
+    
+    public static boolean nytDebugStateTrueOrFalse() {
+        return nyt_in_debugging_mode;
     }
     
     

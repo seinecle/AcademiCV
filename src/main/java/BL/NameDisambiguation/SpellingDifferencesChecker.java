@@ -110,6 +110,10 @@ public class SpellingDifferencesChecker {
                     currAuth.setFullname(terms[0].trim() + " " + terms[1].trim());
                 }
             }
+            //we don't keep in the set of authors the badly spelled versions of the author's name
+            if (StringUtils.stripAccents(currAuth.getFullname()).toLowerCase().replaceAll("-", " ").trim().equals(StringUtils.stripAccents(ControllerBean.getSearch().getFullname().toLowerCase().replaceAll("-", " ").trim()))) {
+                continue;
+            }
 
             setAuthorsWithEdits.add(currAuth);
         }
@@ -211,9 +215,20 @@ public class SpellingDifferencesChecker {
     private static int thresholdLD(Author author1, Author author2, Integer ld, Float weightedLd) {
 
 
+
+
         arrayTermsInFullnameInAuthor1 = author1.getFullname().split(" ");
         arrayTermsInFullnameInAuthor2 = author2.getFullname().split(" ");
 
+        //first, let's rule out an obvious case:
+        //if both surnames have a single term, and the ld between these terms is above 2, then we don't have a match
+        if ((author1.getSurname().split(" ").length) == 1 & (author2.getSurname().split(" ").length) == 1) {
+
+            int distSurname = StringUtils.getLevenshteinDistance(author1.getSurname(), author2.getSurname());
+            if (distSurname > 2) {
+                return -1;
+            }
+        }
 
         //detects matches such as "Perreau, Adrian" & "Pinninck, Adrian Perreau De" 	
         if (arrayTermsInFullnameInAuthor1.length != arrayTermsInFullnameInAuthor2.length) {

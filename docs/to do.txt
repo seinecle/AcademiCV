@@ -1,11 +1,9 @@
 bug fixes
-- suppress double quotes in search fields (in case a user would put them)
-- Daniel W Drumm
 
 minor features
+- add landing page when no co-author is found
 - page for credits
 - improve the name suggestion for Wouter De Nooy and such
-- add journal where the author most published
 
 not so minor features
 - progress bar in the first page

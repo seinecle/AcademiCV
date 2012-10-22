@@ -4,15 +4,12 @@
  */
 package BL.DocumentHandling;
 
-import Model.Author;
 import Model.Document;
 import Utils.FindAllPairs;
 import Utils.Pair;
 import Utils.WeightedLevenstheinDistanceCalculator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  *
@@ -61,46 +58,52 @@ public class DocumentAggregator {
                 setDocs.remove(currPair.getRight());
                 setDocs.add(mergedDoc);
 
-                
-                
-            } 
 
-            //if two docs are very smilar but with different years, take the most recent one
+
+            } //if two docs are very smilar but with different years, merge them but take the most recent year
             else if (distance < 0.10f && (currPair.getLeft().getYear() != currPair.getRight().getYear())) {
 //                System.out.println("similar titles spotted, with different year");
 //                System.out.println("title 1:" + currPair.getLeft().getTitle());
 //                System.out.println("title 2:" + currPair.getRight().getTitle());
+                mergedDoc = DocumentMerger.merge(currPair.getLeft(), currPair.getRight());
+
 
                 if (currPair.getLeft().getYear() > currPair.getRight().getYear()) {
-                    setDocs.remove(currPair.getRight());
+                    mergedDoc.setYear(currPair.getLeft().getYear());
                 } else {
-                    setDocs.remove(currPair.getLeft());
+                    mergedDoc.setYear(currPair.getRight().getYear());
                 }
+                setDocs.remove(currPair.getLeft());
+                setDocs.remove(currPair.getRight());
+                setDocs.add(mergedDoc);
+
             }
         }
         System.out.println("nb of docs after aggregation / elimination of duplicates: " + setDocs.size());
+
+
         return setDocs;
     }
 
-    public Set<Pair<Author, Author>> getAllPairs(Set<Author> setObjects) {
-        Set<Author> setObjectsProcessed = new TreeSet<Author>();
-        Set<Pair<Author, Author>> setPairs = new TreeSet<Pair<Author, Author>>();
-        Iterator<Author> setObjectsIteratorA = setObjects.iterator();
-        Iterator<Author> setObjectsIteratorB;
-        Author currAuthorA;
-        Author currAuthorB;
-        while (setObjectsIteratorA.hasNext()) {
-            currAuthorA = setObjectsIteratorA.next();
-            setObjectsIteratorB = setObjects.iterator();
-            while (setObjectsIteratorB.hasNext()) {
-                currAuthorB = setObjectsIteratorB.next();
-                if (!setObjectsProcessed.contains(currAuthorB) && (currAuthorA.getForename() != currAuthorB.getForename() | currAuthorA.getSurname() != currAuthorB.getSurname())) {
-                    setPairs.add(new Pair(currAuthorA, currAuthorB));
-                }
-            }
-            setObjectsProcessed.add(currAuthorA);
-        }
-        return setPairs;
-
-    }
+//    public Set<Pair<Author, Author>> getAllPairs(Set<Author> setObjects) {
+//        Set<Author> setObjectsProcessed = new TreeSet<Author>();
+//        Set<Pair<Author, Author>> setPairs = new TreeSet<Pair<Author, Author>>();
+//        Iterator<Author> setObjectsIteratorA = setObjects.iterator();
+//        Iterator<Author> setObjectsIteratorB;
+//        Author currAuthorA;
+//        Author currAuthorB;
+//        while (setObjectsIteratorA.hasNext()) {
+//            currAuthorA = setObjectsIteratorA.next();
+//            setObjectsIteratorB = setObjects.iterator();
+//            while (setObjectsIteratorB.hasNext()) {
+//                currAuthorB = setObjectsIteratorB.next();
+//                if (!setObjectsProcessed.contains(currAuthorB) && (currAuthorA.getForename() != currAuthorB.getForename() | currAuthorA.getSurname() != currAuthorB.getSurname())) {
+//                    setPairs.add(new Pair(currAuthorA, currAuthorB));
+//                }
+//            }
+//            setObjectsProcessed.add(currAuthorA);
+//        }
+//        return setPairs;
+//
+//    }
 }

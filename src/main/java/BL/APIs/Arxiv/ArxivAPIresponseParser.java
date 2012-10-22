@@ -49,6 +49,9 @@ public class ArxivAPIresponseParser extends DefaultHandler {
     private String currDocPrimaryCategory;
     private String currDocCurrAuthorAffiliation;
     private Document currDocument;
+    private Author currAuthor;
+    private Affiliation currAffiliation;
+    private HashSet<Affiliation> currSetAffiliations;
     private InputSource is;
     private int nbArxivDocs = 0;
 
@@ -153,14 +156,26 @@ public class ArxivAPIresponseParser extends DefaultHandler {
 
         //case when an affiliation is provided with the author
         if (qName.equalsIgnoreCase("author") & authorBuilder != null & currDocCurrAuthorAffiliation != null) {
-            currDocSetAuthors.add(new Author(authorBuilder.toString(), new Affiliation(currDocCurrAuthorAffiliation), ControllerBean.uuid));
+            currAuthor = new Author(authorBuilder.toString(), ControllerBean.uuid);
+            System.out.println("affiliation detected:");
+            System.out.println(currDocCurrAuthorAffiliation);
+            System.out.println(currDocYearPublished);
+            currAffiliation = new Affiliation(currDocCurrAuthorAffiliation);
+            currAffiliation.setYear(currDocYearPublished);
+            currSetAffiliations = new HashSet();
+            currSetAffiliations.add(currAffiliation);
+            currAuthor.setSetAffiliations(currSetAffiliations);
+            currDocSetAuthors.add(currAuthor);
+            currDocCurrAuthorAffiliation = null;
+            currAffiliation = null;
             newAuthor = false;
 
         }
 
         //case when no affiliation is provided with the author
         if (qName.equalsIgnoreCase("author") & authorBuilder != null & currDocCurrAuthorAffiliation == null) {
-            currDocSetAuthors.add(new Author(authorBuilder.toString(), ControllerBean.uuid));
+            currAuthor = new Author(authorBuilder.toString(), ControllerBean.uuid);
+            currDocSetAuthors.add(currAuthor);
             newAuthor = false;
         }
 

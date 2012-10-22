@@ -19,15 +19,7 @@ public class DocumentMerger {
         mergedDoc.setTitle(doc1.getTitle());
 
         //set Authors
-        // checks if one of the docs has only full names. If so, we take the authors from the other record.
-        if (doc1.getAuthors().iterator().next().getForename() ==null) {
-            System.out.println("we take the doc with Authors that just have a full name");
-            mergedDoc.setAuthors(doc2.getAuthors());
-        } else {
-            System.out.println("we take the doc with Authors that have a first name / last name distinction");
-
-            mergedDoc.setAuthors(doc1.getAuthors());
-        }
+        mergedDoc.setAuthors(AuthorMerger.mergeAuthorSets(doc1.getAuthors(), doc2.getAuthors()));
 
         //set Year
         mergedDoc.setYear(doc1.getYear());

@@ -5,6 +5,7 @@
 package BL.DocumentHandling;
 
 import Controller.ControllerBean;
+import Model.Affiliation;
 import Model.Author;
 import Model.Document;
 import Utils.Pair;
@@ -29,25 +30,27 @@ public class AuthorsExtractor {
         return doc.getAuthors();
     }
 
-    public static HashMultiset<Author> extractFromDocsInDB(UUID uuid) {
-        HashMultiset<Author> setAllAuthors = HashMultiset.create();
-        List<Document> listDocuments = ControllerBean.ds.find(Document.class).field("uuid").equal(ControllerBean.uuid.toString()).retrievedFields(true, "authors").asList();
-        Iterator<Document> listDocumentsIterator = listDocuments.iterator();
-        while (listDocumentsIterator.hasNext()) {
-            setAllAuthors.addAll(listDocumentsIterator.next().getAuthors());
-
-        }
-        return setAllAuthors;
-    }
-
     public static HashMultiset<Author> extractFromSetDocs(Set<Document> setDocs) {
 
         HashMultiset<Author> setAllAuthors = HashMultiset.create();
         Iterator<Document> setDocsIterator = setDocs.iterator();
-
         while (setDocsIterator.hasNext()) {
             setAllAuthors.addAll(setDocsIterator.next().getAuthors());
         }
         return setAllAuthors;
+    }
+
+    public static void extractCurrSearchedAuthor() {
+        Iterator<Author> setAuthorsIterator = ControllerBean.setAuthors.iterator();
+        Author currAuthor;
+        Author mergedAuthor;
+        while (setAuthorsIterator.hasNext()) {
+            currAuthor = setAuthorsIterator.next();
+            if (currAuthor.getFullname().equals(ControllerBean.getSearch().getFullname())) {
+                mergedAuthor = AuthorMerger.mergeAuthors(currAuthor, ControllerBean.getCurrSearch());
+                ControllerBean.setCurrSearch(mergedAuthor);
+            }
+        };
+
     }
 }

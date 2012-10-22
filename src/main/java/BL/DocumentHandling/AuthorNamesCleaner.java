@@ -7,9 +7,7 @@ package BL.DocumentHandling;
 import Controller.ControllerBean;
 import Model.Author;
 import com.google.common.collect.HashMultiset;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -33,7 +31,6 @@ public class AuthorNamesCleaner {
             }
 
             //we don't keep in the set of authors the badly spelled versions of the author's name
-
             if (StringUtils.stripAccents(currAuthor.getFullname()).toLowerCase().replaceAll("-", " ").trim().equals(StringUtils.stripAccents(ControllerBean.getSearch().getFullname().toLowerCase().replaceAll("-", " ").trim()))) {
                 continue;
             }
@@ -56,10 +53,6 @@ public class AuthorNamesCleaner {
             currAuthor.setFullnameWithComma(currAuthor.getFullnameWithComma().replace(".", ""));
             currAuthor.setFullnameWithComma(currAuthor.getFullnameWithComma().replace("By ", ""));
 
-            //we don't keep in the set of authors the badly spelled versions of the author's name
-            if (StringUtils.stripAccents(currAuthor.getFullname()).toLowerCase().replaceAll("-", " ").trim().equals(StringUtils.stripAccents(ControllerBean.getSearch().getFullname().toLowerCase().replaceAll("-", " ").trim()))) {
-                continue;
-            }
 
 
             returnedSet.add(currAuthor);
@@ -76,6 +69,10 @@ public class AuthorNamesCleaner {
         Author currAuthor;
         while (setAuthorsIterator.hasNext()) {
             currAuthor = setAuthorsIterator.next();
+            if (currAuthor.getSetAffiliations().iterator().hasNext()) {
+                System.out.println("printing affiliations in the author extractor:");
+                System.out.println(currAuthor.getSetAffiliations().iterator().next());
+            }
             currAuthor.setFullname(currAuthor.getFullname().replace(".", ""));
             currAuthor.setFullname(currAuthor.getFullname().replace("By ", ""));
 
@@ -90,9 +87,9 @@ public class AuthorNamesCleaner {
             }
 
             //we don't keep in the set of authors the badly spelled versions of the author's name
-            if (StringUtils.stripAccents(currAuthor.getFullname()).toLowerCase().replaceAll("-", " ").trim().equals(StringUtils.stripAccents(ControllerBean.getSearch().getFullname().toLowerCase().replaceAll("-", " ").trim()))) {
-                continue;
-            }
+//            if (StringUtils.stripAccents(currAuthor.getFullname()).toLowerCase().replaceAll("-", " ").trim().equals(StringUtils.stripAccents(ControllerBean.getSearch().getFullname().toLowerCase().replaceAll("-", " ").trim()))) {
+//                continue;
+//            }
 
 
             returnedSet.add(currAuthor);

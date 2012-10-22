@@ -4,6 +4,7 @@
  */
 package View;
 
+import BL.APIs.NYT.NYTDoc;
 import Controller.ControllerBean;
 import Model.Author;
 import java.io.Serializable;
@@ -43,6 +44,12 @@ public class ReportBean implements Serializable {
         return nameClicked;
     }
 
+    public Author getAuthorClicked() {
+        return authorClicked;
+    }
+    
+    
+
     public void passName() {
         FacesContext context = FacesContext.getCurrentInstance();
         Map map = context.getExternalContext().getRequestParameterMap();
@@ -71,9 +78,39 @@ public class ReportBean implements Serializable {
         return authorClicked.getFullname();
     }
 
-    public String getClickedAuthorLaius() {
+    public String getNYTLaius() {
         StringBuilder sb = new StringBuilder();
 
+        sb.append("<div style=\"font-size:120%;\">");
+        sb.append("<b>");
+        sb.append("Media presence</b><br>");
+        sb.append("</div>");
+
+        if (ControllerBean.NYTDocs.getDocuments().isEmpty()) {
+            sb.append("No media presence was detected for ");
+            sb.append(ControllerBean.getSearch().getFullname());
+            sb.append(" (experimental feature).");
+
+        } else {
+            sb.append(ControllerBean.getSearch().getFullname());
+            sb.append(" is mentioned in the following articles fron the New York Times:<br>");
+            for (NYTDoc element : ControllerBean.NYTDocs.getDocuments()) {
+                sb.append(element.getDate().substring(0, 4));
+                sb.append(". \"<a href=\"");
+                sb.append(element.getUrl());
+                sb.append("\">");
+                sb.append(element.getTitle());
+                sb.append("</a>.\"");
+                sb.append("<br>");
+            }
+        }
+
+        sb.append("<p></p>");
+        return sb.toString();
+    }
+
+    public String getClickedAuthorLaius() {
+        StringBuilder sb = new StringBuilder();
         sb.append("They have ");
         if (authorClicked.getTimesMentioned() == 1) {
             sb.append("one shared publication, in ");
@@ -121,23 +158,45 @@ public class ReportBean implements Serializable {
         toReturn.append(", with a total of ");
         toReturn.append(ControllerBean.setAuthors.size());
         toReturn.append(" co-authors.");
+        toReturn.append("<p></p>");
+        return toReturn.toString();
+    }
 
+    static public String getMostFrequentSource() {
+        int countTitle = ControllerBean.getMostFreqTitle().getRight();
+        StringBuilder toReturn = new StringBuilder();
+        toReturn.append("<div style=\"font-size:120%;\">");
 
+        toReturn.append("<b>Journal with most publications by this researcher</b><br>");
+        toReturn.append("</div>");
 
+        toReturn.append(ControllerBean.getMostFreqTitle().getLeft());
+        toReturn.append(" (");
+        toReturn.append(countTitle);
+        if (countTitle == 1) {
+            toReturn.append(" document published in this outlet).");
+        } else {
+            toReturn.append(" documents published in this outlet).");
+        }
 
-
+        toReturn.append("<p></p>");
         return toReturn.toString();
     }
 
     static public String getMostFrequentCoAuthors() {
         HashSet<Author> mostFrequentCoAuthors = ControllerBean.mostFrequentCoAuthors;
         StringBuilder toReturn = new StringBuilder();
+        toReturn.append("<div style=\"font-size:120%;\">");
+        toReturn.append("<b>Most frequent co-author(s)</b><b><br>");
+        toReturn.append("</div>");
+
         if (mostFrequentCoAuthors.size() == 1) {
             Author mostFrequentCoAuthor = mostFrequentCoAuthors.iterator().next();
             int nbCollab = mostFrequentCoAuthor.getTimesMentioned();
-            toReturn.append("<p>His or her most frequent co-author is <b>" + mostFrequentCoAuthor.getFullname());
-            toReturn.append("</b>.<br></br>\n");
-            toReturn.append("Together, they wrote ");
+            toReturn.append(mostFrequentCoAuthor.getFullname());
+            toReturn.append("</b>");
+            toReturn.append(".<br>");
+            toReturn.append("Together, they have written ");
             toReturn.append(mostFrequentCoAuthor.getTimesMentioned());
             if (nbCollab == 1) {
                 toReturn.append(" document");
@@ -148,12 +207,12 @@ public class ReportBean implements Serializable {
                 toReturn.append(" in  ");
                 toReturn.append(mostFrequentCoAuthor.getYearFirstCollab());
             } else {
-                toReturn.append(" in the years from ");
+                toReturn.append(" from ");
                 toReturn.append(mostFrequentCoAuthor.getYearFirstCollab());
                 toReturn.append(" to ");
                 toReturn.append(mostFrequentCoAuthor.getYearLastCollab());
+                toReturn.append(".");
             }
-            toReturn.append(".</p >");
 
         } else {
             Iterator<Author> mostFrequentCoAuthorsIterator = mostFrequentCoAuthors.iterator();
@@ -164,9 +223,9 @@ public class ReportBean implements Serializable {
                 maxNbCollab = Math.max(currAuthor.getTimesMentioned(), maxNbCollab);
             }
             if (maxNbCollab == 1) {
-                toReturn.append("<p>He or she has multiple coauthors, and never wrote more than one paper with the same coauthor.</p>");
+                toReturn.append("- multiple coauthors, did not write more than one paper with the same coauthor.");
+
             } else {
-                toReturn.append("<p>His or her most frequent co-authors are:</p>");
                 mostFrequentCoAuthorsIterator = mostFrequentCoAuthors.iterator();
                 while (mostFrequentCoAuthorsIterator.hasNext()) {
                     currAuthor = mostFrequentCoAuthorsIterator.next();
@@ -182,14 +241,14 @@ public class ReportBean implements Serializable {
                         toReturn.append(currAuthor.getYearFirstCollab());
                         toReturn.append(" to ");
                         toReturn.append(currAuthor.getYearLastCollab());
-                    }
-                    toReturn.append(". <br>");
-                    System.out.println("toReturn: " + toReturn.toString());
+                        toReturn.append(".<br>");
 
+                    }
                 }
             }
 
         }
+        toReturn.append("<p></p>");
         return toReturn.toString();
     }
 }

@@ -47,6 +47,7 @@ public class MendeleyAPICaller {
                 
                 System.err.println("Caught IOException: " + e.getMessage());
                 System.out.println("Mendeley API was unavailable, 0 docs returned");
+                
                 return container;
             }
 

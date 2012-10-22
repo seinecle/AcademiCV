@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package BL.APIs.Mendeley;
 
 import BL.APIs.Mendeley.MendeleyDocument.author;
@@ -60,9 +57,6 @@ public class MendeleyAPIresponseParser {
             while (currDocAuthorsIterator.hasNext()) {
                 currauthor = currDocAuthorsIterator.next();
                 if ("".equals(currauthor.forename.trim()) || "".equals(currauthor.surname.trim())) {
-                    continue;
-                }
-                if (ControllerBean.getSearch().getForename().equals(currauthor.forename.trim()) && ControllerBean.getSearch().getSurname().equals(currauthor.surname.trim())) {
                     continue;
                 }
                 setcurrAuthors.add(new Author(currauthor.forename, currauthor.surname, ControllerBean.uuid));

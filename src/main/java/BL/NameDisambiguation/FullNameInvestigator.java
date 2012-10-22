@@ -1,5 +1,6 @@
 package BL.NameDisambiguation;
 
+import BL.DocumentHandling.AuthorMerger;
 import Model.Author;
 import Utils.WeightedLevenstheinDistanceCalculator;
 import java.util.HashSet;
@@ -55,6 +56,7 @@ public class FullNameInvestigator {
         String newLastName;
         String newFirstName;
         String[] allTerms;
+        Author mergedAuthor;
         while (setAuthorsWithJustAFullnameIterator.hasNext()) {
             newLastName = "";
             newFirstName = "";
@@ -71,14 +73,15 @@ public class FullNameInvestigator {
 
                 // if an identical name is found, end the search and copy the first and last name
                 if (distance == 0) {
-                    currAuthorWithJustFullName.setForename(currAuthorWithFirstnandLastName.getForename());
-                    currAuthorWithJustFullName.setSurname(currAuthorWithFirstnandLastName.getSurname());
+                    mergedAuthor = AuthorMerger.mergeAuthors(currAuthorWithJustFullName, currAuthorWithFirstnandLastName);
+                    mergedAuthor.setForename(currAuthorWithFirstnandLastName.getForename());
+                    mergedAuthor.setSurname(currAuthorWithFirstnandLastName.getSurname());
 //                    System.out.println("perfect match found");
 //                    System.out.println("author added, first name is: " + currAuthorWithFirstnandLastName.getForename() + ", last name is: " + currAuthorWithFirstnandLastName.getSurname());
 //                    System.out.println("original fullname was: " + currFullName);
 //                    System.out.println("-----------");
 
-                    setAuthors.add(currAuthorWithJustFullName);
+                    setAuthors.add(mergedAuthor);
 
                     break;
                 }
@@ -87,6 +90,11 @@ public class FullNameInvestigator {
                     authorWithFirstnandLastNameMostSimilar = currAuthorWithFirstnandLastName;
                 }
             }
+
+            // if an identical name has not been found,
+            // if an similar name has not been found,
+            //just split the fullname at its last term ("Jose Luis Sanchez de Lucia" becomes "Jose Luis Sanchez de", "Lucia"
+
             if (authorWithFirstnandLastNameMostSimilar == null) {
                 for (int i = 0; i < allTerms.length - 1; i++) {
                     newFirstName = newFirstName.concat(allTerms[i]).concat(" ");
@@ -95,7 +103,6 @@ public class FullNameInvestigator {
                 currAuthorWithJustFullName.setForename(newFirstName.trim());
                 currAuthorWithJustFullName.setSurname(newLastName.trim());
                 setAuthors.add(currAuthorWithJustFullName);
-
                 continue;
             }
 
