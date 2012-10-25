@@ -38,6 +38,30 @@ public class DocumentMerger {
             mergedDoc.setPublication_outlet(doc1.getDoi());
         }
 
+        //set summary
+        if (doc1.getSummary() == null) {
+            mergedDoc.setSummary(doc2.getSummary());
+        } else {
+            mergedDoc.setSummary(doc1.getSummary());
+        }
+
+        //set language
+        if (doc1.getLanguage() == null) {
+            mergedDoc.setLanguage(doc2.getLanguage());
+        } else {
+            mergedDoc.setLanguage(doc1.getLanguage());
+        }
+
+        //set type
+        //here we use a conservative approach,
+        //because we know that worldcat returns "books" for articles, for instance
+        //so unless we compare 2 docs and we know both are of the same type, we don't rule for one against another.
+        if (doc1.getTypeOutlet() == null ? doc2.getTypeOutlet() == null : doc1.getTypeOutlet().equals(doc2.getTypeOutlet())) {
+            mergedDoc.setTypeOutlet(doc2.getTypeOutlet());
+        } else {
+            //nothing. We leave the type unknown
+        }
+
         //set creation Time
         mergedDoc.setCreationDateTime(doc1.getCreationDateTime());
 

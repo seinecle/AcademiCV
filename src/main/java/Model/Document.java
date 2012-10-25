@@ -1,13 +1,10 @@
 package Model;
 
 import Controller.ControllerBean;
-import com.google.code.morphia.annotations.Entity;
-import com.google.code.morphia.annotations.Id;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.UUID;
-import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 
 /*
@@ -18,15 +15,13 @@ import org.joda.time.DateTime;
  *
  * @author C. Levallois
  */
-@Entity
 public class Document implements Comparable<Document>, Serializable {
 
-    @Id
-    private ObjectId id;
     private String uuid;
     private Integer docId;
     private String title;
     private String publication_outlet;
+    private String summary;
     private Integer year;
     private String whereFrom;
     private String mendeley_url;
@@ -34,6 +29,8 @@ public class Document implements Comparable<Document>, Serializable {
     private DateTime creationDateTime;
     private String topicArxiv;
     private HashSet<Author> authors;
+    private String typeOutlet;
+    private String language;
 
     public Document() {
         this.uuid = ControllerBean.uuid.toString();
@@ -128,8 +125,30 @@ public class Document implements Comparable<Document>, Serializable {
     public void setDocId(Integer docId) {
         this.docId = docId;
     }
-    
-    
+
+    public String getTypeOutlet() {
+        return typeOutlet;
+    }
+
+    public void setTypeOutlet(String typeOutlet) {
+        this.typeOutlet = typeOutlet;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
 
     @Override
     public String toString() {
@@ -161,6 +180,7 @@ public class Document implements Comparable<Document>, Serializable {
         int hash = 5;
         hash = 19 * hash + (this.title != null ? this.title.hashCode() : 0);
         hash = 19 * hash + (this.publication_outlet != null ? this.publication_outlet.hashCode() : 0);
+        hash = 19 * hash + (this.whereFrom != null ? this.whereFrom.hashCode() : 0);
         hash = 19 * hash + (this.year != null ? this.year.hashCode() : 0);
         hash = 19 * hash + (this.authors != null ? this.authors.hashCode() : 0);
         return hash;
@@ -187,9 +207,11 @@ public class Document implements Comparable<Document>, Serializable {
         if (this.authors != other.authors && (this.authors == null || !this.authors.equals(other.authors))) {
             return false;
         }
+        if (this.whereFrom != other.whereFrom && (this.whereFrom == null || !this.whereFrom.equals(other.whereFrom))) {
+            return false;
+        }
         return true;
     }
-
 
     @Override
     public int compareTo(Document other) {

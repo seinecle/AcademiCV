@@ -2,13 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package BL.APIs.Arxiv;
+package BL.APIs.WorldCatIdentities;
 
 import BL.APIs.Mendeley.ContainerMendeleyDocuments;
 import Controller.AdminPanel;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,11 +21,11 @@ import org.xml.sax.InputSource;
  *
  * @author C. Levallois
  */
-public class ArxivAPICaller {
+public class WorldCatAPICaller {
 
     private static String quidamFirstName;
     private static String quidamLastName;
-    public static boolean debug = AdminPanel.arxivDebugStateTrueOrFalse();
+    public static boolean debug;
     private static String currLine;
     private static BufferedReader APIresult;
     private static ContainerMendeleyDocuments container;
@@ -35,62 +33,58 @@ public class ArxivAPICaller {
 
     public static InputSource run(String firstname, String lastname) throws Exception {
 
-        if (!debug) {
-            quidamFirstName = firstname.replaceAll(" ", "%20");
-            quidamLastName = lastname.replaceAll(" ", "%20");
+        quidamFirstName = firstname.replaceAll(" ", "%20");
+        quidamLastName = lastname.replaceAll(" ", "%20");
+        debug = AdminPanel.worldcatDebugStateTrueOrFalse();
+        StringBuilder content;
+        String line;
+        String lineSeparator = System.getProperty("line.separator");
+        String result;
 
-            String APIcall = "http://export.arxiv.org/api/query?search_query=au:" + quidamFirstName + "+AND+au:" + quidamLastName + "&max_results=200";
-            System.out.println("API call is:");
+
+
+        if (!debug) {
+            String APIcall = "http://worldcat.org/identities/find?fullName=" + quidamFirstName + "+" + quidamLastName;
+            System.out.println("WorldCat API call is:");
             System.out.println(APIcall);
 
-            URL arxiv = new URL(APIcall);
-            URLConnection mc = arxiv.openConnection();
+            URL worldcat = new URL(APIcall);
+            URLConnection mc = worldcat.openConnection();
 
             try {
                 APIresult = new BufferedReader(
                         new InputStreamReader(
                         mc.getInputStream()));
             } catch (java.net.ConnectException e) {
-                System.out.println("connection to ARXIV failed");
+                System.out.println("connection to WORLDCAT failed");
             } catch (IOException e) {
                 System.err.println("Caught IOException: " + e.getMessage());
             }
-
-//            currLine = APIresult.readLine();
-//            currLine = convertUnicode(currLine);
             is = new InputSource(APIresult);
-        }
+//            while ((line = APIresult.readLine()) != null) {
+//                System.out.println(line);
+//            }
 
+        }
         if (debug) {
-            is = new InputSource(new StringReader(getFileContents("C:\\Users\\C. Levallois\\Downloads\\query.webintents")));
-
+            System.out.println("WorldCat API call in debugging mode");
+            content = new StringBuilder();
+            BufferedReader br = new BufferedReader(new FileReader("D:\\Docs Pro Clement\\E-projects\\Olympics\\worldcatClement.txt"));
+            while ((line = br.readLine()) != null) {
+                content.append(line);
+                content.append(lineSeparator);
+            }
+            result = content.toString();
+            is = new InputSource(new StringReader(result));
         }
+
+//        System.out.println("WORLDCAT results are: " + result);
+//            currLine = convertUnicode(currLine);
 
 
         return is;
 
 
-    }
-
-    private static String getFileContents(String filename)
-            throws IOException, FileNotFoundException {
-        File file = new File(filename);
-        StringBuilder contents = new StringBuilder();
-
-        BufferedReader input = new BufferedReader(new FileReader(file));
-
-        try {
-            String line;
-
-            while ((line = input.readLine()) != null) {
-                contents.append(line);
-                contents.append(System.getProperty("line.separator"));
-            }
-        } finally {
-            input.close();
-        }
-
-        return contents.toString();
     }
 
     static String convertUnicode(String line) {

@@ -106,7 +106,7 @@
             <p:commandButton style="display: none" id="displayDialog" type="button" onclick="cd.show();"/>
 
             <p:confirmDialog id ="dialogBox" message= "#{reportBean.getClickedAuthorLaius()}"
-                             header="#{reportBean.nameClicked}, #{reportBean.authorClicked.mostRecentAffiliation}"
+                             header="#{reportBean.nameClicked}#{reportBean.authorClicked.mostRecentAffiliation}"
                              widgetVar="cd"
                              severity="info">
                 <h:outputText styleClass="ui-widget"  value="" escape="false" />

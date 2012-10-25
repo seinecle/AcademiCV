@@ -1,21 +1,15 @@
 package Model;
 
 import BL.APIs.Mendeley.ContainerMendeleyDocuments;
-import com.google.code.morphia.annotations.Entity;
-import com.google.code.morphia.annotations.Id;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.UUID;
-import org.bson.types.ObjectId;
 
-//@Embedded
-@Entity
 public class Quidam implements Comparable<Quidam>, Serializable {
 
-    @Id
-    ObjectId id;
+    
     private String forename;
     private String surname;
     private String fullname;
@@ -24,6 +18,7 @@ public class Quidam implements Comparable<Quidam>, Serializable {
     private ContainerMendeleyDocuments container;
     private String uuid;
     private HashSet<Affiliation> setAffiliations = new HashSet();
+    private int birthYear;
 
     public Quidam() {
     }
@@ -142,6 +137,16 @@ public class Quidam implements Comparable<Quidam>, Serializable {
         }
         return mostCurrentAffiliation;
     }
+
+    public int getBirthYear() {
+        return birthYear;
+    }
+
+    public void setBirthYear(int birthYear) {
+        this.birthYear = birthYear;
+    }
+    
+    
 
     @Override
     public int hashCode() {

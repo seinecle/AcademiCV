@@ -11,7 +11,7 @@ import BL.APIs.Mendeley.MendeleyAPICaller;
 import BL.APIs.Mendeley.MendeleyAPIresponseParser;
 import BL.APIs.NYT.ContainerNYTDocuments;
 import BL.APIs.NYT.NYTAPICaller;
-import BL.DocumentHandling.AuthorMerger;
+import BL.APIs.WorldCatIdentities.WorldCatAPIController;
 import BL.DocumentHandling.AuthorNamesCleaner;
 import BL.DocumentHandling.AuthorStatsHandler;
 import BL.DocumentHandling.AuthorsExtractor;
@@ -21,30 +21,31 @@ import BL.NameDisambiguation.FullNameInvestigator;
 import BL.NameDisambiguation.SpellingDifferencesChecker;
 import BL.Viz.Processing.ConvertToSegments;
 import BL.Viz.Processing.Segment;
-import Model.Affiliation;
 import Model.Author;
 import Model.CloseMatchBean;
 import Model.Document;
 import Model.GlobalEditsCounter;
 import Model.MapLabels;
+import Model.PersistingAcademic;
+import Model.PersistingEdit;
 import Model.Search;
 import Utils.Clock;
 import Utils.Pair;
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
 import com.google.code.morphia.query.Query;
+import com.google.code.morphia.query.UpdateOperations;
 import com.google.common.collect.HashMultiset;
 import com.google.gson.Gson;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
-import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,6 +59,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import org.apache.commons.lang3.StringUtils;
+import org.xml.sax.InputSource;
 
 /**
  *
@@ -92,7 +94,6 @@ public class ControllerBean implements Serializable {
     static public int maxYear;
     static public int nbArxivDocs = 0;
     static public int nbMendeleyDocs = 0;
-    BufferedReader readerArxivResults;
     static public HashMultiset<Author> multisetAuthors;
     static public Set<Author> setAuthors;
     static public HashSet<Document> setDocumentsUnFiltered;
@@ -100,18 +101,52 @@ public class ControllerBean implements Serializable {
     static public TreeSet<MapLabels> setMapLabels;
     static public HashMap<String, Pair<Integer, Integer>> mapAuthorToDates;
     private boolean NYTfound;
-    private static Author currSearch = new Author();
+    static private Author currSearch = new Author();
+    private Query<GlobalEditsCounter> updateQueryCounter;
+    private UpdateOperations<GlobalEditsCounter> opsCounter;
+    static private int tempBirthYear = 0;
 
     @PostConstruct
     private void init() {
         try {
             Mongo m;
+
+
+//            JELASTIC SETTINGS  
+//            Properties prop = new Properties();
+//            prop.load(new FileInputStream(System.getProperty("user.home") + "/mydb.cfg"));
+//            String host = prop.getProperty("host").toString();
+//            String dbname = prop.getProperty("dbname").toString();
+//            String user = prop.getProperty("user").toString();
+//            String password = prop.getProperty("password").toString();
+//            System.out.println("host: " + host + "\ndbname: " + dbname + "\nuser: " + user + "\npassword: " + password);
+
+//            m = new Mongo(host, 27017);
+//            DB db = m.getDB(dbname);
+//            if (db.authenticate(user, password.toCharArray())) {
+//                System.out.println("Connected!");
+//            } else {
+//                System.out.println("Connection failed");
+//            }
+
+//             LOCAL SETTINGS
             m = new Mongo();
+
             Morphia morphia = new Morphia();
-            morphia.map(Author.class);
-            morphia.map(Document.class);
-            ds = morphia.createDatastore(m, "namesDB");
-            count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
+            morphia.map(GlobalEditsCounter.class);
+            morphia.map(PersistingAcademic.class);
+            morphia.map(PersistingEdit.class);
+            ds = morphia.createDatastore(m, "academicvLocal");
+            GlobalEditsCounter gec = ds.find(GlobalEditsCounter.class).get();
+            if (gec == null) {
+                count = 0;
+                updateQueryCounter = ds.createQuery(GlobalEditsCounter.class);
+                opsCounter = ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 1);
+                ds.update(updateQueryCounter, opsCounter, true);
+
+            } else {
+                count = gec.getGlobalCounter();
+            }
             pushCounter();
 
 
@@ -119,6 +154,8 @@ public class ControllerBean implements Serializable {
             Logger.getLogger(ControllerBean.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MongoException ex) {
             Logger.getLogger(ControllerBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            System.out.println("IO exception: " + ex);
         }
     }
 
@@ -158,15 +195,24 @@ public class ControllerBean implements Serializable {
         ds.save(search);
         search = ds.find(Search.class).field("uuid").equal(uuid.toString()).get();
 
+
+        //-3
+        // Calling the SCOPUS database
+        //WORK IN PROGRESS - GET AN HTML ERROR CODE OF 401 AT THE MOMENT
+        //ScopusAPICaller.run(forename, surname);
+
+        //-2
+        // Calling the WORLDCAT database
+        Clock gettingWorldCat = new Clock("calling WorldCat...");
+        WorldCatAPIController worldcat = new WorldCatAPIController();
+        worldcat.run();
+        gettingWorldCat.closeAndPrintClock();
+
         //0
         // Calling the Arxiv database and persisting the docs in a standardized form
         Clock gettingArxivData = new Clock("calling Arxiv...");
-        if (AdminPanel.arxivDebugStateTrueOrFalse()) {
-            new ArxivAPIresponseParser().parse();
-        } else {
-            readerArxivResults = ArxivAPICaller.run(forename, surname);
-            new ArxivAPIresponseParser(readerArxivResults).parse();
-        }
+        InputSource readerArxivResults = ArxivAPICaller.run(forename, surname);
+        new ArxivAPIresponseParser(readerArxivResults).parse();
         gettingArxivData.closeAndPrintClock();
 
 
@@ -214,7 +260,7 @@ public class ControllerBean implements Serializable {
 
         //7
         //MORE THAN 300 CO-AUTHORS FOUND? moving to an error page
-        if (multisetAuthors.elementSet().size() > 300) {
+        if (multisetAuthors.elementSet().size() > 250) {
             return pageToNavigateTo = "tooManyCoAuthors?faces-redirect=true";
         }
 
@@ -229,6 +275,7 @@ public class ControllerBean implements Serializable {
         //8 bis
         //extracts the author being currently researched from the set of Authors and puts it in a field in the controllerBean: currSearch
         AuthorsExtractor.extractCurrSearchedAuthor();
+
 
         //9
         //Detects pairs of names which are probably the same person, with different spellings / misspellings
@@ -383,6 +430,14 @@ public class ControllerBean implements Serializable {
 
     public static void setCurrSearch(Author newCurrSearch) {
         currSearch = newCurrSearch;
+    }
+
+    public static int getTempBirthYear() {
+        return tempBirthYear;
+    }
+
+    public static void setTempBirthYear(int tempBirthYear) {
+        tempBirthYear = tempBirthYear;
     }
 
     public void prepareNewSearch() {

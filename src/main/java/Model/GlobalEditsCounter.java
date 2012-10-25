@@ -4,12 +4,19 @@
  */
 package Model;
 
+import com.google.code.morphia.annotations.Entity;
+import com.google.code.morphia.annotations.Id;
+import org.bson.types.ObjectId;
+
 /**
  *
  * @author C. Levallois
  */
+@Entity
 public class GlobalEditsCounter {
 
+    @Id
+    ObjectId id;
     private int globalCounter;
 
     GlobalEditsCounter() {

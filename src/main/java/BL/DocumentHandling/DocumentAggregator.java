@@ -32,9 +32,9 @@ public class DocumentAggregator {
 //            }
 //        }
 
-        System.out.println("nb of docs retrieved from the db: " + setDocs.size());
+        System.out.println("Nb of docs before the aggregation: " + setDocs.size());
         setPairsDocs = new FindAllPairs().getAllPairs(setDocs);
-        System.out.println("nb of pairs: " + setPairsDocs.size());
+        System.out.println("nb of pairs we are going to compare now: " + setPairsDocs.size());
 
         Iterator<Pair<Document, Document>> setPairsDocsIterator = setPairsDocs.iterator();
         Document mergedDoc;

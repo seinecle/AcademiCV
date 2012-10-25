@@ -36,6 +36,7 @@ public class MendeleyAPICaller {
 
             URL mendeley = new URL(APIcall);
             URLConnection mc = mendeley.openConnection();
+            
 
             try {
                 APIresult = new BufferedReader(

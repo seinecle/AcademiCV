@@ -4,14 +4,12 @@
  */
 package Model;
 
-import com.google.code.morphia.annotations.Entity;
 import java.util.UUID;
 
 /**
  *
  * @author C. Levallois
  */
-@Entity
 public class Author extends Quidam {
 
     private int yearFirstCollab;

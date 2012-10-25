@@ -1,15 +1,18 @@
 bug fixes
+Peter Verleegh: problem with double spaces?
+if no ambiguous name was found, navigate to the list of names, not the diagram.
+if no most frequent journal is found, do not show this info.
+is mentioned in the following article(s) from the NYT
 
 minor features
 - add landing page when no co-author is found
-- page for credits
-- improve the name suggestion for Wouter De Nooy and such
+- add info when APIs where unresponsive
+- improve the name suggestion for Wouter De Nooy, Sarah De Rijcke and such
 
 not so minor features
 - progress bar in the first page
 - add info about disciplines
-- add info about adfiliations
-- add 
+- persist statistics about age, affiliation and discipline: how many papers, how many co-authors, how many media mentions, 
 
 
 major features

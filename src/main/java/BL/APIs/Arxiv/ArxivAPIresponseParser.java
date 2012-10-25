@@ -19,7 +19,6 @@ import java.util.HashSet;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import org.joda.time.DateTime;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -55,12 +54,8 @@ public class ArxivAPIresponseParser extends DefaultHandler {
     private InputSource is;
     private int nbArxivDocs = 0;
 
-    public ArxivAPIresponseParser(BufferedReader br) {
-        this.is = new InputSource(br);
-    }
-
-    public ArxivAPIresponseParser() throws IOException {
-        this.is = new InputSource(new StringReader(getFileContents("C:\\Users\\C. Levallois\\Downloads\\query.webintents")));
+    public ArxivAPIresponseParser(InputSource newIs) {
+        this.is = newIs;
     }
 
     public void parse() throws IOException {
@@ -81,8 +76,11 @@ public class ArxivAPIresponseParser extends DefaultHandler {
             ControllerBean.nbArxivDocs = nbArxivDocs;
 
         } catch (SAXException se) {
+            System.out.println("SAXException: " + se);
         } catch (ParserConfigurationException pce) {
+            System.out.println("ParserConfigurationException: " + pce);
         } catch (IOException ie) {
+            System.out.println("IOException: " + ie);
         }
     }
 
@@ -221,26 +219,7 @@ public class ArxivAPIresponseParser extends DefaultHandler {
         }
     }
 
-    private static String getFileContents(String filename)
-            throws IOException, FileNotFoundException {
-        File file = new File(filename);
-        StringBuilder contents = new StringBuilder();
 
-        BufferedReader input = new BufferedReader(new FileReader(file));
-
-        try {
-            String line;
-
-            while ((line = input.readLine()) != null) {
-                contents.append(line);
-                contents.append(System.getProperty("line.separator"));
-            }
-        } finally {
-            input.close();
-        }
-
-        return contents.toString();
-    }
 
     private void populateMapPrimaryCategories() {
 
