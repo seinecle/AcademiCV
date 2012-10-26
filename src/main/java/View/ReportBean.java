@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import org.joda.time.LocalDate;
 
 /**
  *
@@ -47,8 +48,6 @@ public class ReportBean implements Serializable {
     public Author getAuthorClicked() {
         return authorClicked;
     }
-    
-    
 
     public void passName() {
         FacesContext context = FacesContext.getCurrentInstance();
@@ -93,7 +92,7 @@ public class ReportBean implements Serializable {
 
         } else {
             sb.append(ControllerBean.getSearch().getFullname());
-            sb.append(" is mentioned in the following articles fron the New York Times:<br>");
+            sb.append(" is mentioned in the following article(s) fron the New York Times:<br>");
             for (NYTDoc element : ControllerBean.NYTDocs.getDocuments()) {
                 sb.append(element.getDate().substring(0, 4));
                 sb.append(". \"<a href=\"");
@@ -154,23 +153,43 @@ public class ReportBean implements Serializable {
             toReturn.append(" and ");
             toReturn.append(ControllerBean.maxYear);
         }
+        if (ControllerBean.setAuthors.size() > 0) {
+            toReturn.append(", with a total of ");
+            toReturn.append(ControllerBean.setAuthors.size());
+            toReturn.append(" co-authors");
+        }
+        toReturn.append(".");
 
-        toReturn.append(", with a total of ");
-        toReturn.append(ControllerBean.setAuthors.size());
-        toReturn.append(" co-authors.");
-        toReturn.append("<p></p>");
+
         return toReturn.toString();
     }
 
+    static public String getAge() {
+        StringBuilder sb = new StringBuilder();
+        if (ControllerBean.getCurrSearch().getBirthYear() != null && ControllerBean.getCurrSearch().getBirthYear() != 0) {
+            LocalDate today = new LocalDate();
+            Integer currYear = today.getYear() - ControllerBean.getCurrSearch().getBirthYear();
+            sb.append(ControllerBean.getSearch().getFullname());
+            sb.append(" is ").append(currYear).append(" years old.");
+            sb.append("<p></p>");
+        }
+
+        return sb.toString();
+
+    }
+
     static public String getMostFrequentSource() {
-        int countTitle = ControllerBean.getMostFreqTitle().getRight();
         StringBuilder toReturn = new StringBuilder();
+        int countTitle = ControllerBean.getMostFreqSource().getRight();
+        if (countTitle == 0) {
+            return toReturn.toString();
+        }
         toReturn.append("<div style=\"font-size:120%;\">");
 
         toReturn.append("<b>Journal with most publications by this researcher</b><br>");
         toReturn.append("</div>");
 
-        toReturn.append(ControllerBean.getMostFreqTitle().getLeft());
+        toReturn.append(ControllerBean.getMostFreqSource().getLeft());
         toReturn.append(" (");
         toReturn.append(countTitle);
         if (countTitle == 1) {
@@ -186,9 +205,15 @@ public class ReportBean implements Serializable {
     static public String getMostFrequentCoAuthors() {
         HashSet<Author> mostFrequentCoAuthors = ControllerBean.mostFrequentCoAuthors;
         StringBuilder toReturn = new StringBuilder();
+
+        if (mostFrequentCoAuthors == null) {
+            return toReturn.toString();
+        }
+
         toReturn.append("<div style=\"font-size:120%;\">");
         toReturn.append("<b>Most frequent co-author(s)</b><b><br>");
         toReturn.append("</div>");
+
 
         if (mostFrequentCoAuthors.size() == 1) {
             Author mostFrequentCoAuthor = mostFrequentCoAuthors.iterator().next();

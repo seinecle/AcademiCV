@@ -13,14 +13,14 @@ public class AdminPanel {
 //debugging    ----------------------------------------------------------------------------
     // ##### MENDELEY API CALL DEBUGGING
     //in debugging mode, the mendeley pubs of Andrea Scharnhorst are fetched locally
-    static boolean mendeley_in_debugging_mode = true;
+    static boolean mendeley_in_debugging_mode = false;
     
     // ##### ARXIV API CALL DEBUGGING
     //in debugging mode, the arxiv pubs of Andrea Scharnhorst are fetched locally
-    static boolean arxiv_in_debugging_mode = true;
+    static boolean arxiv_in_debugging_mode = false;
     
     // ##### SCOPUS API CALL DEBUGGING
-    static boolean scopus_in_debugging_mode = true;
+    static boolean scopus_in_debugging_mode = false;
     
     // ##### WORLDCAT API CALL DEBUGGING
     //in debugging mode, the worldcat identities of Andrea Scharnhorst are fetched locally
@@ -28,7 +28,7 @@ public class AdminPanel {
     
     // ##### NEW YORK TIMES API CALL DEBUGGING
     //in debugging mode, no call to NYT is made, at all
-    static boolean nyt_in_debugging_mode = true;
+    static boolean nyt_in_debugging_mode = false;
     
     // ##### WISDOM CROWDS DEBUGGING #################################
     // in debugging mode, user edits are persisted in the db BUT they are not retrieved in the disambiguation phase

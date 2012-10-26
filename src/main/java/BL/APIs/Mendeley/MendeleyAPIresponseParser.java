@@ -1,4 +1,3 @@
-
 package BL.APIs.Mendeley;
 
 import BL.APIs.Mendeley.MendeleyDocument.author;
@@ -17,6 +16,7 @@ import java.util.List;
 public class MendeleyAPIresponseParser {
 
     ContainerMendeleyDocuments container;
+    private int nbMendeleyDocs = 0;
 
     public MendeleyAPIresponseParser(ContainerMendeleyDocuments container) {
         this.container = container;
@@ -40,8 +40,6 @@ public class MendeleyAPIresponseParser {
         HashSet<Author> setcurrAuthors;
         ControllerBean.nbMendeleyDocs = currList.size();
         while (currListIterator.hasNext()) {
-
-
             currDoc = currListIterator.next();
 
             //this skips the documents that have incomplete data. They will simply not be considered by the application.
@@ -49,7 +47,6 @@ public class MendeleyAPIresponseParser {
                 continue;
             }
             newDoc = new Document();
-
             currDocAuthorsIterator = currDoc.getAuthors().iterator();
             setcurrAuthors = new HashSet();
             author currauthor;
@@ -72,10 +69,12 @@ public class MendeleyAPIresponseParser {
             newDoc.setUuid(ControllerBean.uuid);
             newDoc.setWhereFrom("mendeley");
             newDoc.setYear(Integer.parseInt(currDoc.getYear()));
+            nbMendeleyDocs++;
 
 
             ControllerBean.setDocs.add(newDoc);
 
         }
+        ControllerBean.nbMendeleyDocs = nbMendeleyDocs;
     }
 }

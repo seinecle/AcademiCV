@@ -195,21 +195,18 @@ public class AuthorStatsHandler {
 
 
         //find earliest and latest dates of publication
-        setAuthorsIterator = setAuthors.iterator();
         int earliest = 3000;
         int latest = 0;
-        while (setAuthorsIterator.hasNext()) {
-
-            currAuthor = setAuthorsIterator.next();
-            if (currAuthor.getYearFirstCollab() < earliest) {
-                earliest = currAuthor.getYearFirstCollab();
+        for (Document element : ControllerBean.setDocs) {
+            if (element.getYear() < earliest) {
+                earliest = element.getYear();
             }
-            if (currAuthor.getYearLastCollab() > latest) {
-                latest = currAuthor.getYearLastCollab();
+            if (element.getYear() > latest) {
+                latest = element.getYear();
             }
+            ControllerBean.minYear = earliest;
+            ControllerBean.maxYear = latest;
         }
-        ControllerBean.minYear = earliest;
-        ControllerBean.maxYear = latest;
 
 
 

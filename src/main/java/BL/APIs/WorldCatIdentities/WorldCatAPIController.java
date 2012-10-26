@@ -21,18 +21,22 @@ public class WorldCatAPIController {
     public WorldCatAPIController() {
     }
 
-    public static void run() throws Exception {
+    public void run() throws Exception {
+        currBirthYear = 0;
         worldcatInputSource = WorldCatAPICaller.run(ControllerBean.getSearch().getForename(), ControllerBean.getSearch().getSurname());
         HashSet<String> setIdentities = new WorldCatAPIresponseParser(worldcatInputSource).parse();
+        System.out.println("nb of identities found: " + setIdentities.size());
 
         Iterator<String> setIdentitiesIterator = setIdentities.iterator();
-
+        String currIdentity;
         while (setIdentitiesIterator.hasNext()) {
-            String currIdentity = setIdentitiesIterator.next();
+            currIdentity = setIdentitiesIterator.next();
+            System.out.println("launching a second phase of WorldCat call: looking at the identity: " + currIdentity);
             worldcatInputSource = WorldCatAPICallerWithIdentityCode.run(currIdentity);
             new WorldCatAPIIdentityresponseParser(worldcatInputSource).parse();
         }
 
+        System.out.println("setting Temp Birth Year: " + currBirthYear);
         ControllerBean.setTempBirthYear(currBirthYear);
 
     }
@@ -41,7 +45,7 @@ public class WorldCatAPIController {
         return currBirthYear;
     }
 
-    public static void setCurrBirthYear(int currBirthYear) {
-        currBirthYear = currBirthYear;
+    public static void setCurrBirthYear(int newCurrBirthYear) {
+        currBirthYear = newCurrBirthYear;
     }
 }

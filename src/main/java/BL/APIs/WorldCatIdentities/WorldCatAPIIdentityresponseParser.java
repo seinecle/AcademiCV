@@ -31,22 +31,28 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
     private boolean newIsFiction;
     private boolean newSummary;
     private boolean newSub;
+    private boolean newCreator;
+    private boolean newAuthorityInfo;
+    private boolean newNameInfo;
     private StringBuilder titleBuilder;
     private StringBuilder dateBuilder;
     private StringBuilder summaryBuilder;
     private StringBuilder isFictionBuilder;
     private StringBuilder subBuilder;
+    private StringBuilder creatorBuilder;
     private String currTitle;
     private String currDate;
     private String currIsFiction;
     private String currSummary;
     private String currSub;
     private String currLanguage;
+    private String currCreator;
     private String currSearchName;
     private Document currDoc;
     private HashSet<Author> currSetAuthors;
     private boolean yearFound;
     private InputSource is;
+    private Author currAuthor;
 
     public WorldCatAPIIdentityresponseParser(InputSource newIs) {
         this.is = newIs;
@@ -91,6 +97,7 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
 
         if (qName.equals("citation")) {
             newCitation = true;
+            currSetAuthors = new HashSet();
         }
 
         if (qName.equals("isFiction")) {
@@ -103,8 +110,22 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
             dateBuilder = new StringBuilder();
         }
 
+        if (qName.equals("authorityInfo")) {
+            newAuthorityInfo = true;
+        }
+
+        if (qName.equals("nameInfo")) {
+            newNameInfo = true;
+        }
+
+        if (qName.equals("creator")) {
+            newCreator = true;
+            creatorBuilder = new StringBuilder();
+        }
+
         if (qName.startsWith("sub")) {
             newSub = true;
+            System.out.println("start of sub");
             subBuilder = new StringBuilder();
         }
 
@@ -138,6 +159,10 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
             subBuilder.append(ch, start, length);
         }
 
+        if (newCreator) {
+            creatorBuilder.append(ch, start, length);
+        }
+
         if (newTitle) {
             titleBuilder.append(ch, start, length);
         }
@@ -153,54 +178,110 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
 
 
         //case when an affiliation is provided with the author
-        if (qName.equals("citation") & currIsFiction.equals("False")) {
-
-            yearFound = currSub.matches(".*\\(\\d\\d\\d\\d.*");
-            if (yearFound) {
-                WorldCatAPIController.setCurrBirthYear(Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1").substring(1)));
-                System.out.println("year of birth found: " + WorldCatAPIController.getCurrBirthYear());
-            } else {
-                //nothing
+        if (qName.equals("citation")) {
+            if (currSub != null) {
+                System.out.println("currSub analized at end of citation...");
+                yearFound = currSub.matches(".*\\d\\d\\d\\d.*");
+                if (yearFound) {
+                    WorldCatAPIController.setCurrBirthYear(Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1")));
+                    System.out.println("year of birth found: " + WorldCatAPIController.getCurrBirthYear());
+                } else {
+                    //nothing
+                }
             }
-
-
             currDoc = new Document();
             currDoc.setTitle(currTitle);
-            currSetAuthors = new HashSet();
-            currSetAuthors.add(new Author(currSearchName));
             currDoc.setAuthors(currSetAuthors);
-            currDoc.setYear(Integer.parseInt(currDate));
+            if (currDate != null) {
+                try {
+                    currDoc.setYear(Integer.parseInt(currDate));
+                } catch (java.lang.NumberFormatException e) {
+                }
+            }
             currDoc.setSummary(currSummary);
             currDoc.setLanguage(currLanguage);
+            System.out.println("document added to the set");
+            System.out.println("(title is:");
+            System.out.println(currDoc.getTitle());
             ControllerBean.setDocs.add(currDoc);
 
 
             currTitle = null;
             currIsFiction = null;
             currDate = null;
-            newCitation = false;
             currLanguage = null;
             currSummary = null;
+            currSub = null;
+            newCitation = false;
+
+
         }
 
         if (qName.equals("date") && newCitation) {
             currDate = dateBuilder.toString();
+            newDate = false;
         }
 
         if (qName.equals("isFiction") && newCitation) {
             currIsFiction = isFictionBuilder.toString();
+            newIsFiction = false;
         }
 
-        if (qName.startsWith("sub") && newCitation) {
+        if (qName.startsWith("sub") && (newCitation || newNameInfo || newAuthorityInfo)) {
             currSub = subBuilder.toString();
+            newSub = false;
         }
 
         if (qName.equals("title") && newCitation) {
             currTitle = titleBuilder.toString();
+            newTitle = false;
+        }
+
+        if (qName.equals("creator") && newCitation) {
+            currCreator = creatorBuilder.toString();
+            if (currCreator.contains(",")) {
+                currAuthor = new Author();
+                currAuthor.setFullnameWithComma(currCreator);
+                currSetAuthors.add(currAuthor);
+            }
+            newCreator = false;
         }
 
         if (qName.equals("summary") && newCitation) {
             currSummary = summaryBuilder.toString();
+            newSummary = false;
         }
+
+        if (qName.equals("authorityInfo")) {
+            if (currSub != null) {
+                System.out.println("currSub analized at end of citation...");
+                yearFound = currSub.matches(".*\\d\\d\\d\\d.*");
+                if (yearFound) {
+                    WorldCatAPIController.setCurrBirthYear(Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1")));
+                    System.out.println("year of birth found: " + WorldCatAPIController.getCurrBirthYear());
+                } else {
+                    //nothing
+                }
+            }
+
+
+            newAuthorityInfo = false;
+        }
+
+        if (qName.equals("nameInfo")) {
+            if (currSub != null) {
+                System.out.println("currSub analized at end of citation...");
+                yearFound = currSub.matches(".*\\d\\d\\d\\d.*");
+                if (yearFound) {
+                    WorldCatAPIController.setCurrBirthYear(Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1")));
+                    System.out.println("year of birth found: " + WorldCatAPIController.getCurrBirthYear());
+                } else {
+                    //nothing
+                }
+            }
+
+            newNameInfo = false;
+        }
+
     }
 }

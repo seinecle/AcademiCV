@@ -9,7 +9,6 @@ import java.util.UUID;
 
 public class Quidam implements Comparable<Quidam>, Serializable {
 
-    
     private String forename;
     private String surname;
     private String fullname;
@@ -18,7 +17,7 @@ public class Quidam implements Comparable<Quidam>, Serializable {
     private ContainerMendeleyDocuments container;
     private String uuid;
     private HashSet<Affiliation> setAffiliations = new HashSet();
-    private int birthYear;
+    private Integer birthYear;
 
     public Quidam() {
     }
@@ -102,10 +101,15 @@ public class Quidam implements Comparable<Quidam>, Serializable {
 
     public void setFullnameWithComma(String newFullnameWithComma) {
         String[] arrayTerms = newFullnameWithComma.split(",");
-        this.fullnameWithComma = newFullnameWithComma;
-        this.forename = arrayTerms[1].trim();
-        this.surname = arrayTerms[0].trim();
-        this.fullname = arrayTerms[1].trim() + " " + arrayTerms[0].trim();
+//        if (arrayTerms.length == 1) {
+//            this.fullname = newFullnameWithComma;
+//        } 
+//        else {
+            this.fullnameWithComma = newFullnameWithComma;
+            this.forename = arrayTerms[1].trim();
+            this.surname = arrayTerms[0].trim();
+            this.fullname = arrayTerms[1].trim() + " " + arrayTerms[0].trim();
+//        }
     }
 
     public String getLd() {
@@ -138,15 +142,13 @@ public class Quidam implements Comparable<Quidam>, Serializable {
         return mostCurrentAffiliation;
     }
 
-    public int getBirthYear() {
+    public Integer getBirthYear() {
         return birthYear;
     }
 
     public void setBirthYear(int birthYear) {
         this.birthYear = birthYear;
     }
-    
-    
 
     @Override
     public int hashCode() {

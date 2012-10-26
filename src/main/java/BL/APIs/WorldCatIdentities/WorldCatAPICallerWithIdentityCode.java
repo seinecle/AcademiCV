@@ -4,7 +4,6 @@
  */
 package BL.APIs.WorldCatIdentities;
 
-import BL.APIs.Mendeley.ContainerMendeleyDocuments;
 import Controller.AdminPanel;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -13,8 +12,6 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.xml.sax.InputSource;
@@ -25,10 +22,7 @@ import org.xml.sax.InputSource;
  */
 public class WorldCatAPICallerWithIdentityCode {
 
-    private static String quidamFirstName;
-    private static String quidamLastName;
     public static boolean debug;
-    private static String currLine;
     private static BufferedReader APIresult;
     private static InputSource is;
 
@@ -46,7 +40,7 @@ public class WorldCatAPICallerWithIdentityCode {
         if (!debug) {
 
             
-            String APIcall = "http://worldcat.org/identities/" + currIdentity + "/identity.xml";
+            String APIcall = "http://worldcat.org"+ currIdentity + "/identity.xml";
             System.out.println("WorldCat API call is:");
             System.out.println(APIcall);
 

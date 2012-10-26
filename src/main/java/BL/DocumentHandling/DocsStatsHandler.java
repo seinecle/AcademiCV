@@ -42,7 +42,7 @@ public class DocsStatsHandler {
                 mostFrequentTitle = currTitle;
             }
         }
-        System.out.println("most frequent title: " + mostFrequentTitle);
+        System.out.println("most frequent source: " + mostFrequentTitle);
         System.out.println("count: " + maxCountTitle);
         return new Pair(mostFrequentTitle, maxCountTitle);
 

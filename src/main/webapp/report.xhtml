@@ -20,6 +20,9 @@
             $(function(){
 
                 var json = '#{reportBean.json}';
+                if (json == null){
+                    return;
+                }
                 addSegments(json);
             
 
@@ -81,8 +84,8 @@
             </p:commandButton>  
         </h:form>
 
-        <div id="container" style=" margin-left: auto; margin-right: auto;width:900px"></div>
-        <div style="margin-left: auto; margin-right: auto;text-align: center;width:800px">
+        <div id="container" style="#{controllerBean.wereThereCoAuthorsFound()}margin-left: auto; margin-right: auto;width:900px"></div>
+        <div style="#{controllerBean.wereThereCoAuthorsFound()}margin-left: auto; margin-right: auto;text-align: center;width:800px">
             <p><b>Do you spot some errors?</b> Click on the "previous page" button of your browser to make edits.</p>
         </div>
 
@@ -90,6 +93,7 @@
         <div id ="laius">
             <p></p>
             <h:outputText styleClass="ui-widget"  value="#{reportBean.getGeneralLaius()}" escape="false" /><br></br>
+            <h:outputText styleClass="ui-widget"  value="#{reportBean.getAge()}" escape="false" /><br></br>
             <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentSource()}" escape="false" />
             <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentCoAuthors()}" escape="false" />
             <h:outputText styleClass="ui-widget"  value="#{reportBean.NYTLaius}" escape="false" />

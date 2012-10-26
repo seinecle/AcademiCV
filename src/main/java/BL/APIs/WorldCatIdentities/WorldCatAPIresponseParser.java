@@ -41,7 +41,7 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
 
     public WorldCatAPIresponseParser(InputSource newIs) {
         this.is = newIs;
-        currSearchName = ControllerBean.getSearch().getFullnameWithComma();
+        currSearchName = ControllerBean.getSearch().getFullname();
         currSearchName = StringUtils.stripAccents(currSearchName);
         currSearchName = RemoveNonASCII.remove(currSearchName);
         setIdentitiesFound = new HashSet();
@@ -86,6 +86,7 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
         // their value can be tested with attributes.getValue(indexNumber);
 
         if (qName.equals("match") && (attributes.getValue(0).equals("ExactMatches") | attributes.getValue(0).equals("FuzzyFirstName"))) {
+            System.out.println("new Match found");
             newMatch = true;
         }
 
@@ -146,23 +147,56 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
 
         if (qName.equals("uri") && newMatch) {
             currURI = URIBuilder.toString();
-            currURI = RemoveNonASCII.remove(currURI);
-            System.out.println("currURI without non ASCII= " + currURI);
-            System.out.println("currURI without non ASCII= " + currSearchName);
+            if (!currURI.contains("lccn")) {
+//            currURI = RemoveNonASCII.remove(currURI);
+                currURI = currURI.toLowerCase();
+                String[] termsInURI = currURI.split(",");
+                termsInURI[0] = termsInURI[0].replace("/identities/np-", "");
 
-            if (!currURI.contains(currSearchName)) {
-                currURI = null;
+                String URIreconstructed;
+                if (termsInURI.length > 1) {
+                    if (termsInURI[1].matches(".*\\$\\d\\d\\d\\d.*")) {
+                        termsInURI[1] = termsInURI[1].replaceAll("(.*)(\\$\\d\\d\\d\\d)(.*)", "$1");
+                    }
+                    if (!termsInURI[1].equals(StringUtils.stripAccents(ControllerBean.getSearch().getForename()))) {
+                        termsInURI[1] = "do not include in the set!";
+                    }
+
+                    if (!termsInURI[0].equals(StringUtils.stripAccents(ControllerBean.getSearch().getSurname()))) {
+                        termsInURI[0] = "do not include in the set!";
+                    }
+
+                    URIreconstructed = termsInURI[1].trim() + "%20" + termsInURI[0].trim();
+                } else {
+                    URIreconstructed = "do not include in the set!";
+                }
+                URIreconstructed = URIreconstructed.replaceAll(" ", "%20");
+                System.out.println("currURI = " + currURI);
+                System.out.println("URIreconstructed = " + URIreconstructed);
+                currSearchName = currSearchName.replaceAll(" ", "%20").toLowerCase();
+                System.out.println("currSearchName: " + currSearchName);
+
+                if (!URIreconstructed.contains(currSearchName)) {
+                    currURI = null;
+                } else {
+                    System.out.println("uri added to the set:" + currURI);
+                    currURI = currURI.replaceAll(" ", "%20");
+                    setIdentitiesFound.add(currURI);
+                }
             } else {
                 setIdentitiesFound.add(currURI);
             }
+            newURI = false;
         }
 
         if (qName.equals("nameType") && newMatch) {
             currNameType = nameTypeBuilder.toString();
+            newNameType = false;
         }
 
         if (qName.equals("establishedForm") && newMatch) {
             currEstablishedForm = establishedFormBuilder.toString();
+            newEstablishedForm = false;
         }
     }
 }

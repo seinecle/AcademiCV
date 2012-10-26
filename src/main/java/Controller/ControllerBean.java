@@ -69,7 +69,7 @@ import org.xml.sax.InputSource;
 @SessionScoped
 public class ControllerBean implements Serializable {
 
-    private static Pair<String, Integer> mostFreqTitle;
+    private static Pair<String, Integer> mostFreqSource;
     DBCollection quidamDocsColl;
     DBCollection quidamPartnersColl;
     static public Datastore ds;
@@ -77,7 +77,7 @@ public class ControllerBean implements Serializable {
     List<CloseMatchBean> listCloseMatches;
     static public ContainerMendeleyDocuments mendeleyDocs;
     static public ContainerNYTDocuments NYTDocs;
-    public static TreeMap<Author, Author> mapCloseMatches = new TreeMap();
+    public static TreeMap<Author, Author> mapCloseMatches;
     private String forename;
     private String surname;
     public boolean wisdomCrowds;
@@ -105,6 +105,7 @@ public class ControllerBean implements Serializable {
     private Query<GlobalEditsCounter> updateQueryCounter;
     private UpdateOperations<GlobalEditsCounter> opsCounter;
     static private int tempBirthYear = 0;
+    static private boolean coAuthorsFound = true;
 
     @PostConstruct
     private void init() {
@@ -166,21 +167,28 @@ public class ControllerBean implements Serializable {
         setDocumentsUnFiltered = new HashSet();
         setDocs = new HashSet();
         setMapLabels = new TreeSet();
+        mapCloseMatches = new TreeMap();
         setCloseMatches = new TreeSet();
         mapAuthorToDates = new HashMap();
         setDocumentsUnFiltered = new HashSet();
         segments = new ArrayList();
         mendeleyDocs = null;
         NYTDocs = null;
+        nbMendeleyDocs = 0;
+        nbArxivDocs = 0;
+
+
+        //Cleans a bit the user input
+        forename = forename.replaceAll("\\.|\"", " ").trim();
+        surname = surname.replaceAll("\\.|\"", " ").trim();
+        forename = forename.replaceAll("  ", " ");
+        surname = surname.replaceAll("  ", " ");
 
         System.out.println(
                 "forename: " + forename);
         System.out.println(
                 "surname: " + surname);
 
-        //Cleans a bit the user input
-        forename = forename.replaceAll("\\.\"", " ").trim();
-        surname = surname.replaceAll("\\.\"", " ").trim();
         uuid = UUID.randomUUID();
         //PERSISTING THE MAIN FORENAME AND SURNAME;
         search = new Search();
@@ -213,6 +221,7 @@ public class ControllerBean implements Serializable {
         Clock gettingArxivData = new Clock("calling Arxiv...");
         InputSource readerArxivResults = ArxivAPICaller.run(forename, surname);
         new ArxivAPIresponseParser(readerArxivResults).parse();
+        System.out.println("nb Arxiv docs found: " + nbArxivDocs);
         gettingArxivData.closeAndPrintClock();
 
 
@@ -221,6 +230,8 @@ public class ControllerBean implements Serializable {
         Clock gettingMendeleyData = new Clock("calling Mendeley...");
         mendeleyDocs = MendeleyAPICaller.run(forename, surname);
         new MendeleyAPIresponseParser(mendeleyDocs).parse();
+        System.out.println("nb Mendeley docs found: " + nbMendeleyDocs);
+
         gettingMendeleyData.closeAndPrintClock();
 
         //2
@@ -275,6 +286,7 @@ public class ControllerBean implements Serializable {
         //8 bis
         //extracts the author being currently researched from the set of Authors and puts it in a field in the controllerBean: currSearch
         AuthorsExtractor.extractCurrSearchedAuthor();
+        currSearch.setBirthYear(tempBirthYear);
 
 
         //9
@@ -283,25 +295,38 @@ public class ControllerBean implements Serializable {
         atleastOneMatchFound = new SpellingDifferencesChecker(setAuthors, wisdomCrowds).check();
         spellCheckClock.closeAndPrintClock();
 
-
-
-
         //10
         //navigates to the pages for name disambiguation or directly to the last report page
         if (atleastOneMatchFound) {
-            System.out.println("similar names found. Navigating to the spell check page");
+            System.out.println("Co-authors found!");
+            System.out.println("Similar names found");
+            System.out.println("Navigating to the spell check page");
             pageToNavigateTo = "pairscheck?faces-redirect=true";
 
         } else {
-            System.out.println("No ambiguous name found. Navigating directly to the visualization");
-            computationsBeforeReport();
-            AuthorStatsHandler.updateAuthorNamesAfterUserInput();
-            segments = new ConvertToSegments().convert();
-            segments.add(new Segment(forename + " " + surname, 1, true));
-            json = new Gson().toJson(segments);
-
-            pageToNavigateTo = "report?faces-redirect=true";
+            if (setAuthors.size() > 0) {
+                System.out.println("Co-authors found!");
+                System.out.println("No similarity found between pairs of names");
+                System.out.println("Navigating directly to the final check page");
+                computationsBeforeReport();
+                pageToNavigateTo = "finalcheck?faces-redirect=true";
+            } else {
+                coAuthorsFound = false;
+                System.out.println("No co-author found");
+                System.out.println("Navigating directly to the report page");
+                computationsBeforeReport();
+                pageToNavigateTo = "report?faces-redirect=true";
+            }
         }
+
+//            computationsBeforeReport();
+//            AuthorStatsHandler.updateAuthorNamesAfterUserInput();
+//            segments = new ConvertToSegments().convert();
+//            segments.add(new Segment(forename + " " + surname, 1, true));
+//            json = new Gson().toJson(segments);
+//
+//            pageToNavigateTo = "report?faces-redirect=true";
+
         return pageToNavigateTo;
     }
 
@@ -312,7 +337,7 @@ public class ControllerBean implements Serializable {
         Clock generateStats = new Clock("generating descriptive stats on the set of authors after user input");
         setAuthors = AuthorStatsHandler.updateAuthorNamesAfterUserInput();
         DocsStatsHandler.computeNumberDocs();
-        mostFreqTitle = DocsStatsHandler.extractMostFrequentSource();
+        mostFreqSource = DocsStatsHandler.extractMostFrequentSource();
         generateStats.closeAndPrintClock();
 
 
@@ -420,8 +445,8 @@ public class ControllerBean implements Serializable {
         return NYTfound;
     }
 
-    public static Pair<String, Integer> getMostFreqTitle() {
-        return mostFreqTitle;
+    public static Pair<String, Integer> getMostFreqSource() {
+        return mostFreqSource;
     }
 
     public static Author getCurrSearch() {
@@ -436,8 +461,16 @@ public class ControllerBean implements Serializable {
         return tempBirthYear;
     }
 
-    public static void setTempBirthYear(int tempBirthYear) {
-        tempBirthYear = tempBirthYear;
+    public static void setTempBirthYear(int newTempBirthYear) {
+        tempBirthYear = newTempBirthYear;
+    }
+
+    public static String wereThereCoAuthorsFound() {
+        if (!coAuthorsFound) {
+            return "display:none; ";
+        } else {
+            return "";
+        }
     }
 
     public void prepareNewSearch() {

@@ -4,7 +4,6 @@
  */
 package BL.APIs.WorldCatIdentities;
 
-import BL.APIs.Mendeley.ContainerMendeleyDocuments;
 import Controller.AdminPanel;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -26,9 +25,7 @@ public class WorldCatAPICaller {
     private static String quidamFirstName;
     private static String quidamLastName;
     public static boolean debug;
-    private static String currLine;
     private static BufferedReader APIresult;
-    private static ContainerMendeleyDocuments container;
     private static InputSource is;
 
     public static InputSource run(String firstname, String lastname) throws Exception {

@@ -39,7 +39,7 @@ public class ArxivAPICaller {
             quidamFirstName = firstname.replaceAll(" ", "%20");
             quidamLastName = lastname.replaceAll(" ", "%20");
 
-            String APIcall = "http://export.arxiv.org/api/query?search_query=au:" + quidamFirstName + "+AND+au:" + quidamLastName + "&max_results=200";
+            String APIcall = "http://export.arxiv.org/api/query?search_query=au:%22" + quidamFirstName + "%20" + quidamLastName + "%22&max_results=200";
             System.out.println("API call is:");
             System.out.println(APIcall);
 
