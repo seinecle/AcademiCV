@@ -166,9 +166,9 @@ public class ReportBean implements Serializable {
 
     static public String getAge() {
         StringBuilder sb = new StringBuilder();
-        if (ControllerBean.getCurrSearch().getBirthYear() != null && ControllerBean.getCurrSearch().getBirthYear() != 0) {
+        if (ControllerBean.getSearch().getBirthYear() != null && ControllerBean.getSearch().getBirthYear() != 0) {
             LocalDate today = new LocalDate();
-            Integer currYear = today.getYear() - ControllerBean.getCurrSearch().getBirthYear();
+            Integer currYear = today.getYear() - ControllerBean.getSearch().getBirthYear();
             sb.append(ControllerBean.getSearch().getFullname());
             sb.append(" is ").append(currYear).append(" years old.");
             sb.append("<p></p>");

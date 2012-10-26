@@ -6,6 +6,7 @@ package Model;
 
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
+import java.util.HashSet;
 import org.bson.types.ObjectId;
 
 /**
@@ -25,6 +26,8 @@ public class PersistingAcademic {
     private int discipline1;
     private int discipline2;
     private int discipline3;
+    private int searchCount;
+    private HashSet<Affiliation> setAffiliations;
 
     public PersistingAcademic() {
     }
@@ -92,4 +95,22 @@ public class PersistingAcademic {
     public void setDiscipline3(int discipline3) {
         this.discipline3 = discipline3;
     }
+
+    public int getSearchCount() {
+        return searchCount;
+    }
+
+    public void setSearchCount(int searchCount) {
+        this.searchCount = searchCount;
+    }
+
+    public HashSet<Affiliation> getSetAffiliations() {
+        return setAffiliations;
+    }
+
+    public void setSetAffiliations(HashSet<Affiliation> setAffiliations) {
+        this.setAffiliations = setAffiliations;
+    }
+    
+    
 }

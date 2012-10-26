@@ -70,6 +70,8 @@ import org.xml.sax.InputSource;
 public class ControllerBean implements Serializable {
 
     private static Pair<String, Integer> mostFreqSource;
+    private static Query<PersistingAcademic> updateQueryPA;
+    private static UpdateOperations<PersistingAcademic> opsPA;
     DBCollection quidamDocsColl;
     DBCollection quidamPartnersColl;
     static public Datastore ds;
@@ -86,7 +88,7 @@ public class ControllerBean implements Serializable {
     static public boolean atleastOneMatchFound;
     static private ArrayList<Segment> segments;
     static String pageToNavigateTo;
-    static private Search search;
+    static private Author search;
     static private int count;
     static public HashSet<Author> mostFrequentCoAuthors;
     static public int nbDocs;
@@ -101,7 +103,6 @@ public class ControllerBean implements Serializable {
     static public TreeSet<MapLabels> setMapLabels;
     static public HashMap<String, Pair<Integer, Integer>> mapAuthorToDates;
     private boolean NYTfound;
-    static private Author currSearch = new Author();
     private Query<GlobalEditsCounter> updateQueryCounter;
     private UpdateOperations<GlobalEditsCounter> opsCounter;
     static private int tempBirthYear = 0;
@@ -191,17 +192,10 @@ public class ControllerBean implements Serializable {
 
         uuid = UUID.randomUUID();
         //PERSISTING THE MAIN FORENAME AND SURNAME;
-        search = new Search();
-
-        search.setDate();
-
+        search = new Author();
         search.setForename(forename);
-
         search.setSurname(surname);
-
         search.setUuid(uuid.toString());
-        ds.save(search);
-        search = ds.find(Search.class).field("uuid").equal(uuid.toString()).get();
 
 
         //-3
@@ -286,7 +280,7 @@ public class ControllerBean implements Serializable {
         //8 bis
         //extracts the author being currently researched from the set of Authors and puts it in a field in the controllerBean: currSearch
         AuthorsExtractor.extractCurrSearchedAuthor();
-        currSearch.setBirthYear(tempBirthYear);
+        search.setBirthYear(tempBirthYear);
 
 
         //9
@@ -309,12 +303,15 @@ public class ControllerBean implements Serializable {
                 System.out.println("No similarity found between pairs of names");
                 System.out.println("Navigating directly to the final check page");
                 computationsBeforeReport();
+                persistAcademic();
                 pageToNavigateTo = "finalcheck?faces-redirect=true";
             } else {
                 coAuthorsFound = false;
                 System.out.println("No co-author found");
                 System.out.println("Navigating directly to the report page");
                 computationsBeforeReport();
+                persistAcademic();
+
                 pageToNavigateTo = "report?faces-redirect=true";
             }
         }
@@ -387,7 +384,11 @@ public class ControllerBean implements Serializable {
         this.surname = StringUtils.capitalize(surname);
     }
 
-    public static Search getSearch() {
+    public static void setSearch(Author newAuthor) {
+        search = newAuthor;
+    }
+
+    public static Author getSearch() {
         return search;
     }
 
@@ -399,14 +400,6 @@ public class ControllerBean implements Serializable {
         this.wisdomCrowds = wisdomCrowds;
     }
 
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
     public static synchronized void pushCounter() {
 //        int count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
 //        System.out.println("counter in pushCounter method in ControllerBean is:" + count);
@@ -415,14 +408,6 @@ public class ControllerBean implements Serializable {
 //        System.out.println("string value of count: ");
 //        System.out.println("string value of count: " + String.valueOf(count).trim());
         count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
-    }
-
-    public void setNbDocs(int nbDocs) {
-        ControllerBean.nbDocs = nbDocs;
-    }
-
-    public int getNbDocs() {
-        return nbDocs;
     }
 
     public static int getMinYear() {
@@ -449,14 +434,6 @@ public class ControllerBean implements Serializable {
         return mostFreqSource;
     }
 
-    public static Author getCurrSearch() {
-        return currSearch;
-    }
-
-    public static void setCurrSearch(Author newCurrSearch) {
-        currSearch = newCurrSearch;
-    }
-
     public static int getTempBirthYear() {
         return tempBirthYear;
     }
@@ -478,30 +455,30 @@ public class ControllerBean implements Serializable {
 
         if (!map.isEmpty()) {
 
-            String previousUUID = (String) map.get("uuid");
-            Query q1 = ds.createQuery(Document.class).field("uuid").equal(previousUUID);
-            Query q2 = ds.createQuery(MapLabels.class).field("uuid").equal(previousUUID);
-            Query q3 = ds.createQuery(Segment.class).field("uuid").equal(previousUUID);
-
-            ds.delete(q1);
-
-            ds.delete(q2);
-
-            ds.delete(q3);
             String newSearch = (String) map.get("clickedAuthor");
 
-            if (newSearch.contains(
-                    ",")) {
+            if (newSearch.contains(",")) {
                 String[] fields = newSearch.split(",");
                 forename = fields[1].trim();
                 surname = fields[0].trim();
             }
 
-            map.remove(
-                    "clickedAuthor");
-            map.remove(
-                    "uuid");
+            map.remove("clickedAuthor");
+            map.remove("uuid");
 
         }
+    }
+
+    public static void persistAcademic() {
+        PersistingAcademic pa = new PersistingAcademic();
+        pa.setFullNameWithComma(search.getFullnameWithComma());
+        pa.setBirthYear(search.getBirthYear());
+        pa.setCountCoAuthors(setAuthors.size());
+        pa.setCountDocuments(setDocs.size());
+        pa.setSetAffiliations(search.getSetAffiliations());
+
+        updateQueryPA = ControllerBean.ds.createQuery(PersistingAcademic.class).field("fullNameWithComma").equal(search.getFullnameWithComma());
+        opsPA = ControllerBean.ds.createUpdateOperations(PersistingAcademic.class).inc("searchCount", 1);
+        ControllerBean.ds.update(updateQueryPA, opsPA, true);
     }
 }

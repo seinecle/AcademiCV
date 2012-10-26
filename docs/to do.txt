@@ -3,15 +3,16 @@ Peter Verleegh: problem with double spaces?
 add majus after hyphen
 
 minor features
-- add landing page when no co-author is found
 - add info when APIs where unresponsive
 - improve the name suggestion for Wouter De Nooy, Sarah De Rijcke and such
+- add a button to the last page to go back to first page, when no coauthors are found
 
 not so minor features
 - progress bar in the first page
 - add info about disciplines
 - persist statistics about age, affiliation and discipline: how many papers, how many co-authors, how many media mentions, 
 - add methodology section to the pdf report.
+- add an engine to identify 3 main disciplines of the researcher
 
 major features
 - localization

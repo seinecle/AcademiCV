@@ -5,17 +5,12 @@
 package BL.DocumentHandling;
 
 import Controller.ControllerBean;
-import Model.Affiliation;
 import Model.Author;
 import Model.Document;
-import Utils.Pair;
 import com.google.common.collect.HashMultiset;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  *
@@ -47,10 +42,9 @@ public class AuthorsExtractor {
         while (setAuthorsIterator.hasNext()) {
             currAuthor = setAuthorsIterator.next();
             if (currAuthor.getFullname().equals(ControllerBean.getSearch().getFullname())) {
-                mergedAuthor = AuthorMerger.mergeAuthors(currAuthor, ControllerBean.getCurrSearch());
-                ControllerBean.setCurrSearch(mergedAuthor);
+                mergedAuthor = AuthorMerger.mergeAuthors(currAuthor, ControllerBean.getSearch());
+                ControllerBean.setSearch(mergedAuthor);
             }
-        };
-
+        }
     }
 }
