@@ -10,6 +10,8 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.PdfWriter;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,7 +31,7 @@ import sun.misc.BASE64Decoder;
  */
 @ManagedBean
 @ViewScoped
-public class FileDownloadController implements Serializable {
+public class FileDownloadController {
 
     private StreamedContent file;
     private String dataURL;
@@ -59,32 +61,18 @@ public class FileDownloadController implements Serializable {
         BASE64Decoder decoder = new BASE64Decoder();
         byte[] decodedBytes;
         decodedBytes = decoder.decodeBuffer(dataURL.split("^data:image/(png|jpeg);base64,")[1]);
-
-        //TO SAVE THE CIRCLE JUST BY ITSELF
-//        BufferedImage imag = ImageIO.read(in);
-//        ImageIO.write(imag, "png", new File(filenameCircle));
-
-        //CREATES PDF DOC
-//        String filenamePDF = servletContext.getRealPath("report.pdf");
-
-//        PDDocument documentBox = new PDDocument();
-//        PDPage page = new PDPage();
-//        documentBox.addPage(page);
-//        PDFont font = PDType1Font.HELVETICA_BOLD;
-
-
-        //WRITES TEXT IN THE DOC
-//        contentStream.beginText();
-//        contentStream.setFont(font, 12);
-//        contentStream.moveTextPositionByAmount(100, 700);
-//        contentStream.drawString("Hello World");
-//        contentStream.endText();
-
-
-        //PUTS CIRCLE IN THE PDF
-
         InputStream in = new ByteArrayInputStream(decodedBytes);
-        BufferedImage pngBufferedImage = ImageIO.read(in);
+        BufferedImage src = ImageIO.read(in);
+        System.out.println("source width: " + src.getWidth());
+        System.out.println("source height: " + src.getHeight());
+        int FACTOR = 1;
+        BufferedImage dest = new BufferedImage(src.getWidth() / FACTOR, src.getWidth() / FACTOR,
+                BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = dest.createGraphics();
+        AffineTransform at = AffineTransform.getScaleInstance(
+                (double) 1 / FACTOR,
+                (double) 1 / FACTOR);
+        g.drawRenderedImage(src, at);
 
         Document document = new Document();
         ByteArrayOutputStream baosPDF = new ByteArrayOutputStream();
@@ -92,30 +80,25 @@ public class FileDownloadController implements Serializable {
         docWriter = PdfWriter.getInstance(document, baosPDF);
 
         document.open();
-        Image imgIText = Image.getInstance(pngBufferedImage, null);
+        Image imgIText = Image.getInstance(dest, null);
         imgIText.setAlignment(Element.ALIGN_CENTER);
 //        imgIText.setAbsolutePosition(Utilities.millimetersToPoints(30f), Utilities.millimetersToPoints(170f));
 
 
-        //this line are to resize the circle. The value of actualDpi can be modified.
-        float actualDpi = 640;
-        System.out.println("actual dpi: " + actualDpi);
-        if (actualDpi > 0) {
-            imgIText.scalePercent(72f / actualDpi * 100);
-        }
+        imgIText.scaleAbsolute(300, 300);
+//        imgIText.setCompressionLevel(9);
 
         document.add(ParagraphBuilder.getHeader());
         document.add(ParagraphBuilder.getSubHeader());
         document.add(imgIText);
         document.add(ParagraphBuilder.getCountPapers());
         document.add(ParagraphBuilder.getMostFrequentCoAuthor());
-        
+
         document.close();
         docWriter.close();
 
-                InputStream 
-        stream = new ByteArrayInputStream(baosPDF.toByteArray());
-        file = new DefaultStreamedContent(stream, "application/pdf", "report on rings.pdf");
+        InputStream stream = new ByteArrayInputStream(baosPDF.toByteArray());
+        file = new DefaultStreamedContent(stream, "application/pdf", "academicv "+ControllerBean.getSearch().getFullname());
 
 
         return file;

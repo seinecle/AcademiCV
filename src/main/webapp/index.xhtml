@@ -10,129 +10,96 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
     </h:head>
     <h:body>
-        <p:layout id="idLayout" fullPage="true">
-            <p:layoutUnit id="idLayoutUnit" position="center">
+        <!--        <p:layout id="idLayout" fullPage="true">
+                    <p:layoutUnit id="idLayoutUnit" position="center">-->
 
-                <p:socket channel="/counter" >
-                    <p:ajax event="message" update="editCounterId" />
-                </p:socket>
+        <p:socket channel="/counter" >
+            <p:ajax event="message" update="editCounterId" />
+        </p:socket>
 
-                <div id ="bannerTitleBackground"></div>
-                <div id ="bannerTitle">
-                    <h:outputText  style="padding-left: 5px;" value="Rings of Scholarship">
-                        <p:effect type="pulsate" event="click" />
-                    </h:outputText>
-                    <br></br>
+        <div id ="bannerTitleBackground"></div>
+        <div id ="bannerTitle">
+            <h:outputText  style="padding-left: 5px;" value="academiCV">
+                <p:effect type="pulsate" event="click" />
+            </h:outputText>
+            <br></br>
+
+        </div>
+        <h:panelGroup id ="editCounterId" style="    background-color:rgba(0,0,0,0);
+                      position:fixed;
+                      top:1%;
+                      left:1%;
+                      text-align: left;
+                      font-size: 100%;
+                      margin: 0px auto;
+                      width:96%;
+                      height:80px;
+                      padding-left: 50px;
+                      padding-top: 70px;
+                      z-index: 2;
+                      ">
+            <h:outputText  style="padding-left: 5px;" value="counter of edits made by the community: #{controllerBean.getCount()}" rendered ="#{controllerBean.wisdomCrowds}"/>
+            <br></br>
+            <h:form>
+                <p:commandButton value="Feedback? Here!" onclick="bar.show()" type="button" />  
+            </h:form>
+
+        </h:panelGroup>
+
+        <h:form id ="formId">
+
+            <div id="containerOutside">
+                <h:outputText styleClass="ui-widget" style="padding-left: 5px;" value="1. Fill in the name of a researcher "/>
+
+                <div id="container">
+
+                    <h:inputText id ="foreName" value="#{controllerBean.forename}" size="40"/><br/>
+                    <p:watermark for="foreName" value="First name(s)" />
+                    <br/>
+
+                    <h:inputText id="surName" value="#{controllerBean.surname}" size="40"/><br/>
+                    <p:watermark for="surName" value="Last name" />
+                    <br/>
+
+                    <h:outputText styleClass="ui-widget" style="padding-left: 5px;vertical-align:20%;" value="benefit from the wisdom of the crowds" rendered ="#{controllerBean.wisdomCrowds}"/>
+                    <h:outputText styleClass="ui-widget" style="padding-left: 5px;vertical-align:20%;" value="you do not benefit from the wisdom of the crowds." rendered ="#{!controllerBean.wisdomCrowds}"/>
+                    <p:spacer width="10"></p:spacer>
+                    <p:selectBooleanCheckbox id="wisdom" value="#{controllerBean.wisdomCrowds}">
+                        <p:ajax update=":editCounterId"/>
+                    </p:selectBooleanCheckbox>
+                    <br/>
+                    <br/>
+
+                    <p:commandButton action="#{controllerBean.launchNewSearch}"
+                                     title="Add"
+                                     value="create academiCV"
+                                     />
+                    <p:progressBar widgetVar="pbAjax" ajax="true" value="#{controllerBean.progress}" labelTemplate="{value}%" styleClass="animated"/> 
 
                 </div>
-                <h:panelGroup id ="editCounterId" style="    background-color:rgba(0,0,0,0);
-                              position:fixed;
-                              top:1%;
-                              left:1%;
-                              text-align: left;
-                              font-size: 100%;
-                              margin: 0px auto;
-                              width:96%;
-                              height:80px;
-                              padding-left: 50px;
-                              padding-top: 70px;
-                              z-index: 2;
-                              ">
-                    <h:outputText  style="padding-left: 5px;" value="counter of edits made by the community: #{controllerBean.count}" rendered ="#{controllerBean.wisdomCrowds}"/>
-                </h:panelGroup>
-
-                <h:form id ="formId">
-
-                    <div id="containerOutside">
-                        <h:outputText styleClass="ui-widget" style="padding-left: 5px;" value="1. Fill in the name of a researcher "/>
-
-                        <div id="container">
-
-                            <h:inputText id ="foreName" value="#{controllerBean.forename}" size="40"/><br/>
-                            <p:watermark for="foreName" value="First name(s)" />
-                            <br/>
-
-                            <h:inputText id="surName" value="#{controllerBean.surname}" size="40"/><br/>
-                            <p:watermark for="surName" value="Last name" />
-                            <br/>
-
-                            <h:outputText styleClass="ui-widget" style="padding-left: 5px;vertical-align:20%;" value="use the wisdom of the crowd"/>
-                            <p:spacer width="10"></p:spacer>
-                            <p:selectBooleanCheckbox id="wisdom" value="#{controllerBean.wisdomCrowds}">
-                                <p:ajax update=":editCounterId"/>
-                            </p:selectBooleanCheckbox>
-                            <br/>
-                            <br/>
-
-                            <p:commandButton action="#{controllerBean.launchNewSearch}" 
-                                             title="Add"
-                                             value="create ring of scholarship"
-                                             ajax="false"/>
-                        </div>
 
 
-                    </div>
-                    <div id="credits">
-                        <p:commandLink onclick="cd.show()">
-                            <h:outputText style="left:25%;top:510px;" value="  credits" />
-                        </p:commandLink>
-                    </div>
+            </div>
+            <div id="credits">
+                <p:commandLink onclick="cd.show()">
+                    <h:outputText style="left:25%;top:510px;" value="  credits" />
+                </p:commandLink>
 
-                </h:form>
+            </div>
 
-                <!--                <p:lightBox visible ="false">
-                                    <h:outputLink value="#" title="Leo Messi" >
-                                        <h:outputText value="The Messiah"/>
-                                    </h:outputLink>
-                                    <f:facet name="inline">
-                                        <h:outputText value="Rings is created by "/>
-                                        <h:commandLink actionListener="http://www.clementlevallois.net">
-                                            <h:outputText value="Clement Levallois" />
-                                        </h:commandLink>
-                                        <h:outputText value=" and is inspired by a collaboration with "/>
-                                        <h:commandLink actionListener="http://www.erim.eur.nl/people/wilfred-mijnhardt/">
-                                            <h:outputText value="Wilfred Minjhardt" />
-                                        </h:commandLink>
-                                        <p></p>
-                                        <h:outputText value="Bibliographical references are provided by"/>
-                                        <h:commandLink actionListener="http://www.mendeley.com">
-                                            <h:outputText value="Mendeley" />
-                                        </h:commandLink>
-                                        <h:outputText value="."/>
-                                        <p></p>
-                                        <h:outputText value="The drawing of the ring is made with "/>
-                                        <h:commandLink actionListener="http://processingjs.org/">
-                                            <h:outputText value="Processing" />
-                                        </h:commandLink>
-                                        <h:outputText value=" (and was inspired by"/>
-                                        <h:commandLink actionListener="http://circos.ca/">
-                                            <h:outputText value="Circos" />
-                                        </h:commandLink>
-                                        <h:outputText value=")."/>
-                                        <p></p>
-                                        <h:outputText value="On the tech side:"/><br></br>
-                                        <h:commandLink actionListener="http://glassfish.java.net/">
-                                            <h:outputText value="Glassfish" />
-                                        </h:commandLink>
-                                        <h:outputText value=" (server technology)."/>
-                                        <br></br>
-                                        <h:commandLink actionListener="http://glassfish.java.net/">
-                                            <h:outputText value="Primefaces" />
-                                        </h:commandLink>
-                                        <h:outputText value=" (web design)."/>
-                                        <br></br>
-                                        <h:commandLink actionListener="http://code.google.com/p/morphia/">
-                                            <h:outputText value="MongoDB and Morphia" />
-                                        </h:commandLink>
-                                        <h:outputText value=" (database)."/>
-                                        <p></p>
-                                    </f:facet>
-                                </p:lightBox>-->
+        </h:form>
 
-            </p:layoutUnit>
+        <p:notificationBar position="bottom" effect="slide" widgetVar="bar">  
+            <h:form>
+                <h:outputText value="Any comment you have, really!" style=" font-size:15px;" /><br></br>  
+                <p:inputTextarea value="#{controllerBean.feedback}" rows="2" cols="90" />
+                <p:commandButton value="Save" onclick="submit(); bar.hide();" type="button"/>  
+            </h:form>
+        </p:notificationBar>  
 
-        </p:layout>
+
         <h:form>
+
             <p:confirmDialog id ="dialogBox" message= ""
                              header="credits"
                              widgetVar="cd"

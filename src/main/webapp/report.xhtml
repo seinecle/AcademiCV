@@ -61,7 +61,7 @@
         <script type="text/javascript">
             function handleOutcome(event){
                 var canvas = document.getElementById("canvasPDF");
-                var dataURL    = canvas.toDataURL("image/png");
+                var dataURL    = canvas.toDataURL("image/jpeg",0.9);
                 var hidden = document.getElementById('form:dataURL');
                 hidden.value = dataURL;
 
@@ -72,8 +72,8 @@
     <h:body>
 
 
-        <h1>Report for #{controllerBean.forename} #{controllerBean.surname}</h1>
-        <p>#{controllerBean.getCurrSearch().mostRecentAffiliation}</p>
+        <h1>academiCV for #{controllerBean.forename} #{controllerBean.surname}</h1>
+        <p>#{controllerBean.getSearch().mostRecentAffiliation}</p>
 
         <h:form id ="form">
             <h:inputHidden id="dataURL" value="#{fileDownloadController.dataURL}" />
@@ -82,7 +82,20 @@
                              icon="ui-icon-arrowthichk-s">  
                 <p:fileDownload value="#{fileDownloadController.file}" />  
             </p:commandButton>  
+            <br></br>
+            <p:commandButton value="Feedback? Here!" onclick="bar.show()"/>  
+            <br></br>
+            <p:commandButton value="New Search" action="index?faces-redirect=true" rendered="#{!controllerBean.wereThereCoAuthorsFound()}" />  
+
         </h:form>
+        <p:notificationBar position="bottom" effect="slide" widgetVar="bar">  
+            <h:outputText value="Any comment you have, really!" style=" font-size:15px;" />  
+            <h:inputText value="#{controllerBean.feedback}"/>  
+        </p:notificationBar>  
+
+        <div style="#{controllerBean.wereThereCoAuthorsFound()}margin-left: auto; margin-right: auto;text-align: center;width:800px">
+            <p><b>(see also the report below the circle)</b></p>
+        </div>
 
         <div id="container" style="#{controllerBean.wereThereCoAuthorsFound()}margin-left: auto; margin-right: auto;width:900px"></div>
         <div style="#{controllerBean.wereThereCoAuthorsFound()}margin-left: auto; margin-right: auto;text-align: center;width:800px">
@@ -105,20 +118,28 @@
 
         <h:form id="form2" prependId="false">
             <p:remoteCommand name="sendNameClicked" actionListener="#{reportBean.passName}"/>
-            <p:remoteCommand name="updateDialog" update="dialogBox"/>
-
-            <p:commandButton style="display: none" id="displayDialog" type="button" onclick="cd.show();"/>
-
+            <p:remoteCommand name="updateDialog" update=":form3:dialogBox" oncomplete="cd.show();"/>
+        </h:form>
+        <h:form id="form3">
             <p:confirmDialog id ="dialogBox" message= "#{reportBean.getClickedAuthorLaius()}"
                              header="#{reportBean.nameClicked}#{reportBean.authorClicked.mostRecentAffiliation}"
                              widgetVar="cd"
-                             severity="info">
+                             severity="info"
+                             >
                 <h:outputText styleClass="ui-widget"  value="" escape="false" />
                 <p:commandButton value="Draw the ring of #{reportBean.obtainFullName()}?" actionListener ="#{controllerBean.prepareNewSearch()}" action ="index?faces-redirect=true" oncomplete="cd.hide();"/>
                 <p:commandButton value="No, stay on this page" onclick="cd.hide();" type="button" />
             </p:confirmDialog>
-
         </h:form>
+
+        <p:notificationBar position="bottom" effect="slide" widgetVar="bar">  
+            <h:form>
+                <h:outputText value="Any comment you have, really!" style=" font-size:15px;" /><br></br>  
+                <p:inputTextarea value="#{controllerBean.feedback}" rows="2" cols="90" />
+                <p:commandButton value="Save" onclick="bar.hide();" type="button"/>  
+            </h:form>
+        </p:notificationBar>  
+
 
 
 

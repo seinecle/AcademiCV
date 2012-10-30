@@ -203,7 +203,9 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
             System.out.println("document added to the set");
             System.out.println("(title is:");
             System.out.println(currDoc.getTitle());
-            ControllerBean.setDocs.add(currDoc);
+            if (currDoc.getYear() != null & currDoc.getTitle() != null & currDoc.getAuthors() != null) {
+                ControllerBean.setDocs.add(currDoc);
+            }
 
 
             currTitle = null;

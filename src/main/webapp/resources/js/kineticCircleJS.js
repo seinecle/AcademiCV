@@ -471,8 +471,6 @@ function addSegments(json){
             }]);
             updateDialog();
         
-            setTimeout(displayDialogJS,150);
-            
         });
 
 
@@ -480,9 +478,6 @@ function addSegments(json){
         layerLabelSegments.add(labelsArr[i]);
     }
     
-    function displayDialogJS(){
-        document.getElementById('displayDialog').click();
-    }
 
     function getCurrClickedAuthor(){
         return currClickedAuthor;

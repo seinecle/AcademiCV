@@ -99,7 +99,7 @@ void draw() {
 
 
         //RESIZE SKETCH ACCORDINGLY
-        SKETCH_WIDTHf = 3200f + nbSegments*7;
+        SKETCH_WIDTHf = 600f + nbSegments*7;
         SKETCH_HEIGTHf = SKETCH_WIDTHf;
         SKETCH_CENTER_X = SKETCH_WIDTHf / 2;
         SKETCH_CENTER_Y = SKETCH_HEIGTHf / 2;

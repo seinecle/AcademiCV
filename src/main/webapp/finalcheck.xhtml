@@ -11,81 +11,85 @@
     </h:head>
     <h:body style ="width:100%">
 
-<!--        <script type="text/javascript">
-            function handleMessage(data) {
-                console.log("in the handle function");
-                $('.testPush').html("live counter of edits made by the community: "+data);
-            }
-        </script>-->
+        <!--        <script type="text/javascript">
+                    function handleMessage(data) {
+                        console.log("in the handle function");
+                        $('.testPush').html("live counter of edits made by the community: "+data);
+                    }
+                </script>-->
 
-        <p:layout id="idLayout" fullPage="true">
-            <p:layoutUnit id="idLayoutUnit" position="center">
 
-                <div id ="bannerTitleBackground"></div>
-                <div id ="bannerTitle">
-                    <h:outputText  style="padding-left: 5px;" value="Rings of Scholarship"/>
+        <div id ="bannerTitleBackground"></div>
+        <div id ="bannerTitle">
+            <h:outputText  style="padding-left: 5px;" value="academiCV"/>
+        </div>
+        <h:panelGroup id ="editCounterId" style="    background-color:rgba(0,0,0,0);
+                      position:fixed;
+                      top:1%;
+                      left:1%;
+                      text-align: left;
+                      font-size: 100%;
+                      margin: 0px auto;
+                      width:96%;
+                      height:80px;
+                      padding-left: 50px;
+                      padding-top: 70px;
+                      z-index: 2;
+                      ">
+            <h:outputText  style="padding-left: 5px;" value="counter of edits made by the community: #{controllerBean.getCount()}" rendered ="#{controllerBean.wisdomCrowds}" styleClass="testPush"/>
+<br></br>
+            <p:commandButton value="Feedback? Here!" onclick="bar.show()" type="button" />  
+
+        </h:panelGroup>
+        <h:form id ="formId">
+
+            <div id="containerOutside">
+                <h:outputText styleClass="ui-widget" style="padding-left: 5px;" value="3. Final step: a last chance to correct mispellings and delete irrelevant terms"/>
+                <h:commandButton value="next" title="next" action="#{finalCheckBean.moveon()}" style="width:100px;float:right;margin-top: -15px;"/>
+                <div id="containerShow">
+                    <p:dataTable id ="dataId" value ="#{finalCheckBean.listCheckedLabels}" var ="m" scrollable ="true" scrollHeight="250">
+
+                        <p:column headerText="edit" width="100" style="font-size: 50%;">
+                            <h:panelGroup id="editCol">
+                                <p:selectBooleanCheckbox value="#{m.editable}" >
+                                    <f:ajax execute="editCol :formId:dataId:authorCol" render="editCol :formId:dataId:authorCol" />
+                                </p:selectBooleanCheckbox>
+                            </h:panelGroup>
+
+                        </p:column>
+
+                        <p:column headerText="Name of researcher" width="220" style="font-size: 50%;">
+                            <h:panelGroup id="authorCol"  >
+                                <p:inputText value="#{m.label3}" style="font-size: 200%;" rendered="#{m.editable}" size="40"/>
+                                <h:outputText value="#{m.label2}" style="font-size: 200%;text-align: center;" rendered="#{not m.editable}"/>
+                                <p:commandButton value="save edits" style="font-size: 180%;width:150px;" rendered="#{m.editable}" action ="#{finalCheckBean.saveedits()}" update="@form :editCounterId">
+                                </p:commandButton>
+                            </h:panelGroup>
+                        </p:column>
+
+                        <p:column headerText="delete" width="100" style="font-size: 50%;">
+                            <h:panelGroup id="deleteCol">
+                                <p:selectBooleanCheckbox value="#{m.deleted}">
+                                    <f:ajax execute ="@form" render="@form"/>
+                                </p:selectBooleanCheckbox>
+                                <p:commandButton value="delete row(s)?" style="font-size: 180%;width:150px;" rendered="#{m.deleted}" action ="#{finalCheckBean.deleteRow()}" update ="@form :editCounterId">
+                                </p:commandButton>
+                            </h:panelGroup>
+                        </p:column>
+                    </p:dataTable>
+
                 </div>
-                <h:panelGroup id ="editCounterId" style="    background-color:rgba(0,0,0,0);
-                              position:fixed;
-                              top:1%;
-                              left:1%;
-                              text-align: left;
-                              font-size: 100%;
-                              margin: 0px auto;
-                              width:96%;
-                              height:80px;
-                              padding-left: 50px;
-                              padding-top: 70px;
-                              z-index: 2;
-                              ">
-                    <h:outputText  style="padding-left: 5px;" value="counter of edits made by the community: #{controllerBean.count}" rendered ="#{controllerBean.wisdomCrowds}" styleClass="testPush"/>
+            </div>
 
+        </h:form>
+        <p:notificationBar position="bottom" effect="slide" widgetVar="bar">  
+            <h:form>
+                <h:outputText value="Any comment you have, really!" style=" font-size:15px;" /><br></br>  
+                <p:inputTextarea value="#{controllerBean.feedback}" rows="2" cols="90" />
+                <p:commandButton value="Save" onclick="bar.hide();" type="button"/>  
+            </h:form>
+        </p:notificationBar>  
 
-                </h:panelGroup>
-                <h:form id ="formId">
-
-                    <div id="containerOutside">
-                        <h:outputText styleClass="ui-widget" style="padding-left: 5px;" value="3. Final step: a last chance to correct mispellings and delete irrelevant terms"/>
-                        <h:commandButton value="next" title="next" action="#{finalCheckBean.moveon()}" style="width:100px;float:right;margin-top: -15px;"/>
-                        <div id="containerShow">
-                            <p:dataTable id ="dataId" value ="#{finalCheckBean.listCheckedLabels}" var ="m" scrollable ="true" scrollHeight="250">
-
-                                <p:column headerText="edit" width="100" style="font-size: 50%;">
-                                    <h:panelGroup id="editCol">
-                                        <p:selectBooleanCheckbox value="#{m.editable}" >
-                                            <f:ajax execute="editCol :formId:dataId:authorCol" render="editCol :formId:dataId:authorCol" />
-                                        </p:selectBooleanCheckbox>
-                                    </h:panelGroup>
-
-                                </p:column>
-
-                                <p:column headerText="Name of researcher" width="220" style="font-size: 50%;">
-                                    <h:panelGroup id="authorCol"  >
-                                        <p:inputText value="#{m.label3}" style="font-size: 200%;" rendered="#{m.editable}" size="40"/>
-                                        <h:outputText value="#{m.label2}" style="font-size: 200%;text-align: center;" rendered="#{not m.editable}"/>
-                                        <p:commandButton value="save edits" style="font-size: 180%;width:150px;" rendered="#{m.editable}" action ="#{finalCheckBean.saveedits()}" update="@form :editCounterId">
-                                        </p:commandButton>
-                                    </h:panelGroup>
-                                </p:column>
-
-                                <p:column headerText="delete" width="100" style="font-size: 50%;">
-                                    <h:panelGroup id="deleteCol">
-                                        <p:selectBooleanCheckbox value="#{m.deleted}">
-                                            <f:ajax execute ="@form" render="@form"/>
-                                        </p:selectBooleanCheckbox>
-                                        <p:commandButton value="delete row(s)?" style="font-size: 180%;width:150px;" rendered="#{m.deleted}" action ="#{finalCheckBean.deleteRow()}" update ="@form :editCounterId">
-                                        </p:commandButton>
-                                    </h:panelGroup>
-                                </p:column>
-                            </p:dataTable>
-
-                        </div>
-                    </div>
-
-                </h:form>
-            </p:layoutUnit>
-
-        </p:layout> 
 
     </h:body>
 </html>

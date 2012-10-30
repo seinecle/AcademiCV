@@ -96,6 +96,9 @@ public class Quidam implements Comparable<Quidam>, Serializable {
         } else {
             fullnameWithCommaToReturn = this.fullnameWithComma.trim();
         }
+        if (fullnameWithCommaToReturn == null) {
+            fullnameWithCommaToReturn = "no name returned by the fullNameWithComma method on Author";
+        }
         return fullnameWithCommaToReturn;
     }
 
@@ -105,10 +108,10 @@ public class Quidam implements Comparable<Quidam>, Serializable {
 //            this.fullname = newFullnameWithComma;
 //        } 
 //        else {
-            this.fullnameWithComma = newFullnameWithComma;
-            this.forename = arrayTerms[1].trim();
-            this.surname = arrayTerms[0].trim();
-            this.fullname = arrayTerms[1].trim() + " " + arrayTerms[0].trim();
+        this.fullnameWithComma = newFullnameWithComma;
+        this.forename = arrayTerms[1].trim();
+        this.surname = arrayTerms[0].trim();
+        this.fullname = arrayTerms[1].trim() + " " + arrayTerms[0].trim();
 //        }
     }
 

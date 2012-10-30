@@ -1,6 +1,7 @@
 bug fixes
 Peter Verleegh: problem with double spaces?
 add majus after hyphen
+heap size exception for pdfs
 
 minor features
 - add info when APIs where unresponsive

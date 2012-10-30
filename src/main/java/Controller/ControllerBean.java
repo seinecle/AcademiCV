@@ -28,7 +28,7 @@ import Model.GlobalEditsCounter;
 import Model.MapLabels;
 import Model.PersistingAcademic;
 import Model.PersistingEdit;
-import Model.Search;
+import Model.PersistingFeedback;
 import Utils.Clock;
 import Utils.Pair;
 import com.google.code.morphia.Datastore;
@@ -37,6 +37,7 @@ import com.google.code.morphia.query.Query;
 import com.google.code.morphia.query.UpdateOperations;
 import com.google.common.collect.HashMultiset;
 import com.google.gson.Gson;
+import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
@@ -57,6 +58,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.InputSource;
@@ -82,7 +84,7 @@ public class ControllerBean implements Serializable {
     public static TreeMap<Author, Author> mapCloseMatches;
     private String forename;
     private String surname;
-    public boolean wisdomCrowds;
+    public boolean wisdomCrowds = true;
     static private String json;
     static public UUID uuid;
     static public boolean atleastOneMatchFound;
@@ -107,14 +109,18 @@ public class ControllerBean implements Serializable {
     private UpdateOperations<GlobalEditsCounter> opsCounter;
     static private int tempBirthYear = 0;
     static private boolean coAuthorsFound = true;
+    private String feedback;
+    private int progress;
 
     @PostConstruct
     private void init() {
         try {
+            AdminPanel.setLocalMode(AdminPanel.isDebug_local());
             Mongo m;
+            Morphia morphia;
 
 
-//            JELASTIC SETTINGS  
+            //JELASTIC SETTINGS  
 //            Properties prop = new Properties();
 //            prop.load(new FileInputStream(System.getProperty("user.home") + "/mydb.cfg"));
 //            String host = prop.getProperty("host").toString();
@@ -122,7 +128,7 @@ public class ControllerBean implements Serializable {
 //            String user = prop.getProperty("user").toString();
 //            String password = prop.getProperty("password").toString();
 //            System.out.println("host: " + host + "\ndbname: " + dbname + "\nuser: " + user + "\npassword: " + password);
-
+//
 //            m = new Mongo(host, 27017);
 //            DB db = m.getDB(dbname);
 //            if (db.authenticate(user, password.toCharArray())) {
@@ -131,14 +137,28 @@ public class ControllerBean implements Serializable {
 //                System.out.println("Connection failed");
 //            }
 
+            if (AdminPanel.isDebug_local()) {
 //             LOCAL SETTINGS
-            m = new Mongo();
+                m = new Mongo();
+                morphia = new Morphia();
+                ds = morphia.createDatastore(m, "test");
 
-            Morphia morphia = new Morphia();
+//
+            } else {
+                //CLOUDBEES SETTINGS
+                m = new Mongo("alex.mongohq.com", 10003);
+                morphia = new Morphia();
+                ds = morphia.createDatastore(m, Utils.APIkeys.getMongoHQDatabaseName(), "seinecle", Utils.APIkeys.getMongoHQDatabasePassWord().toCharArray());
+                if (ds != null) {
+                    System.out.println("Morphia datastore on CloudBees / MongoHQ created!!!!!!!");
+                }
+            }
+
             morphia.map(GlobalEditsCounter.class);
             morphia.map(PersistingAcademic.class);
             morphia.map(PersistingEdit.class);
-            ds = morphia.createDatastore(m, "academicvLocal");
+            morphia.map(PersistingFeedback.class);
+
             GlobalEditsCounter gec = ds.find(GlobalEditsCounter.class).get();
             if (gec == null) {
                 count = 0;
@@ -177,6 +197,7 @@ public class ControllerBean implements Serializable {
         NYTDocs = null;
         nbMendeleyDocs = 0;
         nbArxivDocs = 0;
+        setProgress(50);
 
 
         //Cleans a bit the user input
@@ -209,6 +230,7 @@ public class ControllerBean implements Serializable {
         WorldCatAPIController worldcat = new WorldCatAPIController();
         worldcat.run();
         gettingWorldCat.closeAndPrintClock();
+        setProgress(10);
 
         //0
         // Calling the Arxiv database and persisting the docs in a standardized form
@@ -217,6 +239,7 @@ public class ControllerBean implements Serializable {
         new ArxivAPIresponseParser(readerArxivResults).parse();
         System.out.println("nb Arxiv docs found: " + nbArxivDocs);
         gettingArxivData.closeAndPrintClock();
+        setProgress(20);
 
 
         //1
@@ -227,6 +250,7 @@ public class ControllerBean implements Serializable {
         System.out.println("nb Mendeley docs found: " + nbMendeleyDocs);
 
         gettingMendeleyData.closeAndPrintClock();
+        setProgress(30);
 
         //2
         // Calling the NYT API
@@ -400,6 +424,10 @@ public class ControllerBean implements Serializable {
         this.wisdomCrowds = wisdomCrowds;
     }
 
+    public static int getCount() {
+        return count;
+    }
+
     public static synchronized void pushCounter() {
 //        int count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
 //        System.out.println("counter in pushCounter method in ControllerBean is:" + count);
@@ -450,6 +478,18 @@ public class ControllerBean implements Serializable {
         }
     }
 
+    public static TreeSet<CloseMatchBean> getSetCloseMatches() {
+        return setCloseMatches;
+    }
+
+    public int getProgress() {
+        return progress;
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
+    }
+
     public void prepareNewSearch() {
         Map<String, Object> map = FacesContext.getCurrentInstance().getExternalContext().getApplicationMap();
 
@@ -480,5 +520,35 @@ public class ControllerBean implements Serializable {
         updateQueryPA = ControllerBean.ds.createQuery(PersistingAcademic.class).field("fullNameWithComma").equal(search.getFullnameWithComma());
         opsPA = ControllerBean.ds.createUpdateOperations(PersistingAcademic.class).inc("searchCount", 1);
         ControllerBean.ds.update(updateQueryPA, opsPA, true);
+    }
+
+    public String getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(String feedback) {
+        this.feedback = feedback;
+        StringBuilder toBePersisted = new StringBuilder();
+        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        String userAgent = externalContext.getRequestHeaderMap().get("User-Agent");
+        if (search != null) {
+            toBePersisted.append("\nSEARCH:");
+            toBePersisted.append("\n");
+            toBePersisted.append(ControllerBean.getSearch().getFullnameWithComma());
+        }
+        toBePersisted.append("\nBROWSER: ");
+        toBePersisted.append("\n");
+        toBePersisted.append(userAgent);
+        toBePersisted.append("\nCURRENT PAGE: ");
+        toBePersisted.append("\n");
+        toBePersisted.append(FacesContext.getCurrentInstance().getViewRoot().getViewId());
+        toBePersisted.append("\nCOMMENT: ");
+        toBePersisted.append("\n");
+        toBePersisted.append(this.feedback);
+        PersistingFeedback pf = new PersistingFeedback();
+        pf.setComment(toBePersisted.toString());
+        ControllerBean.ds.save(pf);
+        System.out.println("feedback persisted: " + toBePersisted.toString());
+
     }
 }

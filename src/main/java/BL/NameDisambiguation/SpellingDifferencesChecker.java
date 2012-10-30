@@ -173,7 +173,8 @@ public class SpellingDifferencesChecker {
                 setCloseMatches.add(new Author(cmb.getAuthor2()));
 
                 //PERSIST CLOSE MATCHES
-                ControllerBean.ds.save(cmb);
+//                ControllerBean.ds.save(cmb);
+                ControllerBean.setCloseMatches.add(cmb);
 
             }
         }
@@ -201,7 +202,6 @@ public class SpellingDifferencesChecker {
                 }
             }
         }
-
 
 
         return atLeastOneMatchFound;

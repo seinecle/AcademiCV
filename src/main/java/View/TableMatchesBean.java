@@ -58,7 +58,8 @@ public class TableMatchesBean implements Serializable {
 
 
             //RETRIEVE MATCHES FROM THIS UUID
-            setClosematchesOriginal.addAll(ControllerBean.ds.find(CloseMatchBean.class).field("uuid").equal(ControllerBean.uuid.toString()).asList());
+//            setClosematchesOriginal.addAll(ControllerBean.ds.find(CloseMatchBean.class).field("uuid").equal(ControllerBean.uuid.toString()).asList());
+            setClosematchesOriginal = ControllerBean.getSetCloseMatches();
 
             System.out.println("number of ambiguous cases, retrieved from DB: " + setClosematchesOriginal.size());
 
@@ -210,7 +211,11 @@ public class TableMatchesBean implements Serializable {
                     updateQuery.field("originalForm").equal(closeMatch.getAuthor2());
                     updateQuery.field("editedForm").equal(mergedAuthor);
                     ops = ControllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
-                    ControllerBean.ds.update(updateQuery, ops, true);
+                    try {
+                        ControllerBean.ds.update(updateQuery, ops, true);
+                    } catch (com.mongodb.MongoException e) {
+                        System.out.println("exception with MongoDB when saving the mergedAuthor");
+                    }
 
                     updateQueryCounter = ControllerBean.ds.createQuery(GlobalEditsCounter.class);
                     opsCounter = ControllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 1);
