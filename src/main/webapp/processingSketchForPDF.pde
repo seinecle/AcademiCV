@@ -99,7 +99,7 @@ void draw() {
 
 
         //RESIZE SKETCH ACCORDINGLY
-        SKETCH_WIDTHf = 600f + nbSegments*7;
+        SKETCH_WIDTHf = 1200f + nbSegments*7;
         SKETCH_HEIGTHf = SKETCH_WIDTHf;
         SKETCH_CENTER_X = SKETCH_WIDTHf / 2;
         SKETCH_CENTER_Y = SKETCH_HEIGTHf / 2;
@@ -108,7 +108,7 @@ void draw() {
         size(SKETCH_WIDTHf, SKETCH_HEIGTHf);
 
         //TEXT SIZE
-        textSize(50);
+        textSize(20+ (SKETCH_WIDTHf-1200)/100 - nbSegments/20);
 
 
         //CIRCLE SIZE

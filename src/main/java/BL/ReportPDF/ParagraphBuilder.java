@@ -36,7 +36,7 @@ public class ParagraphBuilder {
         Paragraph header = new Paragraph();
         header.setFont(HEADERFONT);
         header.setAlignment(Element.ALIGN_CENTER);
-        header.add(new Chunk("Report for "));
+        header.add(new Chunk("AcademiCV for "));
         header.add(new Chunk(ControllerBean.getSearch().getFullname()));
         return header;
     }
