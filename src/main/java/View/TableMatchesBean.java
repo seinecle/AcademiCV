@@ -61,7 +61,7 @@ public class TableMatchesBean implements Serializable {
 //            setClosematchesOriginal.addAll(ControllerBean.ds.find(CloseMatchBean.class).field("uuid").equal(ControllerBean.uuid.toString()).asList());
             setClosematchesOriginal = ControllerBean.getSetCloseMatches();
 
-            System.out.println("number of ambiguous cases, retrieved from DB: " + setClosematchesOriginal.size());
+            System.out.println("number of ambiguous cases: " + setClosematchesOriginal.size());
 
             ControllerBean.pushCounter();
 
