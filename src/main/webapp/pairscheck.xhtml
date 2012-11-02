@@ -9,7 +9,7 @@
         </link>
         <h:outputStylesheet name="css/default.css" />
         <h:outputStylesheet name="css/show.css" />
-        <title>Ring - data cleaning</title>
+        <title>AcademiCV - data cleaning</title>
     </h:head>
 
     <h:body style ="width:100%">
@@ -105,15 +105,13 @@
                     <strong>not sure / just testing</strong>: when you have a doubt about which option is correct. Choose this option to avoid making incorrect suggestions.
                 </p>
             </div>
-        </h:form>
 
-        <p:notificationBar position="bottom" effect="slide" widgetVar="bar">  
-            <h:form>
+            <p:notificationBar position="bottom" effect="slide" widgetVar="bar">  
                 <h:outputText value="Any comment you have, really!" style=" font-size:15px;" /><br></br>  
                 <p:inputTextarea value="#{controllerBean.feedback}" rows="2" cols="90" />
                 <p:commandButton value="Save" onclick="bar.hide();" type="button"/>  
-            </h:form>
-        </p:notificationBar>  
+            </p:notificationBar>  
+        </h:form>
 
         <!--<p:socket onMessage="handleMessage" channel="/counter" />-->
         <!--        <p:socket channel="/counter" >
