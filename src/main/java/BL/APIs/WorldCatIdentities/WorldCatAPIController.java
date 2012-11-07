@@ -5,27 +5,35 @@
 package BL.APIs.WorldCatIdentities;
 
 import Controller.ControllerBean;
+import Utils.Clock;
+import View.ProgressBarMessenger;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.concurrent.Callable;
 import org.xml.sax.InputSource;
 
 /**
  *
  * @author C. Levallois
  */
-public class WorldCatAPIController {
+public class WorldCatAPIController implements Callable, Serializable {
 
-    private static InputSource worldcatInputSource;
-    private static int currBirthYear;
+    private InputSource worldcatInputSource;
+    private int currBirthYear;
 
     public WorldCatAPIController() {
     }
 
-    public void run() throws Exception {
+    @Override
+    public Integer call() throws Exception {
+        Clock gettingWorldCat = new Clock("calling WorldCat...");
+
         currBirthYear = 0;
         worldcatInputSource = WorldCatAPICaller.run(ControllerBean.getSearch().getForename(), ControllerBean.getSearch().getSurname());
         HashSet<String> setIdentities = new WorldCatAPIresponseParser(worldcatInputSource).parse();
         System.out.println("nb of identities found: " + setIdentities.size());
+        ProgressBarMessenger.updateMsg("hello from the worldcatAPI call");
 
         Iterator<String> setIdentitiesIterator = setIdentities.iterator();
         String currIdentity;
@@ -38,14 +46,17 @@ public class WorldCatAPIController {
 
         System.out.println("setting Temp Birth Year: " + currBirthYear);
         ControllerBean.setTempBirthYear(currBirthYear);
+        gettingWorldCat.closeAndPrintClock();
+
+        return 0;
 
     }
 
-    public static int getCurrBirthYear() {
+    public int getCurrBirthYear() {
         return currBirthYear;
     }
 
-    public static void setCurrBirthYear(int newCurrBirthYear) {
+    public void setCurrBirthYear(int newCurrBirthYear) {
         currBirthYear = newCurrBirthYear;
     }
 }

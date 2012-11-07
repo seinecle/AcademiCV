@@ -25,4 +25,10 @@ public class APIkeys {
     public static String getOCLCArticleExchangeAPIkey() {
         return "1flgtXqoIDSzhVAnOMvff1VHCbVePN0G0GFeBY195h56wz2jrHiSJF7RJzL8TXLjVRwFmfRw1ew43ymn";
     }
+    public static String getMongoHQDatabaseName() {
+        return "4t9XF1PuNwHibeoxQxPP9w";
+    }
+    public static String getMongoHQDatabasePassWord() {
+        return "testpass";
+    }
 }

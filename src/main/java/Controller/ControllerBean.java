@@ -4,13 +4,9 @@
  */
 package Controller;
 
-import BL.APIs.Arxiv.ArxivAPICaller;
-import BL.APIs.Arxiv.ArxivAPIresponseParser;
-import BL.APIs.Mendeley.ContainerMendeleyDocuments;
-import BL.APIs.Mendeley.MendeleyAPICaller;
-import BL.APIs.Mendeley.MendeleyAPIresponseParser;
+import BL.APIs.Arxiv.ArxivAPIController;
+import BL.APIs.Mendeley.MendeleyAPIController;
 import BL.APIs.NYT.ContainerNYTDocuments;
-import BL.APIs.NYT.NYTAPICaller;
 import BL.APIs.WorldCatIdentities.WorldCatAPIController;
 import BL.DocumentHandling.AuthorNamesCleaner;
 import BL.DocumentHandling.AuthorStatsHandler;
@@ -37,7 +33,6 @@ import com.google.code.morphia.query.Query;
 import com.google.code.morphia.query.UpdateOperations;
 import com.google.common.collect.HashMultiset;
 import com.google.gson.Gson;
-import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
@@ -53,6 +48,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -61,7 +57,6 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import org.apache.commons.lang3.StringUtils;
-import org.xml.sax.InputSource;
 
 /**
  *
@@ -79,12 +74,11 @@ public class ControllerBean implements Serializable {
     static public Datastore ds;
     static public TreeSet<CloseMatchBean> setCloseMatches;
     List<CloseMatchBean> listCloseMatches;
-    static public ContainerMendeleyDocuments mendeleyDocs;
     static public ContainerNYTDocuments NYTDocs;
     public static TreeMap<Author, Author> mapCloseMatches;
     private String forename;
     private String surname;
-    public boolean wisdomCrowds = true;
+    static public boolean wisdomCrowds = true;
     static private String json;
     static public UUID uuid;
     static public boolean atleastOneMatchFound;
@@ -111,6 +105,7 @@ public class ControllerBean implements Serializable {
     static private boolean coAuthorsFound = true;
     private String feedback;
     private int progress;
+    static public List<Callable<Integer>> calls = new ArrayList<Callable<Integer>>();
 
     @PostConstruct
     private void init() {
@@ -181,7 +176,7 @@ public class ControllerBean implements Serializable {
         }
     }
 
-    public String launchNewSearch() throws Exception {
+    public void launchNewSearch() throws Exception {
 
         multisetAuthors = HashMultiset.create();
         setAuthors = new HashSet();
@@ -193,11 +188,9 @@ public class ControllerBean implements Serializable {
         mapAuthorToDates = new HashMap();
         setDocumentsUnFiltered = new HashSet();
         segments = new ArrayList();
-        mendeleyDocs = null;
         NYTDocs = null;
         nbMendeleyDocs = 0;
         nbArxivDocs = 0;
-        setProgress(50);
 
 
         //Cleans a bit the user input
@@ -218,7 +211,6 @@ public class ControllerBean implements Serializable {
         search.setSurname(surname);
         search.setUuid(uuid.toString());
 
-
         //-3
         // Calling the SCOPUS database
         //WORK IN PROGRESS - GET AN HTML ERROR CODE OF 401 AT THE MOMENT
@@ -226,93 +218,84 @@ public class ControllerBean implements Serializable {
 
         //-2
         // Calling the WORLDCAT database
-        Clock gettingWorldCat = new Clock("calling WorldCat...");
-        WorldCatAPIController worldcat = new WorldCatAPIController();
-        worldcat.run();
-        gettingWorldCat.closeAndPrintClock();
-        setProgress(10);
-
-        //0
-        // Calling the Arxiv database and persisting the docs in a standardized form
-        Clock gettingArxivData = new Clock("calling Arxiv...");
-        InputSource readerArxivResults = ArxivAPICaller.run(forename, surname);
-        new ArxivAPIresponseParser(readerArxivResults).parse();
-        System.out.println("nb Arxiv docs found: " + nbArxivDocs);
-        gettingArxivData.closeAndPrintClock();
-        setProgress(20);
+        Callable<Integer> worldcatCallable = new WorldCatAPIController();
+        Callable<Integer> arxivCallable = new ArxivAPIController();
+        Callable<Integer> mendeleyCallable = new MendeleyAPIController();
+        calls.add(worldcatCallable);
+        calls.add(arxivCallable);
+        calls.add(mendeleyCallable);
 
 
         //1
         // Calling the Mendeley API and persisting the docs in a standardized form
-        Clock gettingMendeleyData = new Clock("calling Mendeley...");
-        mendeleyDocs = MendeleyAPICaller.run(forename, surname);
-        new MendeleyAPIresponseParser(mendeleyDocs).parse();
-        System.out.println("nb Mendeley docs found: " + nbMendeleyDocs);
-
-        gettingMendeleyData.closeAndPrintClock();
-        setProgress(30);
+//        Clock gettingMendeleyData = new Clock("calling Mendeley...");
+//        mendeleyDocs = MendeleyAPICaller.run(forename, surname);
+//        new MendeleyAPIresponseParser(mendeleyDocs).parse();
+//        System.out.println("nb Mendeley docs found: " + nbMendeleyDocs);
+//        ProgressBarMessenger.updateMsg("Mendeleycalled");
+//        RequestContext.getCurrentInstance().update("panel");
+//
+//        gettingMendeleyData.closeAndPrintClock();
 
         //2
         // Calling the NYT API
-        Clock gettingNYTData = new Clock("calling the NYT...");
-        NYTDocs = NYTAPICaller.callAPI(forename, surname);
-        NYTfound = !NYTDocs.getDocuments().isEmpty();
-        gettingNYTData.closeAndPrintClock();
+//        Clock gettingNYTData = new Clock("calling the NYT...");
+//        NYTDocs = NYTAPICaller.callAPI(forename, surname);
+//        NYTfound = !NYTDocs.getDocuments().isEmpty();
+//        gettingNYTData.closeAndPrintClock();
 
         //3
         // aggregating documents from different API source: removing duplicates and incomplete records
+    }
+
+    public static String treatmentAPIresults() {
         Clock aggregatorClock = new Clock("aggregating docs from different APIs into one single set");
         setDocs = DocumentAggregator.aggregate(setDocs);
-        aggregatorClock.closeAndPrintClock();
 
+        aggregatorClock.closeAndPrintClock();
 
         //4
         // NO DOCS FOUND? navigating to an error page
         if (setDocs.isEmpty()) {
             return pageToNavigateTo = "noDocFound?faces-redirect=true";
         }
-
-
         //5
         // extract a set of authors from the set of docs
         Clock authorExtractorClock = new Clock("extracting authors from the set of docs");
         multisetAuthors = AuthorsExtractor.extractFromSetDocs(setDocs);
+
         authorExtractorClock.closeAndPrintClock();
-
-
         //6
         // cleans the authors names (deletes dots, etc.)
         Clock authorCleanerClock = new Clock("cleaning authors names");
         multisetAuthors = AuthorNamesCleaner.cleanFullName(multisetAuthors);
-        authorCleanerClock.closeAndPrintClock();
 
+        authorCleanerClock.closeAndPrintClock();
 
         //7
         //MORE THAN 300 CO-AUTHORS FOUND? moving to an error page
-        if (multisetAuthors.elementSet().size() > 250) {
+        if (multisetAuthors.elementSet()
+                .size() > 250) {
             return pageToNavigateTo = "tooManyCoAuthors?faces-redirect=true";
         }
-
-
         //8
         //finds first and last names when they are missing
         Clock findFirstLastNamesClock = new Clock("finds first and last names in the frequent case when they are missing");
         setAuthors = FullNameInvestigator.investigate(multisetAuthors.elementSet());
-        findFirstLastNamesClock.closeAndPrintClock();
 
+        findFirstLastNamesClock.closeAndPrintClock();
 
         //8 bis
         //extracts the author being currently researched from the set of Authors and puts it in a field in the controllerBean: currSearch
         AuthorsExtractor.extractCurrSearchedAuthor();
+
         search.setBirthYear(tempBirthYear);
-
-
         //9
         //Detects pairs of names which are probably the same person, with different spellings / misspellings
         Clock spellCheckClock = new Clock("finding possible misspellings in names");
         atleastOneMatchFound = new SpellingDifferencesChecker(setAuthors, wisdomCrowds).check();
-        spellCheckClock.closeAndPrintClock();
 
+        spellCheckClock.closeAndPrintClock();
         //10
         //navigates to the pages for name disambiguation or directly to the last report page
         if (atleastOneMatchFound) {
@@ -339,7 +322,6 @@ public class ControllerBean implements Serializable {
                 pageToNavigateTo = "report?faces-redirect=true";
             }
         }
-
 //            computationsBeforeReport();
 //            AuthorStatsHandler.updateAuthorNamesAfterUserInput();
 //            segments = new ConvertToSegments().convert();
@@ -347,7 +329,6 @@ public class ControllerBean implements Serializable {
 //            json = new Gson().toJson(segments);
 //
 //            pageToNavigateTo = "report?faces-redirect=true";
-
         return pageToNavigateTo;
     }
 
@@ -519,7 +500,9 @@ public class ControllerBean implements Serializable {
 
         updateQueryPA = ControllerBean.ds.createQuery(PersistingAcademic.class).field("fullNameWithComma").equal(search.getFullnameWithComma());
         opsPA = ControllerBean.ds.createUpdateOperations(PersistingAcademic.class).inc("searchCount", 1);
-        ControllerBean.ds.update(updateQueryPA, opsPA, true);
+
+        ControllerBean.ds.update(updateQueryPA, opsPA,
+                true);
     }
 
     public String getFeedback() {

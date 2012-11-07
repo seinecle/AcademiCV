@@ -1,12 +1,14 @@
 bug fixes
 Peter Verleegh: problem with double spaces?
 add majus after hyphen
-heap size exception for pdfs
+fix bugs in corrections made in final page (these corrections are not considered).
+
 
 minor features
 - add info when APIs where unresponsive
 - improve the name suggestion for Wouter De Nooy, Sarah De Rijcke and such
 - add a button to the last page to go back to first page, when no coauthors are found
+- add a landing page where we suggest to add middle initials to the first name, if the search produces too few / too many results (as in Paul Glimcher vs Paul W Glimcher)
 
 not so minor features
 - progress bar in the first page
@@ -14,6 +16,7 @@ not so minor features
 - persist statistics about age, affiliation and discipline: how many papers, how many co-authors, how many media mentions, 
 - add methodology section to the pdf report.
 - add an engine to identify 3 main disciplines of the researcher
+- add a page where list of publis that can be checked.
 
 major features
 - localization

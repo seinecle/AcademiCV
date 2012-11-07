@@ -13,27 +13,21 @@ public class AdminPanel {
 //debugging    ----------------------------------------------------------------------------
     // ##### LOCAL DEV
     //MongoDB is local
-    static boolean debug_local = false;
-    
+    static boolean debug_local = true;
     // ##### MENDELEY API CALL DEBUGGING
     //in debugging mode, the mendeley pubs of Andrea Scharnhorst are fetched locally
     static boolean mendeley_in_debugging_mode;
-    
     // ##### ARXIV API CALL DEBUGGING
     //in debugging mode, the arxiv pubs of Andrea Scharnhorst are fetched locally
     static boolean arxiv_in_debugging_mode;
-    
     // ##### SCOPUS API CALL DEBUGGING
     static boolean scopus_in_debugging_mode;
-    
     // ##### WORLDCAT API CALL DEBUGGING
     //in debugging mode, the worldcat identities of Andrea Scharnhorst are fetched locally
     static boolean worldcat_in_debugging_mode;
-    
     // ##### NEW YORK TIMES API CALL DEBUGGING
     //in debugging mode, no call to NYT is made, at all
     static boolean nyt_in_debugging_mode;
-    
     // ##### WISDOM CROWDS DEBUGGING #################################
     // in debugging mode, user edits are persisted in the db BUT they are not retrieved in the disambiguation phase
     static boolean wisdom_crowds_in_debugging_mode = true;
@@ -58,15 +52,15 @@ public class AdminPanel {
     public static boolean arxivDebugStateTrueOrFalse() {
         return arxiv_in_debugging_mode;
     }
-    
+
     public static boolean scopusDebugStateTrueOrFalse() {
         return scopus_in_debugging_mode;
     }
-    
+
     public static boolean nytDebugStateTrueOrFalse() {
         return nyt_in_debugging_mode;
     }
-    
+
     public static boolean worldcatDebugStateTrueOrFalse() {
         return worldcat_in_debugging_mode;
     }
@@ -94,14 +88,13 @@ public class AdminPanel {
     public static void setNyt_in_debugging_mode(boolean nyt_in_debugging_mode) {
         AdminPanel.nyt_in_debugging_mode = nyt_in_debugging_mode;
     }
-    
-    public static void setLocalMode(boolean isLocalMode){
+
+    public static void setLocalMode(boolean isLocalMode) {
         setMendeley_in_debugging_mode(isLocalMode);
         setArxiv_in_debugging_mode(isLocalMode);
         setScopus_in_debugging_mode(isLocalMode);
         setWorldcat_in_debugging_mode(isLocalMode);
         setNyt_in_debugging_mode(isLocalMode);
-       
+
     }
-    
 }

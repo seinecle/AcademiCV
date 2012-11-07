@@ -27,7 +27,7 @@ public class Clock {
     }
     
     
-    void startClock(){
+   private void startClock(){
         
         start = System.currentTimeMillis();
         logText = action + "..."+newLine;

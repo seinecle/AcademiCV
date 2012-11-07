@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <h:head>
+        <title>academiCV</title>
+        <h:outputStylesheet name="css/progressBar1.css" />
+    </h:head>
+    <h:body>
+        <h1>Beginning of an implementation of a progress bar</h1>
+        <h:form id="formID">
+            <p:remoteCommand name="launchSearch" action="#{progressBarMessenger.processCalls()}"/>
+            <p:remoteCommand name="checkUpdates" action="#{progressBarMessenger.checkUpdates()}"/>
+            <div style="margin-left: 50px;font-size: 130%;">
+                <h:outputText id="txt" value="#{progressBarMessenger.returnMsg()}" escape="false" />
+            </div>
+            <!--<p:poll interval="3" update="txt" oncomplete="launchSearch()"/>-->
+            <p:poll interval="3" update="txt" oncomplete="checkUpdates()"/>
+        </h:form>
+
+    </h:body>
+    <script type="text/javascript">
+        //<![CDATA[
+        $(function(){
+            launchSearch();
+        }); //end ready
+        //]]>
+    </script>
+
+</html>
+

@@ -5,6 +5,8 @@
 package BL.APIs.WorldCatIdentities;
 
 import Controller.ControllerBean;
+import Model.Author;
+import View.ProgressBarMessenger;
 import Utils.RemoveNonASCII;
 import java.io.IOException;
 import java.util.HashSet;
@@ -12,6 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.primefaces.context.RequestContext;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -98,6 +101,9 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
         if (qName.equals("establishedForm")) {
             newEstablishedForm = true;
             establishedFormBuilder = new StringBuilder();
+            System.out.println("start of established form");
+//            RequestContext.getCurrentInstance()
+//                    .update("formID");
         }
 
 
@@ -135,8 +141,9 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
 
             yearFound = currURI.matches(".*\\(\\d\\d\\d\\d.*");
             if (yearFound) {
-                WorldCatAPIController.setCurrBirthYear(Integer.parseInt(currEstablishedForm.replaceAll(".*(\\(\\d\\d\\d\\d).*", "$1").substring(1)));
-                System.out.println("year of birth found: " + currBirthYear);
+                Author currMainSearchAuthor = ControllerBean.getSearch();
+                currMainSearchAuthor.setBirthYear(Integer.parseInt(currEstablishedForm.replaceAll(".*(\\(\\d\\d\\d\\d).*", "$1").substring(1)));
+                ControllerBean.setSearch(currMainSearchAuthor);
             } else {
                 currBirthYear = null;
             }

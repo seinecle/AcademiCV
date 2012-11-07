@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.clementlevallois</groupId>
-    <artifactId>RingsOfScholarship</artifactId>
+    <artifactId>AcademiCV</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <name>RingsOfScholarship</name>
+    <name>AcademicCV</name>
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>

@@ -85,7 +85,7 @@ public class ReportBean implements Serializable {
         sb.append("Media presence</b><br>");
         sb.append("</div>");
 
-        if (ControllerBean.NYTDocs.getDocuments().isEmpty()) {
+        if (ControllerBean.NYTDocs == null || ControllerBean.NYTDocs.getDocuments().isEmpty()) {
             sb.append("No media presence was detected for ");
             sb.append(ControllerBean.getSearch().getFullname());
             sb.append(" (experimental feature).");
