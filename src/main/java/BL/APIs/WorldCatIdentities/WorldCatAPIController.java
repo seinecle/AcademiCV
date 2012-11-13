@@ -33,7 +33,8 @@ public class WorldCatAPIController implements Callable, Serializable {
         worldcatInputSource = WorldCatAPICaller.run(ControllerBean.getSearch().getForename(), ControllerBean.getSearch().getSurname());
         HashSet<String> setIdentities = new WorldCatAPIresponseParser(worldcatInputSource).parse();
         System.out.println("nb of identities found: " + setIdentities.size());
-        ProgressBarMessenger.updateMsg("hello from the worldcatAPI call");
+        ProgressBarMessenger.updateMsg("<p>hello from the worldcatAPI call!</p>");
+        ProgressBarMessenger.setWorldCatProgress("50");
 
         Iterator<String> setIdentitiesIterator = setIdentities.iterator();
         String currIdentity;

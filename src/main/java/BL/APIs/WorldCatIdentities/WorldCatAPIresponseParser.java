@@ -102,8 +102,6 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
             newEstablishedForm = true;
             establishedFormBuilder = new StringBuilder();
             System.out.println("start of established form");
-//            RequestContext.getCurrentInstance()
-//                    .update("formID");
         }
 
 

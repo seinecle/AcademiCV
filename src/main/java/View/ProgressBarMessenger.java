@@ -14,7 +14,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
@@ -35,6 +34,8 @@ public class ProgressBarMessenger implements Serializable {
     private int countCalls;
     private ExecutorService pool;
     private List<Future<Integer>> listResults;
+    private static String worldCatProgress = "not set yet";
+    private String wcp = "not set yet";
 
     public ProgressBarMessenger() {
 
@@ -49,15 +50,20 @@ public class ProgressBarMessenger implements Serializable {
     }
 
     public String returnMsg() {
-        System.out.println("msg in progress bar bean returned");
-//        RequestContext.getCurrentInstance().update("formID");
         return sb.toString();
     }
 
     public static void updateMsg(String msg) {
-        System.out.println("msg in progress bar bean updated");
         sb.append(msg);
         sb.append(" ");
+    }
+    
+    public static String getWorldCatProgress(){
+        return String.valueOf(worldCatProgress);
+    }
+
+    public static void setWorldCatProgress(String count){
+        worldCatProgress = count;
     }
 
     public String processCalls() throws InterruptedException {
@@ -71,10 +77,10 @@ public class ProgressBarMessenger implements Serializable {
 
             Future<Integer> future = pool.submit(currCall);
             futures.add(future);
-            updateMsg(getAPILaius(countCalls));
             System.out.println("new Call submitted: " + countCalls);
             callsIterator.remove();
         }
+        callsComplete = true;
         //            Timer.waitSeconds(5);
         System.out.println("API calls have been placed");
 
@@ -85,7 +91,8 @@ public class ProgressBarMessenger implements Serializable {
     }
 
     public String checkUpdates() throws InterruptedException {
-        if (!callsComplete) {
+
+        if (futures == null) {
             return null;
         }
 
@@ -93,17 +100,19 @@ public class ProgressBarMessenger implements Serializable {
         while (futuresIterator.hasNext()) {
             Future<Integer> future = futuresIterator.next();
             if (!future.isDone()) {
+                System.out.println("some API calls have not returned yet");
                 return null;
             }
         }
         callsComplete = true;
         updateMsg("The search across the web is over. We found xx documents.<br> We will now proceed to the aggregation of the results.");
+        System.out.println("all API calls returned");
 
         String nextPage = ControllerBean.treatmentAPIresults();
 
         if (!processingComplete) {
             processingComplete = true;
-            Timer.waitSeconds(4);
+            Timer.waitSeconds(6);
             return null;
         }
         System.out.println(
@@ -115,7 +124,7 @@ public class ProgressBarMessenger implements Serializable {
         String laius = null;
         switch (nb) {
             case 1:
-                laius = "<p>search of worldcat is over.</p><p> Looking at Arxiv now...</p>";
+                laius = "<p>Looking at Arxiv now...</p>";
                 break;
             case 2:
                 laius = "<p>search of Arxiv is over.</p><p>  Looking at Mendeley now...</p>";
@@ -124,4 +133,14 @@ public class ProgressBarMessenger implements Serializable {
         return laius;
 
     }
+
+    public String getWcp() {
+        return worldCatProgress;
+    }
+
+    public void setWcp(String wcp) {
+        this.wcp = worldCatProgress;
+    }
+    
+    
 }

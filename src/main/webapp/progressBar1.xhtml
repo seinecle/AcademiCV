@@ -7,24 +7,33 @@
     <h:head>
         <title>academiCV</title>
         <h:outputStylesheet name="css/progressBar1.css" />
+        <h:outputScript library="js" name="kinetic-v4.0.5.js" />
+        <h:outputScript library="js" name="progressbar1.js" />
     </h:head>
+
     <h:body>
         <h1>Beginning of an implementation of a progress bar</h1>
         <h:form id="formID">
             <p:remoteCommand name="launchSearch" action="#{progressBarMessenger.processCalls()}"/>
             <p:remoteCommand name="checkUpdates" action="#{progressBarMessenger.checkUpdates()}"/>
-            <div style="margin-left: 50px;font-size: 130%;">
-                <h:outputText id="txt" value="#{progressBarMessenger.returnMsg()}" escape="false" />
-            </div>
-            <!--<p:poll interval="3" update="txt" oncomplete="launchSearch()"/>-->
-            <p:poll interval="3" update="txt" oncomplete="checkUpdates()"/>
+            <!--<p:poll interval="3" update=":txt" oncomplete="checkUpdates()"/>-->
+            <p:poll interval="3" update=":txt,counter" oncomplete="checkUpdates(); updateVisualization();"/>
+            <h:inputHidden id="counter" value="#{progressBarMessenger.wcp}"/>
+
         </h:form>
+        <div style="margin-left: 50px;font-size: 130%;">
+            <h:outputText id="txt" value="#{progressBarMessenger.returnMsg()}" escape="false"/>
+
+            <div id="container" style="margin-left: auto; margin-right: auto;width:900px"></div>
+        </div>
 
     </h:body>
     <script type="text/javascript">
         //<![CDATA[
         $(function(){
+            initVisualization();
             launchSearch();
+            
         }); //end ready
         //]]>
     </script>

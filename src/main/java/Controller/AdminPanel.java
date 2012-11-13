@@ -13,7 +13,7 @@ public class AdminPanel {
 //debugging    ----------------------------------------------------------------------------
     // ##### LOCAL DEV
     //MongoDB is local
-    static boolean debug_local = true;
+    static boolean debug_local = false;
     // ##### MENDELEY API CALL DEBUGGING
     //in debugging mode, the mendeley pubs of Andrea Scharnhorst are fetched locally
     static boolean mendeley_in_debugging_mode;
