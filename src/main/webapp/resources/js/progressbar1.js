@@ -27,7 +27,7 @@ function initVisualization(){
 }
 
 function updateVisualization(){
-    var count = document.getElementById('formID:counter').valueOf();
+    var count = document.getElementById('formID:counter').value;
     console.log("value of count is: "+count);
     var worldcat = stage.get('.worldcat');
     worldcat.apply('transitionTo', {

@@ -135,10 +135,13 @@ public class ProgressBarMessenger implements Serializable {
     }
 
     public String getWcp() {
+        System.out.println("wcp returned");
         return worldCatProgress;
     }
 
     public void setWcp(String wcp) {
+        System.out.println("wcp set");
+
         this.wcp = worldCatProgress;
     }
     
