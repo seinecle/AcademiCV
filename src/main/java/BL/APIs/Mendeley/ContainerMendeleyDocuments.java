@@ -5,6 +5,7 @@
 package BL.APIs.Mendeley;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -23,8 +24,7 @@ import javax.faces.bean.ViewScoped;
 @ViewScoped
 public class ContainerMendeleyDocuments implements Serializable {
 
-    private List<MendeleyDocument> documents;
-    private MendeleyDocument selectedDocument;
+    private List<MendeleyDocument> documents = new ArrayList();
 
     public List<MendeleyDocument> getDocuments() {
         return documents;
@@ -34,15 +34,6 @@ public class ContainerMendeleyDocuments implements Serializable {
         this.documents = documents;
     }
 
-    public MendeleyDocument getSelectedDocument() {
-        return selectedDocument;
-    }
-
-    public void setSelectedDocument(MendeleyDocument selectedDocument) {
-        this.selectedDocument = selectedDocument;
-    }
-
-    
        
     
     @Override

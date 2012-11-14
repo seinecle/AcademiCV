@@ -34,16 +34,15 @@ public class ProgressBarMessenger implements Serializable {
     private int countCalls;
     private ExecutorService pool;
     private List<Future<Integer>> listResults;
-    private static String worldCatProgress = "not set yet";
-    private String wcp = "not set yet";
+    private static StringBuilder msg;
+    private String progressMessage = "not set yet";
 
     public ProgressBarMessenger() {
 
         sb = new StringBuilder();
+        msg = new StringBuilder();
         countCalls = 0;
-        sb.append("<p>This is a progress bar - will continue to improve...</p>");
         sb.append("<p>Looking up information on ").append(ControllerBean.getSearch().getFullname()).append(" on very large databases... </p>");
-        sb.append("<p>All API calls made at once</p>");
 //        sb.append("<p>Currently searching WorldCat: a catalogue of publications in thousands of libraries in the world </p>");
 //        sb.append("<p>(please be patient while it loads...)</p>");
         System.out.println("new ProgressBarMessenger initialized!");
@@ -57,13 +56,13 @@ public class ProgressBarMessenger implements Serializable {
         sb.append(msg);
         sb.append(" ");
     }
-    
-    public static String getWorldCatProgress(){
-        return String.valueOf(worldCatProgress);
+
+    public static String getProgress() {
+        return msg.toString();
     }
 
-    public static void setWorldCatProgress(String count){
-        worldCatProgress = count;
+    public static void setProgress(String newMsg) {
+        msg.append(newMsg);
     }
 
     public String processCalls() throws InterruptedException {
@@ -105,45 +104,33 @@ public class ProgressBarMessenger implements Serializable {
             }
         }
         callsComplete = true;
-        updateMsg("The search across the web is over. We found xx documents.<br> We will now proceed to the aggregation of the results.");
-        System.out.println("all API calls returned");
-
+        if (!processingComplete) {
+            updateMsg("The search across the web is over. We found xx documents.<br> Moving now to the disambiguation of names...<br>"+
+                    "[of course this message needs to be improved. And I'll add a button, instead of an automatic transition]");
+            System.out.println("all API calls returned");
+        }
         String nextPage = ControllerBean.treatmentAPIresults();
 
         if (!processingComplete) {
             processingComplete = true;
-            Timer.waitSeconds(6);
             return null;
         }
+
+        Timer.waitSeconds(6);
+
         System.out.println(
                 "nextpage:" + nextPage);
         return nextPage;
     }
 
-    private String getAPILaius(int nb) {
-        String laius = null;
-        switch (nb) {
-            case 1:
-                laius = "<p>Looking at Arxiv now...</p>";
-                break;
-            case 2:
-                laius = "<p>search of Arxiv is over.</p><p>  Looking at Mendeley now...</p>";
-                break;
-        }
-        return laius;
-
+    public String getProgressMessage() {
+        System.out.println("getting progress msg");
+        return msg.toString();
     }
 
-    public String getWcp() {
-        System.out.println("wcp returned");
-        return worldCatProgress;
-    }
+    public void setProgressMessage(String newMsg) {
+        System.out.println("setting progress msg");
 
-    public void setWcp(String wcp) {
-        System.out.println("wcp set");
-
-        this.wcp = worldCatProgress;
+        this.progressMessage = msg.toString();
     }
-    
-    
 }

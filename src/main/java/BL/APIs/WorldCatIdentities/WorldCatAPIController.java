@@ -33,8 +33,8 @@ public class WorldCatAPIController implements Callable, Serializable {
         worldcatInputSource = WorldCatAPICaller.run(ControllerBean.getSearch().getForename(), ControllerBean.getSearch().getSurname());
         HashSet<String> setIdentities = new WorldCatAPIresponseParser(worldcatInputSource).parse();
         System.out.println("nb of identities found: " + setIdentities.size());
-        ProgressBarMessenger.updateMsg("<p>hello from the worldcatAPI call!</p>");
-        ProgressBarMessenger.setWorldCatProgress("50");
+//        ProgressBarMessenger.updateMsg("<p>hello from the worldcatAPI call!</p>");
+        ProgressBarMessenger.setProgress("worldcat in progress");
 
         Iterator<String> setIdentitiesIterator = setIdentities.iterator();
         String currIdentity;
@@ -42,11 +42,14 @@ public class WorldCatAPIController implements Callable, Serializable {
             currIdentity = setIdentitiesIterator.next();
             System.out.println("launching a second phase of WorldCat call: looking at the identity: " + currIdentity);
             worldcatInputSource = WorldCatAPICallerWithIdentityCode.run(currIdentity);
-            new WorldCatAPIIdentityresponseParser(worldcatInputSource).parse();
+            WorldCatAPIIdentityresponseParser worldcatIdentitiesParser = new WorldCatAPIIdentityresponseParser(worldcatInputSource);
+            worldcatIdentitiesParser.parse();
         }
 
         System.out.println("setting Temp Birth Year: " + currBirthYear);
         ControllerBean.setTempBirthYear(currBirthYear);
+        ProgressBarMessenger.setProgress("worldcat returned");
+
         gettingWorldCat.closeAndPrintClock();
 
         return 0;

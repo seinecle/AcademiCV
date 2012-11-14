@@ -4,13 +4,15 @@
  */
 package BL.APIs.Mendeley;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author C. Levallois
  */
-public class MendeleyDocument {
+public class MendeleyDocument implements Serializable{
 
     private String uuid;
     private String title;
@@ -18,7 +20,7 @@ public class MendeleyDocument {
     private String mendeley_url;
     private String doi;
     private String year;
-    private List<author> authors;
+    private List<author> authors = new ArrayList();
 
     MendeleyDocument() {
     }

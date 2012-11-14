@@ -6,7 +6,7 @@ package Controller;
 
 import BL.APIs.Arxiv.ArxivAPIController;
 import BL.APIs.Mendeley.MendeleyAPIController;
-import BL.APIs.NYT.ContainerNYTDocuments;
+import BL.APIs.NYT.NYTAPIController;
 import BL.APIs.WorldCatIdentities.WorldCatAPIController;
 import BL.DocumentHandling.AuthorNamesCleaner;
 import BL.DocumentHandling.AuthorStatsHandler;
@@ -74,7 +74,6 @@ public class ControllerBean implements Serializable {
     static public Datastore ds;
     static public TreeSet<CloseMatchBean> setCloseMatches;
     List<CloseMatchBean> listCloseMatches;
-    static public ContainerNYTDocuments NYTDocs;
     public static TreeMap<Author, Author> mapCloseMatches;
     private String forename;
     private String surname;
@@ -98,13 +97,12 @@ public class ControllerBean implements Serializable {
     static public Set<Document> setDocs;
     static public TreeSet<MapLabels> setMapLabels;
     static public HashMap<String, Pair<Integer, Integer>> mapAuthorToDates;
-    private boolean NYTfound;
+    static private boolean NYTfound;
     private Query<GlobalEditsCounter> updateQueryCounter;
     private UpdateOperations<GlobalEditsCounter> opsCounter;
     static private int tempBirthYear = 0;
     static private boolean coAuthorsFound = true;
     private String feedback;
-    private int progress;
     static public List<Callable<Integer>> calls = new ArrayList<Callable<Integer>>();
 
     @PostConstruct
@@ -188,7 +186,6 @@ public class ControllerBean implements Serializable {
         mapAuthorToDates = new HashMap();
         setDocumentsUnFiltered = new HashSet();
         segments = new ArrayList();
-        NYTDocs = null;
         nbMendeleyDocs = 0;
         nbArxivDocs = 0;
 
@@ -217,35 +214,15 @@ public class ControllerBean implements Serializable {
         //ScopusAPICaller.run(forename, surname);
 
         //-2
-        // Calling the WORLDCAT database
+        // Calling all APIS
         Callable<Integer> worldcatCallable = new WorldCatAPIController();
         Callable<Integer> arxivCallable = new ArxivAPIController();
         Callable<Integer> mendeleyCallable = new MendeleyAPIController();
+        Callable<Integer> nytCallable = new NYTAPIController();
         calls.add(worldcatCallable);
         calls.add(arxivCallable);
         calls.add(mendeleyCallable);
-
-
-        //1
-        // Calling the Mendeley API and persisting the docs in a standardized form
-//        Clock gettingMendeleyData = new Clock("calling Mendeley...");
-//        mendeleyDocs = MendeleyAPICaller.run(forename, surname);
-//        new MendeleyAPIresponseParser(mendeleyDocs).parse();
-//        System.out.println("nb Mendeley docs found: " + nbMendeleyDocs);
-//        ProgressBarMessenger.updateMsg("Mendeleycalled");
-//        RequestContext.getCurrentInstance().update("panel");
-//
-//        gettingMendeleyData.closeAndPrintClock();
-
-        //2
-        // Calling the NYT API
-//        Clock gettingNYTData = new Clock("calling the NYT...");
-//        NYTDocs = NYTAPICaller.callAPI(forename, surname);
-//        NYTfound = !NYTDocs.getDocuments().isEmpty();
-//        gettingNYTData.closeAndPrintClock();
-
-        //3
-        // aggregating documents from different API source: removing duplicates and incomplete records
+        calls.add(nytCallable);
     }
 
     public static String treatmentAPIresults() {
@@ -435,10 +412,6 @@ public class ControllerBean implements Serializable {
         ControllerBean.maxYear = maxYear;
     }
 
-    public boolean isNYTfound() {
-        return NYTfound;
-    }
-
     public static Pair<String, Integer> getMostFreqSource() {
         return mostFreqSource;
     }
@@ -459,17 +432,21 @@ public class ControllerBean implements Serializable {
         }
     }
 
+    public static boolean isNYTfound() {
+        return NYTfound;
+    }
+
+    public static void setNYTfound(boolean NYTfound) {
+        ControllerBean.NYTfound = NYTfound;
+    }
+    
+    
+
     public static TreeSet<CloseMatchBean> getSetCloseMatches() {
         return setCloseMatches;
     }
 
-    public int getProgress() {
-        return progress;
-    }
-
-    public void setProgress(int progress) {
-        this.progress = progress;
-    }
+    
 
     public void prepareNewSearch() {
         Map<String, Object> map = FacesContext.getCurrentInstance().getExternalContext().getApplicationMap();

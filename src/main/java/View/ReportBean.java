@@ -4,7 +4,7 @@
  */
 package View;
 
-import BL.APIs.NYT.NYTDoc;
+import BL.APIs.NYT.*;
 import Controller.ControllerBean;
 import Model.Author;
 import java.io.Serializable;
@@ -85,7 +85,7 @@ public class ReportBean implements Serializable {
         sb.append("Media presence</b><br>");
         sb.append("</div>");
 
-        if (ControllerBean.NYTDocs == null || ControllerBean.NYTDocs.getDocuments().isEmpty()) {
+        if (!ControllerBean.isNYTfound()) {
             sb.append("No media presence was detected for ");
             sb.append(ControllerBean.getSearch().getFullname());
             sb.append(" (experimental feature).");
@@ -93,7 +93,7 @@ public class ReportBean implements Serializable {
         } else {
             sb.append(ControllerBean.getSearch().getFullname());
             sb.append(" is mentioned in the following article(s) fron the New York Times:<br>");
-            for (NYTDoc element : ControllerBean.NYTDocs.getDocuments()) {
+            for (NYTDoc element : NYTAPIController.getNYTDocs().getDocuments()) {
                 sb.append(element.getDate().substring(0, 4));
                 sb.append(". \"<a href=\"");
                 sb.append(element.getUrl());

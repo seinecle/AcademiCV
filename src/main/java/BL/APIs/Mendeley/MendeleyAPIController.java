@@ -6,6 +6,7 @@ package BL.APIs.Mendeley;
 
 import Controller.ControllerBean;
 import Utils.Clock;
+import View.ProgressBarMessenger;
 import java.io.Serializable;
 import java.util.concurrent.Callable;
 
@@ -22,6 +23,7 @@ public class MendeleyAPIController implements Callable, Serializable {
 
         Clock gettingMendeleyData = new Clock("calling Mendeley...");
         mendeleyDocs = MendeleyAPICaller.run(ControllerBean.getSearch().getForename(), ControllerBean.getSearch().getSurname());
+        ProgressBarMessenger.setProgress("mendeley returned");
         MendeleyAPIresponseParser parser = new MendeleyAPIresponseParser(mendeleyDocs);
         parser.parse();
         System.out.println("nb Mendeley docs found: " + ControllerBean.nbMendeleyDocs);
