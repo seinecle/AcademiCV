@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import javax.faces.bean.ManagedProperty;
 
 /**
@@ -17,21 +18,14 @@ import javax.faces.bean.ManagedProperty;
 public class NYTAPIresponseParser {
 
     ContainerNYTDocuments container;
-    private int nbNYTDocs = 0;
-    private Author search;
-    @ManagedProperty("#{controllerBean}")
-    private ControllerBean controllerBean;
+    private Set<Document> setNYTDocs = new HashSet();
+    
 
-    public void setcontrollerBean(ControllerBean controllerBean) {
-        this.controllerBean = controllerBean;
-    }
-
-    public NYTAPIresponseParser(ContainerNYTDocuments container, Author search) {
+    public NYTAPIresponseParser(ContainerNYTDocuments container) {
         this.container = container;
-        this.search = search;
     }
 
-    public void parse() {
+    public Set<Document> parse() {
         List<NYTDoc> currList;
 
         // this if else deals with the case when the container of Mendeley docs is empty, bc the Mendeley API was unresponsive
@@ -58,8 +52,9 @@ public class NYTAPIresponseParser {
             newDoc.setPublication_outlet("New York Times");
             newDoc.setWhereFrom("New York Times API");
             newDoc.setYear(Integer.parseInt(currDoc.getYear()));
-            nbNYTDocs++;
-            controllerBean.addToSetMediaDocs(newDoc);
+            setNYTDocs.add(newDoc);
         }
+        return setNYTDocs;
+        
     }
 }

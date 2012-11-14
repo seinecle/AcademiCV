@@ -13,8 +13,10 @@ import BL.DocumentHandling.AuthorStatsHandler;
 import BL.DocumentHandling.AuthorsExtractor;
 import BL.DocumentHandling.DocsStatsHandler;
 import BL.DocumentHandling.DocumentAggregator;
+import BL.NameDisambiguation.AuthorSpellingEditor;
+import BL.NameDisambiguation.CloseMatchesDetector;
 import BL.NameDisambiguation.FullNameInvestigator;
-import BL.NameDisambiguation.SpellingDifferencesChecker;
+import BL.NameDisambiguation.MapLabelsInitiator;
 import BL.Viz.Processing.ConvertToSegments;
 import BL.Viz.Processing.Segment;
 import Model.Author;
@@ -40,8 +42,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -72,7 +74,7 @@ public class ControllerBean implements Serializable {
     DBCollection quidamDocsColl;
     DBCollection quidamPartnersColl;
     public static Datastore ds;
-    private TreeSet<CloseMatchBean> setCloseMatches;
+    private Set<CloseMatchBean> setCloseMatches;
     List<CloseMatchBean> listCloseMatches;
     public TreeMap<Author, Author> mapCloseMatches;
     private String forename;
@@ -85,29 +87,23 @@ public class ControllerBean implements Serializable {
     String pageToNavigateTo;
     private Author search;
     private int count;
-    private HashSet<Author> mostFrequentCoAuthors;
-    private int nbDocs;
     private int minYear;
     private int maxYear;
-    private int nbArxivDocs = 0;
-    private int nbMendeleyDocs = 0;
     private HashMultiset<Author> multisetAuthors;
     private Set<Author> setAuthors;
-    private HashSet<Document> setDocumentsUnFiltered;
     private Set<Document> setDocs;
     private TreeSet<MapLabels> setMapLabels;
-    private HashMap<String, Pair<Integer, Integer>> mapAuthorToDates;
     private boolean NYTfound;
     private Query<GlobalEditsCounter> updateQueryCounter;
     private UpdateOperations<GlobalEditsCounter> opsCounter;
     private int tempBirthYear = 0;
     private boolean coAuthorsFound = true;
     private String feedback;
-    private List<Callable<Integer>> calls;
-    private Callable<Integer> worldcatCallable;
-    private Callable<Integer> arxivCallable;
-    private Callable<Integer> mendeleyCallable;
-    private Callable<Integer> nytCallable;
+    private List<Callable<Set<Document>>> calls;
+    private Callable<Set<Document>> worldcatCallable;
+    private Callable<Set<Document>> arxivCallable;
+    private Callable<Set<Document>> mendeleyCallable;
+    private Callable<Set<Document>> nytCallable;
     private Set<Document> setMediaDocs;
 
     @PostConstruct
@@ -179,18 +175,15 @@ public class ControllerBean implements Serializable {
         }
     }
 
-    public void launchNewSearch() throws Exception {
+    public String launchNewSearch() throws Exception {
         setMediaDocs = new HashSet();
-        calls = new ArrayList<Callable<Integer>>();
+        calls = new ArrayList<Callable<Set<Document>>>();
         multisetAuthors = HashMultiset.create();
         setAuthors = new HashSet();
-        setDocumentsUnFiltered = new HashSet();
         setDocs = new HashSet();
         setMapLabels = new TreeSet();
         mapCloseMatches = new TreeMap();
         setCloseMatches = new TreeSet();
-        mapAuthorToDates = new HashMap();
-        setDocumentsUnFiltered = new HashSet();
         segments = new ArrayList();
 
 
@@ -227,6 +220,8 @@ public class ControllerBean implements Serializable {
         calls.add(arxivCallable);
         calls.add(mendeleyCallable);
         calls.add(nytCallable);
+
+        return "progressBar1?faces-redirect=true";
     }
 
     public String treatmentAPIresults() {
@@ -264,23 +259,34 @@ public class ControllerBean implements Serializable {
         Clock findFirstLastNamesClock = new Clock("finds first and last names in the frequent case when they are missing");
         setAuthors = new FullNameInvestigator().investigate(multisetAuthors.elementSet());
 
+//        Iterator<Author> setAuthorsIterator = setAuthors.iterator();
+//        while (setAuthorsIterator.hasNext()) {
+//            Author currAuthor = setAuthorsIterator.next();
+//            System.out.println("currAuthor:" + currAuthor.getFullnameWithComma());
+//        }
+
         findFirstLastNamesClock.closeAndPrintClock();
 
         //8 bis
         //extracts the author being currently researched from the set of Authors and puts it in a field in the controllerBean: currSearch
         AuthorsExtractor authorsExtractor = new AuthorsExtractor();
-        authorsExtractor.extractCurrSearchedAuthor();
-        search.setBirthYear(tempBirthYear);
+        search = authorsExtractor.extractCurrSearchedAuthor(setAuthors, search);
 
         //9
         //Detects pairs of names which are probably the same person, with different spellings / misspellings
-        Clock spellCheckClock = new Clock("finding possible misspellings in names");
-        atleastOneMatchFound = new SpellingDifferencesChecker(setAuthors, wisdomCrowds, search).check();
+        Clock wotcClock = new Clock("bring edits from the wisdom of the crowds to author names");
+        setAuthors = new AuthorSpellingEditor(setAuthors, wisdomCrowds, search).check();
+        wotcClock.closeAndPrintClock();
+        Clock closeMatchesClock = new Clock("detecting close matches in author names, and making suggestions for their resolution");
+        setCloseMatches = new CloseMatchesDetector().check(setAuthors);
+        closeMatchesClock.closeAndPrintClock();
+        Clock initializingMapLabelsClock = new Clock("initializing a map of original author names and their correct version");
+        setMapLabels = new MapLabelsInitiator().check(setAuthors, setCloseMatches);
+        initializingMapLabelsClock.closeAndPrintClock();
 
-        spellCheckClock.closeAndPrintClock();
         //10
         //navigates to the pages for name disambiguation or directly to the last report page
-        if (atleastOneMatchFound) {
+        if (!setCloseMatches.isEmpty()) {
             System.out.println("Co-authors found!");
             System.out.println("Similar names found");
             System.out.println("Navigating to the spell check page");
@@ -319,16 +325,17 @@ public class ControllerBean implements Serializable {
         //1
         //generate descriptive stats at this stage
         Clock generateStats = new Clock("generating descriptive stats on the set of authors after user input");
-        setAuthors = new AuthorStatsHandler().updateAuthorNamesAfterUserInput();
+        setAuthors = new AuthorStatsHandler().updateAuthorNamesAfterUserInput(setDocs, setMapLabels, search);
+        search = new AuthorStatsHandler().findMosFrequentCoauthor(setDocs, setAuthors, search);
         DocsStatsHandler docsStatsHandler = new DocsStatsHandler();
-        mostFreqSource = docsStatsHandler.extractMostFrequentSource();
+        mostFreqSource = docsStatsHandler.extractMostFrequentSource(setDocs);
         generateStats.closeAndPrintClock();
 
 
 
         //PERSIST SEGMENTS
-        segments = new ConvertToSegments().convert();
-        segments.add(new Segment(getSearch().getFullnameWithComma(), 1, true));
+        segments = new ConvertToSegments().convert(setAuthors, setMapLabels);
+        segments.add(new Segment(search.getFullnameWithComma(), 1, true));
         setJson(new Gson().toJson(segments));
     }
 
@@ -459,7 +466,7 @@ public class ControllerBean implements Serializable {
         this.setAuthors = setAuthors;
     }
 
-    public TreeSet<CloseMatchBean> getSetCloseMatches() {
+    public Set<CloseMatchBean> getSetCloseMatches() {
         return setCloseMatches;
     }
 
@@ -495,7 +502,7 @@ public class ControllerBean implements Serializable {
         this.setMapLabels.remove(mapLabel);
     }
 
-    public List<Callable<Integer>> getCalls() {
+    public List<Callable<Set<Document>>> getCalls() {
         return calls;
     }
 
@@ -519,8 +526,6 @@ public class ControllerBean implements Serializable {
         this.setMediaDocs.add(mediaDoc);
     }
 
-    
-    
     public void prepareNewSearch() {
         Map<String, Object> map = FacesContext.getCurrentInstance().getExternalContext().getApplicationMap();
 

@@ -11,6 +11,7 @@ import Utils.Clock;
 import com.google.common.collect.TreeMultiset;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.faces.bean.ManagedProperty;
@@ -21,26 +22,20 @@ import javax.faces.bean.ManagedProperty;
  */
 public class ConvertToSegments {
 
-    @ManagedProperty("#{controllerBean}")
-    private ControllerBean controllerBean;
 
-    public void setcontrollerBean(ControllerBean controllerBean) {
-        this.controllerBean = controllerBean;
-    }
-
-    public ArrayList<Segment> convert() {
+    public ArrayList<Segment> convert(Set<Author> setAuthorsFromController, Set<MapLabels> setMapLabels) {
         Clock convertingToSegmentsClock = new Clock("converting to segments");
         ArrayList<Segment> al = new ArrayList();
         TreeMap<String, String> mapOfCorrectedNames = new TreeMap();
         TreeMultiset<String> ms = TreeMultiset.create();
-        TreeSet<Author> setAuthors = new TreeSet();
-        setAuthors.addAll(controllerBean.getSetAuthors());
+        Set<Author> setAuthors = new TreeSet();
+        setAuthors.addAll(setAuthorsFromController);
         Author currAuthor;
         String spellCheckedAuthor;
         String currElement;
 
         //converts the set of MapLabels into a simpler map<String, String>
-        Iterator<MapLabels> setMapLabelsIterator = controllerBean.getSetMapLabels().iterator();
+        Iterator<MapLabels> setMapLabelsIterator = setMapLabels.iterator();
         MapLabels currMapLabels;
         while (setMapLabelsIterator.hasNext()) {
             currMapLabels = setMapLabelsIterator.next();

@@ -2,6 +2,10 @@ bug fixes
 Peter Verleegh: problem with double spaces?
 add majus after hyphen
 fix bugs in corrections made in final page (these corrections are not considered).
+for Andrea Scharnhorst:
+- see why Loet Leydesdorff is not separated by commas. Every noun should be comma separated after the "FullNameInvestigator" step.
+- correct the detection of ambiguities so that "Almila, Salah Akda" and "Salah, Akda Almila" soient detectes comme semblables
+- remove Andrea Scharnhorst from final check.
 
 
 minor features

@@ -81,7 +81,7 @@ public class MendeleyDocument implements Serializable{
         this.authors = authors;
     }
 
-    class author {
+    static class author {
 
         String forename;
         String surname;

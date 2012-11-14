@@ -39,7 +39,7 @@ public class NYTAPICaller {
 
         if (!debug) {
             String APIcall = "http://api.nytimes.com/svc/search/v1/article?query=" + "%22" + quidamFirstName + "%20" + quidamLastName + "%22" + "&api-key=" + APIkey;
-            System.out.println("API call is:");
+            System.out.println("New York Times API call is:");
             System.out.println(APIcall);
 
             URL nyt = new URL(APIcall);
@@ -62,7 +62,7 @@ public class NYTAPICaller {
             currLine = convertUnicode(currLine);
 //            currLine = RemoveNonASCII.remove(currLine);
 //            currLine = WordUtils.capitalize(currLine);
-            System.out.println(currLine);
+//            System.out.println(currLine);
 
             //            System.out.println("Mendely API response: ");
 //            System.out.println(currLine);

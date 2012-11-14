@@ -4,7 +4,6 @@
  */
 package BL.DocumentHandling;
 
-import Controller.ControllerBean;
 import Model.Author;
 import Model.Document;
 import Model.MapLabels;
@@ -14,7 +13,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import javax.faces.bean.ManagedProperty;
 
 /**
  *
@@ -22,14 +20,7 @@ import javax.faces.bean.ManagedProperty;
  */
 public class AuthorStatsHandler {
 
-    @ManagedProperty("#{controllerBean}")
-    private ControllerBean controllerBean;
-
-    public void setcontrollerBean(ControllerBean controllerBean) {
-        this.controllerBean = controllerBean;
-    }
-
-    public Set<Author> updateAuthorNamesAfterUserInput() {
+    public Set<Author> updateAuthorNamesAfterUserInput(Set<Document> setDocs, Set<MapLabels> setMapLabels, Author search) {
 
         HashMap<Integer, Document> mapDocs;
         Iterator<Integer> mapDocsIterator;
@@ -41,7 +32,6 @@ public class AuthorStatsHandler {
         HashMultiset<Author> multisetAuthors;
         Iterator<Author> multisetAuthorsIterator;
         HashSet<Author> setAuthors;
-        Iterator<Author> setAuthorsIterator;
 
 
 
@@ -57,7 +47,7 @@ public class AuthorStatsHandler {
         // *********
         mapDocs = new HashMap();
         int docCounter = 0;
-        for (Document element : controllerBean.getSetDocs()) {
+        for (Document element : setDocs) {
             docCounter++;
             element.setDocId(docCounter);
             mapDocs.put(docCounter, element);
@@ -72,15 +62,20 @@ public class AuthorStatsHandler {
         // *********
         // put the labels in the set into a more convenient map<String,String> form
         // *********
-        setMapLabelsIterator = controllerBean.getSetMapLabels().iterator();
+        setMapLabelsIterator = setMapLabels.iterator();
         MapLabels currMapLabels;
         mapIncorrectToCorrect = new HashMap();
         String[] terms;
         String currOriginalFullname;
         while (setMapLabelsIterator.hasNext()) {
             currMapLabels = setMapLabelsIterator.next();
+//            System.out.println("curr Map Label: " + currMapLabels.getLabel1());
             terms = currMapLabels.getLabel1().split(",");
-            currOriginalFullname = terms[1].trim() + " " + terms[0].trim();
+            if (terms.length == 1) {
+                currOriginalFullname = currMapLabels.getLabel1();
+            } else {
+                currOriginalFullname = terms[1].trim() + " " + terms[0].trim();
+            }
 //            System.out.println("currOriginalFullname" + currOriginalFullname);
 //            System.out.println("currMapLabels.getLabel2(): \"" + currMapLabels.getLabel2() + "\"");
             mapIncorrectToCorrect.put(currOriginalFullname, currMapLabels.getLabel2());
@@ -105,7 +100,7 @@ public class AuthorStatsHandler {
                 int currStart;
                 int currEnd;
                 currAuthor = currSetAuthorsIterator.next();
-                if (currAuthor.getFullname().equals(controllerBean.getSearch().getFullname())) {
+                if (currAuthor.getFullname().equals(search.getFullname())) {
                     continue;
                 }
 //                System.out.println("currAuthor fullname with comma is: " + currAuthor.getFullname());
@@ -174,16 +169,21 @@ public class AuthorStatsHandler {
             setAuthors.add(currAuthor);
         }
 
-        //-----------------------------------------------------------------------------------------------------------------------------
-        // end of the aggregation work on authors. The following extracts features
-        //-----------------------------------------------------------------------------------------------------------------------------
+        return setAuthors;
+    }
+    //-----------------------------------------------------------------------------------------------------------------------------
+    // end of the aggregation work on authors. The following extracts features
+    //-----------------------------------------------------------------------------------------------------------------------------
+    //find most frequent co-author
 
+    public Author findMosFrequentCoauthor(Set<Document> setDocs, Set<Author> setAuthors, Author search) {
 
-        //find most frequent co-author
-        setAuthorsIterator = setAuthors.iterator();
+        Iterator<Author> setAuthorsIterator = setAuthors.iterator();
         HashSet<Author> setMostFrequentCoAuthors = new HashSet();
         Iterator<Author> setMostFrequentCoAuthorsIterator;
+        Author currAuthor;
         int maxSharedWorks = 0;
+
         while (setAuthorsIterator.hasNext()) {
 
             currAuthor = setAuthorsIterator.next();
@@ -192,36 +192,30 @@ public class AuthorStatsHandler {
                 setMostFrequentCoAuthors.add(currAuthor);
             }
         }
-
         setMostFrequentCoAuthorsIterator = setMostFrequentCoAuthors.iterator();
+
         while (setMostFrequentCoAuthorsIterator.hasNext()) {
             if (setMostFrequentCoAuthorsIterator.next().getTimesMentioned() < maxSharedWorks) {
                 setMostFrequentCoAuthorsIterator.remove();
             }
         }
-        Author currSearch = controllerBean.getSearch();
-        currSearch.setSetMostFrequentCoAuthors(setMostFrequentCoAuthors);
 
-
+        search.setSetMostFrequentCoAuthors(setMostFrequentCoAuthors);
         //find earliest and latest dates of publication
         int earliest = 3000;
         int latest = 0;
-        for (Document element : controllerBean.getSetDocs()) {
+        for (Document element : setDocs) {
             if (element.getYear() < earliest) {
                 earliest = element.getYear();
             }
             if (element.getYear() > latest) {
                 latest = element.getYear();
             }
-            currSearch.setYearFirstCollab(earliest);
-            currSearch.setYearLastCollab(latest);
+            search.setYearFirstCollab(earliest);
+            search.setYearLastCollab(latest);
 
         }
-        controllerBean.setSearch(currSearch);
 
-
-
-
-        return setAuthors;
+        return search;
     }
 }

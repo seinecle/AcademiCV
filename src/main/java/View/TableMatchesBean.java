@@ -3,6 +3,7 @@
  * and open the template in the editor.
  */
 package View;
+
 import Controller.ControllerBean;
 import Model.CloseMatchBean;
 import Model.GlobalEditsCounter;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
@@ -40,15 +42,12 @@ public class TableMatchesBean implements Serializable {
     private boolean renderNextButton = true;
     private int countUpdated;
     private PushContext pushContext;
-    
     @ManagedProperty("#{controllerBean}")
     private ControllerBean controllerBean;
 
     public void setControllerBean(ControllerBean controllerBean) {
         this.controllerBean = controllerBean;
     }
-    
-    
 
     public int getCountUpdated() {
         return countUpdated;
@@ -59,6 +58,10 @@ public class TableMatchesBean implements Serializable {
     }
 
     public TableMatchesBean() {
+    }
+
+    @PostConstruct
+    public void init() {
         try {
             System.out.println("new TableMatchesBean!");
             listCloseMatchesDisplayed.clear();
@@ -66,9 +69,10 @@ public class TableMatchesBean implements Serializable {
             optionChosen = 4;
 
 
+
             //RETRIEVE MATCHES FROM THIS UUID
 //            setClosematchesOriginal.addAll(controllerBean.ds.find(CloseMatchBean.class).field("uuid").equal(controllerBean.uuid.toString()).asList());
-            setClosematchesOriginal = controllerBean.getSetCloseMatches();
+            setClosematchesOriginal.addAll(controllerBean.getSetCloseMatches());
 
             System.out.println("number of ambiguous cases: " + setClosematchesOriginal.size());
 

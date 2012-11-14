@@ -11,6 +11,7 @@ import Model.Document;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import javax.faces.bean.ManagedProperty;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -49,18 +50,13 @@ public class ArxivAPIresponseParser extends DefaultHandler {
     private HashSet<Affiliation> currSetAffiliations;
     private InputSource is;
     private int nbArxivDocs = 0;
-    @ManagedProperty("#{controllerBean}")
-    private ControllerBean controllerBean;
-
-    public void setcontrollerBean(ControllerBean controllerBean) {
-        this.controllerBean = controllerBean;
-    }
+    private Set<Document> setArxivDocs = new HashSet();
 
     public ArxivAPIresponseParser(InputSource newIs) {
         this.is = newIs;
     }
 
-    public void parse() throws IOException {
+    public Set<Document> parse() throws IOException {
 
         //populate map of arxiv primary categories
         populateMapPrimaryCategories();
@@ -83,6 +79,8 @@ public class ArxivAPIresponseParser extends DefaultHandler {
         } catch (IOException ie) {
             System.out.println("IOException: " + ie);
         }
+        
+        return setArxivDocs;
     }
 
     @Override
@@ -156,9 +154,9 @@ public class ArxivAPIresponseParser extends DefaultHandler {
         //case when an affiliation is provided with the author
         if (qName.equalsIgnoreCase("author") & authorBuilder != null & currDocCurrAuthorAffiliation != null) {
             currAuthor = new Author(authorBuilder.toString());
-            System.out.println("affiliation detected:");
-            System.out.println(currDocCurrAuthorAffiliation);
-            System.out.println(currDocYearPublished);
+//            System.out.println("affiliation detected:");
+//            System.out.println(currDocCurrAuthorAffiliation);
+//            System.out.println(currDocYearPublished);
             currAffiliation = new Affiliation(currDocCurrAuthorAffiliation);
             currAffiliation.setYear(currDocYearPublished);
             currSetAffiliations = new HashSet();
@@ -210,7 +208,7 @@ public class ArxivAPIresponseParser extends DefaultHandler {
             currDocument.setTopicArxiv(currDocPrimaryCategory);
 //            currDocument.setCreationDateTime(new DateTime());
             if (currDocSetAuthors != null & currDocTitle != null & currDocYearPublished != null) {
-                controllerBean.addToSetDocs(currDocument);
+                setArxivDocs.add(currDocument);
             }
             newEntry = false;
             nbArxivDocs++;

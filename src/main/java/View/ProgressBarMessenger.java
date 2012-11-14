@@ -6,14 +6,20 @@ package View;
 
 import Controller.ControllerBean;
 import Utils.Timer;
+import Model.Document;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
@@ -27,13 +33,14 @@ import javax.faces.bean.ViewScoped;
 public class ProgressBarMessenger implements Serializable {
 
     private static StringBuilder sb = new StringBuilder();
-    private List<Future<Integer>> futures;
-    private Callable<Integer> currCall;
+    private List<Future<Set<Document>>> futures;
+    private Callable<Set<Document>> currCall;
+    private List<Callable<Set<Document>>> calls;
     private boolean callsComplete = false;
     private boolean processingComplete = false;
     private int countCalls;
     private ExecutorService pool;
-    private List<Future<Integer>> listResults;
+    private List<Future<Set<Document>>> listResults;
     private static StringBuilder msg;
     private String progressMessage = "not set yet";
     @ManagedProperty("#{controllerBean}")
@@ -42,10 +49,12 @@ public class ProgressBarMessenger implements Serializable {
     public void setcontrollerBean(ControllerBean controllerBean) {
         this.controllerBean = controllerBean;
     }
-    private List<Callable<Integer>> calls = controllerBean.getCalls();
 
     public ProgressBarMessenger() {
+    }
 
+    @PostConstruct
+    private void init() {
         sb = new StringBuilder();
         msg = new StringBuilder();
         countCalls = 0;
@@ -53,6 +62,7 @@ public class ProgressBarMessenger implements Serializable {
 //        sb.append("<p>Currently searching WorldCat: a catalogue of publications in thousands of libraries in the world </p>");
 //        sb.append("<p>(please be patient while it loads...)</p>");
         System.out.println("new ProgressBarMessenger initialized!");
+
     }
 
     public String returnMsg() {
@@ -73,15 +83,16 @@ public class ProgressBarMessenger implements Serializable {
     }
 
     public String processCalls() throws InterruptedException {
+        calls = controllerBean.getCalls();
         System.out.println("APIs calls started");
         pool = Executors.newFixedThreadPool(10);
         futures = new ArrayList();
-        Iterator<Callable<Integer>> callsIterator = calls.iterator();
+        Iterator<Callable<Set<Document>>> callsIterator = calls.iterator();
         while (callsIterator.hasNext()) {
             countCalls++;
             currCall = callsIterator.next();
 
-            Future<Integer> future = pool.submit(currCall);
+            Future<Set<Document>> future = pool.submit(currCall);
             futures.add(future);
             System.out.println("new Call submitted: " + countCalls);
             callsIterator.remove();
@@ -102,14 +113,24 @@ public class ProgressBarMessenger implements Serializable {
             return null;
         }
 
-        Iterator<Future<Integer>> futuresIterator = futures.iterator();
+        Iterator<Future<Set<Document>>> futuresIterator = futures.iterator();
         while (futuresIterator.hasNext()) {
-            Future<Integer> future = futuresIterator.next();
+            Future<Set<Document>> future = futuresIterator.next();
             if (!future.isDone()) {
                 System.out.println("some API calls have not returned yet");
                 return null;
             }
         }
+        futuresIterator = futures.iterator();
+        while (futuresIterator.hasNext()) {
+            try {
+                Future<Set<Document>> future = futuresIterator.next();
+                controllerBean.addToSetDocs(future.get());
+            } catch (ExecutionException ex) {
+                Logger.getLogger(ProgressBarMessenger.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
         callsComplete = true;
         if (!processingComplete) {
             updateMsg("The search across the web is over. We found xx documents.<br> Moving now to the disambiguation of names...<br>"
@@ -131,13 +152,12 @@ public class ProgressBarMessenger implements Serializable {
     }
 
     public String getProgressMessage() {
-        System.out.println("getting progress msg");
+//        System.out.println("getting progress msg");
         return msg.toString();
     }
 
     public void setProgressMessage(String newMsg) {
-        System.out.println("setting progress msg");
-
+//        System.out.println("setting progress msg");
         this.progressMessage = msg.toString();
     }
 }

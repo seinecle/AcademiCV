@@ -19,12 +19,6 @@ import javax.faces.bean.ManagedProperty;
  */
 public class AuthorsExtractor {
 
-    @ManagedProperty("#{controllerBean}")
-    private ControllerBean controllerBean;
-
-    public void setcontrollerBean(ControllerBean controllerBean) {
-        this.controllerBean = controllerBean;
-    }
 
     public AuthorsExtractor() {
     }
@@ -43,16 +37,18 @@ public class AuthorsExtractor {
         return setAllAuthors;
     }
 
-    public void extractCurrSearchedAuthor() {
-        Iterator<Author> setAuthorsIterator = controllerBean.getSetAuthors().iterator();
+    public Author extractCurrSearchedAuthor(Set<Author> setAuthors, Author search) {
+        Iterator<Author> setAuthorsIterator = setAuthors.iterator();
+        Author searchAuthor = search;
         Author currAuthor;
         Author mergedAuthor;
         while (setAuthorsIterator.hasNext()) {
             currAuthor = setAuthorsIterator.next();
-            if (currAuthor.getFullname().equals(controllerBean.getSearch().getFullname())) {
-                mergedAuthor = new AuthorMerger().mergeAuthors(currAuthor, controllerBean.getSearch());
-                controllerBean.setSearch(mergedAuthor);
+            if (currAuthor.getFullname().equals(search.getFullname())) {
+                mergedAuthor = new AuthorMerger().mergeAuthors(currAuthor, search);
+                searchAuthor = mergedAuthor;
             }
         }
+        return searchAuthor;
     }
 }

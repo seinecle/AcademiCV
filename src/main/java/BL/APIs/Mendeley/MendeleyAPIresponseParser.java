@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import javax.faces.bean.ManagedProperty;
 
 /**
@@ -18,21 +19,14 @@ public class MendeleyAPIresponseParser {
 
     ContainerMendeleyDocuments container;
     private int nbMendeleyDocs = 0;
-    private Author search;
-    @ManagedProperty("#{controllerBean}")
-    private ControllerBean controllerBean;
-
-    public void setcontrollerBean(ControllerBean controllerBean) {
-        this.controllerBean = controllerBean;
-    }
 
     public MendeleyAPIresponseParser(ContainerMendeleyDocuments container, Author search) {
         this.container = container;
-        this.search = search;
     }
 
-    public void parse() {
+    public Set<Document> parse() {
         List<MendeleyDocument> currList;
+        Set<Document> setMendeleyDocs = new HashSet();
 
         // this if else deals with the case when the container of Mendeley docs is empty, bc the Mendeley API was unresponsive
         // if the container is null, just create an empty list
@@ -76,11 +70,9 @@ public class MendeleyAPIresponseParser {
             newDoc.setPublication_outlet(currDoc.getPublication_outlet());
             newDoc.setWhereFrom("mendeley");
             newDoc.setYear(Integer.parseInt(currDoc.getYear()));
-            nbMendeleyDocs++;
-
-
-            controllerBean.addToSetDocs(newDoc);
-
+            setMendeleyDocs.add(newDoc);
         }
+
+        return setMendeleyDocs;
     }
 }

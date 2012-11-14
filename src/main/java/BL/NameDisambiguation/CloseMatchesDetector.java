@@ -1,137 +1,46 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package BL.NameDisambiguation;
 
-import Controller.AdminPanel;
-import Controller.ControllerBean;
 import Model.Author;
 import Model.CloseMatchBean;
-import Model.MapLabels;
-import Model.PersistingEdit;
 import Utils.DiffSpelling;
 import Utils.FindAllPairs;
 import Utils.Pair;
 import com.google.common.collect.Sets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
-import javax.faces.bean.ManagedProperty;
 import org.apache.commons.lang3.StringUtils;
 
-public class SpellingDifferencesChecker {
+/**
+ *
+ * @author C. Levallois
+ */
+public class CloseMatchesDetector {
 
-    TreeSet<Author> setCloseMatches = new TreeSet();
-    TreeSet<Author> setAuthorsWithEdits = new TreeSet();
-    ArrayList authorsInOneDoc;
-    Author currAuth;
-    String mainFirstName;
-    String mainLastName;
-    boolean debug;
+    private String[] arrayTermsInFullnameInAuthor1;
+    private String[] arrayTermsInFullnameInAuthor2;
+    private HashSet<String> setTermsInFullnameAuthor1;
+    private HashSet<String> setTermsInFullnameAuthor2;
+    private String[] arrayTermsInSurnameInAuthor1;
+    private String[] arrayTermsInSurnameInAuthor2;
+    private HashSet<String> setTermsInSurnameAuthor1;
+    private HashSet<String> setTermsInSurnameAuthor2;
+    private HashSet<String> intersectFullNamesAuthor1And2;
+    private HashMap<String, Pair<String, Integer>> mapEdits;
+    private Author search;
     private TreeMap<String, String> mapLabels = new TreeMap();
     private boolean atLeastOneMatchFound = false;
-    static private String[] arrayTermsInFullnameInAuthor1;
-    static private String[] arrayTermsInFullnameInAuthor2;
-    static private HashSet<String> setTermsInFullnameAuthor1;
-    static private HashSet<String> setTermsInFullnameAuthor2;
-    static private String[] arrayTermsInSurnameInAuthor1;
-    static private String[] arrayTermsInSurnameInAuthor2;
-    static private HashSet<String> setTermsInSurnameAuthor1;
-    static private HashSet<String> setTermsInSurnameAuthor2;
-    static private HashSet<String> intersectFullNamesAuthor1And2;
-    static private HashMap<String, Pair<String, Integer>> mapEdits;
-    static private boolean wisdomCrowd;
-    private Set<Author> setAuthorsOriginal;
-    private Author search;
-    @ManagedProperty("#{controllerBean}")
-    private ControllerBean controllerBean;
+    private Set<CloseMatchBean> setCloseMatches = new HashSet();
 
-    public void setcontrollerBean(ControllerBean controllerBean) {
-        this.controllerBean = controllerBean;
-    }
-
-    public SpellingDifferencesChecker(Set<Author> setAuthorsOriginal, boolean wisdomCrowd, Author search) {
-
-        this.search = search;
-        SpellingDifferencesChecker.wisdomCrowd = wisdomCrowd;
-        this.setAuthorsOriginal = setAuthorsOriginal;
-
-    }
-
-    public boolean check() {
-
-        debug = AdminPanel.wisdomCrowdsDebugStateTrueOrFalse();
-
-        //***********
-        //if the user has selected the wisdom of the crowds in the UI
-        //retrieve the persisted edits corresponding to the author currently being searched
-        //***********
-
-        if (wisdomCrowd) {
-            List<PersistingEdit> listEdits = ControllerBean.ds.find(PersistingEdit.class).field("reference").equal(search.getFullnameWithComma()).field("counter").greaterThan(1).asList();
-            mapEdits = new HashMap();
-            int elementCounter;
-            String elementEditedForm;
-            String elementOriginalForm;
-            int elementCounterInMap;
-
-            for (PersistingEdit element : listEdits) {
-                elementCounter = element.getCounter();
-//            System.out.println("elementCounter: " + elementCounter);
-                elementEditedForm = element.getEditedForm();
-//            System.out.println("elementEditedForm: " + elementEditedForm);
-                elementOriginalForm = element.getOriginalForm();
-//            System.out.println("elementOriginalForm: " + elementOriginalForm);
-
-                if (!mapEdits.containsKey(elementOriginalForm)) {
-                    mapEdits.put(elementOriginalForm, new Pair(elementEditedForm, elementCounter));
-                } else {
-                    elementCounterInMap = mapEdits.get(elementOriginalForm).getRight();
-                    if (elementCounterInMap < elementCounter) {
-                        mapEdits.put(elementOriginalForm, new Pair(elementEditedForm, elementCounter));
-                    }
-                }
-            }
-        }
-
-
-
-        //***********
-        // makes the necessary edits, retrieved in the step before from the database, to the set of Authors
-        //***********
-
-        Iterator<Author> setAuthorsOriginalIterator = setAuthorsOriginal.iterator();
-        while (setAuthorsOriginalIterator.hasNext()) {
-            currAuth = setAuthorsOriginalIterator.next();
-            if (wisdomCrowd && !debug) {
-                boolean editAlreadyExists = mapEdits.containsKey(currAuth.getFullnameWithComma());
-                if (editAlreadyExists) {
-                    String editedForm = mapEdits.get(currAuth.getFullnameWithComma()).getLeft();
-                    String[] terms = editedForm.split(",");
-                    currAuth.setForename(terms[0].trim());
-                    currAuth.setSurname(terms[1].trim());
-                    currAuth.setFullname(terms[0].trim() + " " + terms[1].trim());
-                }
-            }
-            //we don't keep in the set of authors the badly spelled versions of the author's name
-            if (StringUtils.stripAccents(currAuth.getFullname()).toLowerCase().replaceAll("-", " ").trim().equals(StringUtils.stripAccents(search.getFullname().toLowerCase().replaceAll("-", " ").trim()))) {
-                continue;
-            }
-
-            setAuthorsWithEdits.add(currAuth);
-        }
-        controllerBean.setSetAuthors(setAuthorsWithEdits);
-
-
-
-        //***********
-        // finds all pairs of authors ans starts the detection of near homonyms
-        //***********
-
+    public Set<CloseMatchBean> check(Set<Author> setAuthorsWithEdits) {
         Set<Pair<Author, Author>> setPairs = new FindAllPairs().getAllPairs(setAuthorsWithEdits);
         Iterator<Pair<Author, Author>> setPairsIterator = setPairs.iterator();
         Author author1;
@@ -175,53 +84,20 @@ public class SpellingDifferencesChecker {
                 cmb.setAuthor2Displayed(new DiffSpelling().diff_text2Custom(diffs));
 //                System.out.println("displayed 1" + cmb.getAuthor1Displayed());
 //                System.out.println("displayed 2" + cmb.getAuthor2Displayed());
-                setCloseMatches.add(new Author(cmb.getAuthor1()));
-                setCloseMatches.add(new Author(cmb.getAuthor2()));
-
-                //PERSIST CLOSE MATCHES
-                controllerBean.addToSetCloseMatches(cmb);
+//                setCloseMatches.add(new Author(cmb.getAuthor1()));
+//                setCloseMatches.add(new Author(cmb.getAuthor2()));
+                  setCloseMatches.add(cmb);  
 
             }
         }
-
-
-        //***********
-        // persist a map of labels
-        // this is a map of the form ("original form of the author spelling in the set of Authors", "corrected form of this Author following user input")
-        // this map is useful to keep a connection between original form an subsequent modifications
-        // here, this map is populated with only the others that were not found to be similar to another.
-        // this map will be modified in the paircheck and finalcheck webpages, with user input.
-        //***********        
-
-        Iterator<Author> setAuthorsIterator = setAuthorsWithEdits.iterator();
-        Author currAuthor;
-
-        while (setAuthorsIterator.hasNext()) {
-            currAuthor = setAuthorsIterator.next();
-            if (!setCloseMatches.contains(currAuthor)) {
-                if (!currAuthor.getFullnameWithComma().trim().equals(mainFirstName + ", " + mainLastName)) {
-//                    System.out.println("unambiguous author: " + currAuthor.getFullname());
-//                    System.out.println("main Auth: " + mainFirstName + " " + mainLastName);
-
-                    controllerBean.addToSetMapLabels(new MapLabels(currAuthor.getFullnameWithComma(), currAuthor.getFullnameWithComma()));
-                }
-            }
-        }
-
-
-        return atLeastOneMatchFound;
+        return setCloseMatches;
     }
 
-    private static float computeWeightedLD(Integer ld, String one, String two) {
-
+    private float computeWeightedLD(Integer ld, String one, String two) {
         return (float) ld / Math.min(one.length(), two.length());
     }
 
-    private static int thresholdLD(Author author1, Author author2, Integer ld, Float weightedLd) {
-
-
-
-
+    private int thresholdLD(Author author1, Author author2, Integer ld, Float weightedLd) {
         arrayTermsInFullnameInAuthor1 = author1.getFullname().split(" ");
         arrayTermsInFullnameInAuthor2 = author2.getFullname().split(" ");
 
@@ -293,8 +169,8 @@ public class SpellingDifferencesChecker {
         }
 
     }
-
-    private Author getSuggestion(Author author1, Author author2, int typeMatch) {
+    
+        private Author getSuggestion(Author author1, Author author2, int typeMatch) {
         Author author3;
         int code = typeMatch;
         boolean suggestionMade = false;
@@ -418,4 +294,5 @@ public class SpellingDifferencesChecker {
         return author3;
 
     }
+
 }

@@ -9,6 +9,7 @@ import Model.Document;
 import Utils.Pair;
 import com.google.common.collect.HashMultiset;
 import java.util.Iterator;
+import java.util.Set;
 import javax.faces.bean.ManagedProperty;
 
 /**
@@ -17,16 +18,9 @@ import javax.faces.bean.ManagedProperty;
  */
 public class DocsStatsHandler {
 
-    @ManagedProperty("#{controllerBean}")
-    private ControllerBean controllerBean;
-
-    public void setcontrollerBean(ControllerBean controllerBean) {
-        this.controllerBean = controllerBean;
-    }
-
-    public Pair<String, Integer> extractMostFrequentSource() {
+    public Pair<String, Integer> extractMostFrequentSource(Set<Document> setDocs) {
         HashMultiset multisetTitles = HashMultiset.create();
-        Iterator<Document> setDocsIterator = controllerBean.getSetDocs().iterator();
+        Iterator<Document> setDocsIterator = setDocs.iterator();
         Document currDoc;
         while (setDocsIterator.hasNext()) {
             currDoc = setDocsIterator.next();

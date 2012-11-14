@@ -5,12 +5,12 @@
 package BL.APIs.WorldCatIdentities;
 
 import Controller.ControllerBean;
-import View.ProgressBarMessenger;
 import Model.Author;
 import Model.Document;
 import Utils.RemoveNonASCII;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Set;
 import javax.faces.bean.ManagedProperty;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -55,12 +55,8 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
     private boolean yearFound;
     private InputSource is;
     private Author currAuthor;
-    @ManagedProperty("#{controllerBean}")
-    private ControllerBean controllerBean;
+    private Set<Document> setWorldcatDocs = new HashSet();
 
-    public void setcontrollerBean(ControllerBean controllerBean) {
-        this.controllerBean = controllerBean;
-    }
 
     public WorldCatAPIIdentityresponseParser(InputSource newIs, Author search) {
         this.is = newIs;
@@ -70,8 +66,7 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
 
     }
 
-    public void parse() throws IOException {
-
+    public Set<Document> parse() throws IOException {
 
 
         //get a factory
@@ -94,6 +89,7 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
         } catch (IOException ie) {
             System.out.println("IOException: " + ie);
         }
+        return setWorldcatDocs;
     }
 
     @Override
@@ -133,7 +129,7 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
 
         if (qName.startsWith("sub")) {
             newSub = true;
-            System.out.println("start of sub");
+//            System.out.println("start of sub");
 
             subBuilder = new StringBuilder();
         }
@@ -189,12 +185,12 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
         //case when an affiliation is provided with the author
         if (qName.equals("citation")) {
             if (currSub != null) {
-                System.out.println("currSub analized at end of citation...");
+//                System.out.println("currSub analyzed at end of citation...");
                 yearFound = currSub.matches(".*\\d\\d\\d\\d.*");
                 if (yearFound) {
-                    Author currMainSearchAuthor = controllerBean.getSearch();
-                    currMainSearchAuthor.setBirthYear((Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1"))));
-                    controllerBean.setSearch(currMainSearchAuthor);
+//                    Author currMainSearchAuthor = controllerBean.getSearch();
+//                    currMainSearchAuthor.setBirthYear((Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1"))));
+//                    controllerBean.setSearch(currMainSearchAuthor);
                 } else {
                     //nothing
                 }
@@ -210,11 +206,11 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
             }
             currDoc.setSummary(currSummary);
             currDoc.setLanguage(currLanguage);
-            System.out.println("document added to the set");
-            System.out.println("(title is:");
+//            System.out.println("document added to the set");
+//            System.out.println("(title is:");
             System.out.println(currDoc.getTitle());
             if (currDoc.getYear() != null & currDoc.getTitle() != null & currDoc.getAuthors() != null) {
-                controllerBean.addToSetDocs(currDoc);
+                setWorldcatDocs.add(currDoc);
             }
 
 
@@ -266,12 +262,12 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
 
         if (qName.equals("authorityInfo")) {
             if (currSub != null) {
-                System.out.println("currSub analized at end of citation...");
+//                System.out.println("currSub analyzed at end of citation...");
                 yearFound = currSub.matches(".*\\d\\d\\d\\d.*");
                 if (yearFound) {
-                    Author currMainSearchAuthor = controllerBean.getSearch();
-                    currMainSearchAuthor.setBirthYear((Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1"))));
-                    controllerBean.setSearch(currMainSearchAuthor);
+//                    Author currMainSearchAuthor = controllerBean.getSearch();
+//                    currMainSearchAuthor.setBirthYear((Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1"))));
+//                    controllerBean.setSearch(currMainSearchAuthor);
                 } else {
                     //nothing
                 }
@@ -283,7 +279,7 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
 
         if (qName.equals("nameInfo")) {
             if (currSub != null) {
-                System.out.println("currSub analized at end of citation...");
+//                System.out.println("currSub analized at end of citation...");
                 yearFound = currSub.matches(".*\\d\\d\\d\\d.*");
                 if (yearFound) {
 //                    Author currMainSearchAuthor = ControllerBean.getSearch();

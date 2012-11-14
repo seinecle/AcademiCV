@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
@@ -52,7 +53,10 @@ public class FinalCheckBean implements Serializable {
         this.controllerBean = controllerBean;
     }
 
-    public FinalCheckBean() {
+    public FinalCheckBean() {}
+    
+    @PostConstruct
+    private void init(){
         System.out.println("new FinalCheckBean!");
 
 

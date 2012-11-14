@@ -178,10 +178,10 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
                     URIreconstructed = "do not include in the set!";
                 }
                 URIreconstructed = URIreconstructed.replaceAll(" ", "%20");
-                System.out.println("currURI = " + currURI);
-                System.out.println("URIreconstructed = " + URIreconstructed);
+//                System.out.println("currURI = " + currURI);
+//                System.out.println("URIreconstructed = " + URIreconstructed);
                 currSearchName = currSearchName.replaceAll(" ", "%20").toLowerCase();
-                System.out.println("currSearchName: " + currSearchName);
+//                System.out.println("currSearchName: " + currSearchName);
 
                 if (!URIreconstructed.contains(currSearchName)) {
                     currURI = null;

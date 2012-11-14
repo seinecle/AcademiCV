@@ -31,7 +31,7 @@ public class MendeleyAPICaller {
 
         if (!debug) {
             String APIcall = "http://api.mendeley.com/oapi/documents/authored/" + "%22" + quidamFirstName + "%20" + quidamLastName + "%22" + "/" + "?consumer_key=" + APIkey + "&items=1000";
-            System.out.println("API call is:");
+            System.out.println("Mendeley API call is:");
             System.out.println(APIcall);
 
             URL mendeley = new URL(APIcall);

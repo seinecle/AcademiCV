@@ -41,7 +41,7 @@ public class WorldCatAPICallerWithIdentityCode {
 
             
             String APIcall = "http://worldcat.org"+ currIdentity + "/identity.xml";
-            System.out.println("WorldCat API call is:");
+            System.out.println("WorldCat Identity API call is:");
             System.out.println(APIcall);
 
             URL worldcat = new URL(APIcall);

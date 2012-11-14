@@ -10,6 +10,9 @@ import View.ProgressBarMessenger;
 import java.io.Serializable;
 import java.util.concurrent.Callable;
 import Model.Author;
+import Model.Document;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -25,15 +28,16 @@ public class MendeleyAPIController implements Callable, Serializable {
     }
 
     @Override
-    public Integer call() throws Exception {
-
+    public Set<Document> call() throws Exception {
+        Set<Document> setMendeleyDocs;
         Clock gettingMendeleyData = new Clock("calling Mendeley...");
         mendeleyDocs = MendeleyAPICaller.run(search.getForename(), search.getSurname());
         ProgressBarMessenger.setProgress("mendeley returned");
         MendeleyAPIresponseParser parser = new MendeleyAPIresponseParser(mendeleyDocs, search);
-        parser.parse();
+        setMendeleyDocs = parser.parse();
         gettingMendeleyData.closeAndPrintClock();
+        System.out.println("about to return the set of Mendeley docs, size is: " + setMendeleyDocs.size());
 
-        return null;
+        return setMendeleyDocs;
     }
 }
