@@ -14,12 +14,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import javax.faces.bean.ManagedProperty;
 
 /**
  *
  * @author C. Levallois
  */
 public class AuthorStatsHandler {
+
+    @ManagedProperty("#{controllerBean}")
+    private ControllerBean controllerBean;
+
+    public void setcontrollerBean(ControllerBean controllerBean) {
+        this.controllerBean = controllerBean;
+    }
 
     public Set<Author> updateAuthorNamesAfterUserInput() {
 
@@ -49,7 +57,7 @@ public class AuthorStatsHandler {
         // *********
         mapDocs = new HashMap();
         int docCounter = 0;
-        for (Document element : ControllerBean.setDocs) {
+        for (Document element : controllerBean.getSetDocs()) {
             docCounter++;
             element.setDocId(docCounter);
             mapDocs.put(docCounter, element);
@@ -64,7 +72,7 @@ public class AuthorStatsHandler {
         // *********
         // put the labels in the set into a more convenient map<String,String> form
         // *********
-        setMapLabelsIterator = ControllerBean.setMapLabels.iterator();
+        setMapLabelsIterator = controllerBean.getSetMapLabels().iterator();
         MapLabels currMapLabels;
         mapIncorrectToCorrect = new HashMap();
         String[] terms;
@@ -97,7 +105,7 @@ public class AuthorStatsHandler {
                 int currStart;
                 int currEnd;
                 currAuthor = currSetAuthorsIterator.next();
-                if (currAuthor.getFullname().equals(ControllerBean.getSearch().getFullname())) {
+                if (currAuthor.getFullname().equals(controllerBean.getSearch().getFullname())) {
                     continue;
                 }
 //                System.out.println("currAuthor fullname with comma is: " + currAuthor.getFullname());
@@ -191,22 +199,25 @@ public class AuthorStatsHandler {
                 setMostFrequentCoAuthorsIterator.remove();
             }
         }
-        ControllerBean.mostFrequentCoAuthors = setMostFrequentCoAuthors;
+        Author currSearch = controllerBean.getSearch();
+        currSearch.setSetMostFrequentCoAuthors(setMostFrequentCoAuthors);
 
 
         //find earliest and latest dates of publication
         int earliest = 3000;
         int latest = 0;
-        for (Document element : ControllerBean.setDocs) {
+        for (Document element : controllerBean.getSetDocs()) {
             if (element.getYear() < earliest) {
                 earliest = element.getYear();
             }
             if (element.getYear() > latest) {
                 latest = element.getYear();
             }
-            ControllerBean.minYear = earliest;
-            ControllerBean.maxYear = latest;
+            currSearch.setYearFirstCollab(earliest);
+            currSearch.setYearLastCollab(latest);
+
         }
+        controllerBean.setSearch(currSearch);
 
 
 

@@ -11,12 +11,20 @@ import com.google.common.collect.HashMultiset;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import javax.faces.bean.ManagedProperty;
 
 /**
  *
  * @author C. Levallois
  */
 public class AuthorsExtractor {
+
+    @ManagedProperty("#{controllerBean}")
+    private ControllerBean controllerBean;
+
+    public void setcontrollerBean(ControllerBean controllerBean) {
+        this.controllerBean = controllerBean;
+    }
 
     public AuthorsExtractor() {
     }
@@ -35,15 +43,15 @@ public class AuthorsExtractor {
         return setAllAuthors;
     }
 
-    public static void extractCurrSearchedAuthor() {
-        Iterator<Author> setAuthorsIterator = ControllerBean.setAuthors.iterator();
+    public void extractCurrSearchedAuthor() {
+        Iterator<Author> setAuthorsIterator = controllerBean.getSetAuthors().iterator();
         Author currAuthor;
         Author mergedAuthor;
         while (setAuthorsIterator.hasNext()) {
             currAuthor = setAuthorsIterator.next();
-            if (currAuthor.getFullname().equals(ControllerBean.getSearch().getFullname())) {
-                mergedAuthor = new AuthorMerger().mergeAuthors(currAuthor, ControllerBean.getSearch());
-                ControllerBean.setSearch(mergedAuthor);
+            if (currAuthor.getFullname().equals(controllerBean.getSearch().getFullname())) {
+                mergedAuthor = new AuthorMerger().mergeAuthors(currAuthor, controllerBean.getSearch());
+                controllerBean.setSearch(mergedAuthor);
             }
         }
     }

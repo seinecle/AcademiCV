@@ -14,6 +14,7 @@ import com.itextpdf.text.Font.FontFamily;
 import com.itextpdf.text.Paragraph;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import javax.faces.bean.ManagedProperty;
 import org.joda.time.DateTime;
 
@@ -94,12 +95,12 @@ public class ParagraphBuilder {
     }
 
     public String getMostFrequentCoAuthors() {
-        HashSet<Author> mostFrequentCoAuthors = ControllerBean.mostFrequentCoAuthors;
+        Set<Author> mostFrequentCoAuthors = controllerBean.getSearch().getSetMostFrequentCoAuthors();
         StringBuilder toReturn = new StringBuilder();
         if (mostFrequentCoAuthors.size() == 1) {
             Author mostFrequentCoAuthor = mostFrequentCoAuthors.iterator().next();
             int nbCollab = mostFrequentCoAuthor.getTimesMentioned();
-            toReturn.append("His or her most frequent co-author is " + mostFrequentCoAuthor.getFullname());
+            toReturn.append("His or her most frequent co-author is ").append(mostFrequentCoAuthor.getFullname());
             toReturn.append("\n\n");
             toReturn.append("Together, they wrote ");
             toReturn.append(mostFrequentCoAuthor.getTimesMentioned());

@@ -192,9 +192,9 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
                 System.out.println("currSub analized at end of citation...");
                 yearFound = currSub.matches(".*\\d\\d\\d\\d.*");
                 if (yearFound) {
-//                    Author currMainSearchAuthor = ControllerBean.getSearch();
-//                    currMainSearchAuthor.setBirthYear((Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1"))));
-//                    ControllerBean.setSearch(currMainSearchAuthor);
+                    Author currMainSearchAuthor = controllerBean.getSearch();
+                    currMainSearchAuthor.setBirthYear((Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1"))));
+                    controllerBean.setSearch(currMainSearchAuthor);
                 } else {
                     //nothing
                 }
@@ -269,9 +269,9 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
                 System.out.println("currSub analized at end of citation...");
                 yearFound = currSub.matches(".*\\d\\d\\d\\d.*");
                 if (yearFound) {
-//                    Author currMainSearchAuthor = ControllerBean.getSearch();
-//                    currMainSearchAuthor.setBirthYear((Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1"))));
-//                    ControllerBean.setSearch(currMainSearchAuthor);
+                    Author currMainSearchAuthor = controllerBean.getSearch();
+                    currMainSearchAuthor.setBirthYear((Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1"))));
+                    controllerBean.setSearch(currMainSearchAuthor);
                 } else {
                     //nothing
                 }

@@ -17,7 +17,6 @@ import org.joda.time.DateTime;
  */
 public class Document implements Comparable<Document>, Serializable {
 
-    private String uuid;
     private Integer docId;
     private String title;
     private String publication_outlet;
@@ -25,6 +24,7 @@ public class Document implements Comparable<Document>, Serializable {
     private Integer year;
     private String whereFrom;
     private String mendeley_url;
+    private String nyt_url;
     private String doi;
     private DateTime creationDateTime;
     private String topicArxiv;
@@ -33,7 +33,6 @@ public class Document implements Comparable<Document>, Serializable {
     private String language;
 
     public Document() {
-        this.uuid = ControllerBean.uuid.toString();
     }
 
     public void setTitle(String title) {
@@ -84,14 +83,6 @@ public class Document implements Comparable<Document>, Serializable {
 
     public HashSet<Author> getAuthors() {
         return authors;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid.toString();
     }
 
     public String getWhereFrom() {
@@ -150,6 +141,16 @@ public class Document implements Comparable<Document>, Serializable {
         this.language = language;
     }
 
+    public String getNyt_url() {
+        return nyt_url;
+    }
+
+    public void setNyt_url(String nyt_url) {
+        this.nyt_url = nyt_url;
+    }
+    
+    
+
     @Override
     public String toString() {
         String toPrint;
@@ -167,10 +168,10 @@ public class Document implements Comparable<Document>, Serializable {
 //                }
                 sb.append(coauthor.getFullname()).append(". ");
             }
-            toPrint = "uuid: " + uuid + ". co-author(s): " + sb.toString() + " Title: " + title + ". Year: " + year + ".\n";
+            toPrint = "co-author(s): " + sb.toString() + " Title: " + title + ". Year: " + year + ".\n";
 
         } else {
-            toPrint = "uuid: " + uuid + ". No author listed. Title: " + title + ". Year: " + year + ".\n";
+            toPrint = "No author listed. Title: " + title + ". Year: " + year + ".\n";
         }
         return toPrint;
     }

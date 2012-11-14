@@ -9,6 +9,7 @@ import com.google.code.morphia.query.Query;
 import com.google.code.morphia.query.UpdateOperations;
 import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 
 /**
@@ -30,6 +31,13 @@ public class MapLabels implements Comparable<MapLabels>, Serializable {
     private boolean deleted;
     private Query<GlobalEditsCounter> updateQueryCounter;
     private UpdateOperations<GlobalEditsCounter> opsCounter;
+    
+    @ManagedProperty("#{controllerBean}")
+    private ControllerBean controllerBean;
+
+    public void setcontrollerBean(ControllerBean controllerBean) {
+        this.controllerBean = controllerBean;
+    }
 
     public MapLabels() {
     }
@@ -89,7 +97,7 @@ public class MapLabels implements Comparable<MapLabels>, Serializable {
         System.out.println("author edited is set: " + label3);
         this.label3 = label3.trim();
 
-        updateQuery = ControllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma());
+        updateQuery = ControllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(controllerBean.getSearch().getFullnameWithComma());
         updateQuery.field("originalForm").equal(label2);
         updateQuery.field("editedForm").equal(label3);
         ops = ControllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
@@ -98,7 +106,7 @@ public class MapLabels implements Comparable<MapLabels>, Serializable {
         updateQueryCounter = ControllerBean.ds.createQuery(GlobalEditsCounter.class);
         opsCounter = ControllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 2);
         ControllerBean.ds.update(updateQueryCounter, opsCounter, true);
-        ControllerBean.pushCounter();
+        controllerBean.pushCounter();
 
         this.label2 = label3;
 

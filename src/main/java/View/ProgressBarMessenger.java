@@ -27,7 +27,6 @@ import javax.faces.bean.ViewScoped;
 public class ProgressBarMessenger implements Serializable {
 
     private static StringBuilder sb = new StringBuilder();
-    private List<Callable<Integer>> calls = controllerBean.getCalls();
     private List<Future<Integer>> futures;
     private Callable<Integer> currCall;
     private boolean callsComplete = false;
@@ -43,6 +42,7 @@ public class ProgressBarMessenger implements Serializable {
     public void setcontrollerBean(ControllerBean controllerBean) {
         this.controllerBean = controllerBean;
     }
+    private List<Callable<Integer>> calls = controllerBean.getCalls();
 
     public ProgressBarMessenger() {
 

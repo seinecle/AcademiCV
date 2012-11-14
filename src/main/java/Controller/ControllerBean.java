@@ -103,7 +103,12 @@ public class ControllerBean implements Serializable {
     private int tempBirthYear = 0;
     private boolean coAuthorsFound = true;
     private String feedback;
-    private List<Callable<Integer>> calls = new ArrayList<Callable<Integer>>();
+    private List<Callable<Integer>> calls;
+    private Callable<Integer> worldcatCallable;
+    private Callable<Integer> arxivCallable;
+    private Callable<Integer> mendeleyCallable;
+    private Callable<Integer> nytCallable;
+    private Set<Document> setMediaDocs;
 
     @PostConstruct
     private void init() {
@@ -175,7 +180,8 @@ public class ControllerBean implements Serializable {
     }
 
     public void launchNewSearch() throws Exception {
-
+        setMediaDocs = new HashSet();
+        calls = new ArrayList<Callable<Integer>>();
         multisetAuthors = HashMultiset.create();
         setAuthors = new HashSet();
         setDocumentsUnFiltered = new HashSet();
@@ -186,8 +192,6 @@ public class ControllerBean implements Serializable {
         mapAuthorToDates = new HashMap();
         setDocumentsUnFiltered = new HashSet();
         segments = new ArrayList();
-        nbMendeleyDocs = 0;
-        nbArxivDocs = 0;
 
 
         //Cleans a bit the user input
@@ -215,10 +219,10 @@ public class ControllerBean implements Serializable {
 
         //-2
         // Calling all APIS
-        Callable<Integer> worldcatCallable = new WorldCatAPIController(search);
-        Callable<Integer> arxivCallable = new ArxivAPIController(search);
-        Callable<Integer> mendeleyCallable = new MendeleyAPIController(search);
-        Callable<Integer> nytCallable = new NYTAPIController(search);
+        worldcatCallable = new WorldCatAPIController(search);
+        arxivCallable = new ArxivAPIController(search);
+        mendeleyCallable = new MendeleyAPIController(search);
+        nytCallable = new NYTAPIController(search);
         calls.add(worldcatCallable);
         calls.add(arxivCallable);
         calls.add(mendeleyCallable);
@@ -264,9 +268,10 @@ public class ControllerBean implements Serializable {
 
         //8 bis
         //extracts the author being currently researched from the set of Authors and puts it in a field in the controllerBean: currSearch
-        AuthorsExtractor.extractCurrSearchedAuthor();
-
+        AuthorsExtractor authorsExtractor = new AuthorsExtractor();
+        authorsExtractor.extractCurrSearchedAuthor();
         search.setBirthYear(tempBirthYear);
+
         //9
         //Detects pairs of names which are probably the same person, with different spellings / misspellings
         Clock spellCheckClock = new Clock("finding possible misspellings in names");
@@ -315,8 +320,8 @@ public class ControllerBean implements Serializable {
         //generate descriptive stats at this stage
         Clock generateStats = new Clock("generating descriptive stats on the set of authors after user input");
         setAuthors = new AuthorStatsHandler().updateAuthorNamesAfterUserInput();
-        new DocsStatsHandler().computeNumberDocs();
-        mostFreqSource = new DocsStatsHandler().extractMostFrequentSource();
+        DocsStatsHandler docsStatsHandler = new DocsStatsHandler();
+        mostFreqSource = docsStatsHandler.extractMostFrequentSource();
         generateStats.closeAndPrintClock();
 
 
@@ -385,18 +390,6 @@ public class ControllerBean implements Serializable {
     public int getCount() {
         return count;
     }
-    
-    
-
-    public synchronized void pushCounter() {
-//        int count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
-//        System.out.println("counter in pushCounter method in ControllerBean is:" + count);
-//        PushContext pushContext = PushContextFactory.getDefault().getPushContext();
-//        pushContext.push("/counter", String.valueOf(count).trim());
-//        System.out.println("string value of count: ");
-//        System.out.println("string value of count: " + String.valueOf(count).trim());
-        count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
-    }
 
     public int getMinYear() {
         return minYear;
@@ -449,11 +442,11 @@ public class ControllerBean implements Serializable {
     public void setSetDocs(Set<Document> setDocs) {
         this.setDocs = setDocs;
     }
-    
+
     public void addToSetDocs(Set<Document> newSetDocs) {
         this.setDocs.addAll(newSetDocs);
     }
-    
+
     public void addToSetDocs(Document doc) {
         this.setDocs.add(doc);
     }
@@ -473,11 +466,11 @@ public class ControllerBean implements Serializable {
     public void setSetCloseMatches(TreeSet<CloseMatchBean> setCloseMatches) {
         this.setCloseMatches = setCloseMatches;
     }
-    
+
     public void addToSetCloseMatches(TreeSet<CloseMatchBean> setCloseMatches) {
         this.setCloseMatches.addAll(setCloseMatches);
     }
-    
+
     public void addToSetCloseMatches(CloseMatchBean closeMatch) {
         this.setCloseMatches.add(closeMatch);
     }
@@ -489,15 +482,15 @@ public class ControllerBean implements Serializable {
     public void setSetMapLabels(TreeSet<MapLabels> setMapLabels) {
         this.setMapLabels = setMapLabels;
     }
-    
+
     public void addToSetMapLabels(TreeSet<MapLabels> setMapLabels) {
         this.setMapLabels.addAll(setMapLabels);
     }
-    
+
     public void addToSetMapLabels(MapLabels mapLabel) {
         this.setMapLabels.add(mapLabel);
     }
-    
+
     public void removeFromSetMapLabels(MapLabels mapLabel) {
         this.setMapLabels.remove(mapLabel);
     }
@@ -505,11 +498,29 @@ public class ControllerBean implements Serializable {
     public List<Callable<Integer>> getCalls() {
         return calls;
     }
-    
-    
+
+    public String getFeedback() {
+        return feedback;
+    }
+
+    public Set<Document> getSetMediaDocs() {
+        return setMediaDocs;
+    }
+
+    public void setSetMediaDocs(Set<Document> setMediaDocs) {
+        this.setMediaDocs = setMediaDocs;
+    }
+
+    public void addToSetMediaDocs(Set<Document> setMediaDocs) {
+        this.setMediaDocs.addAll(setMediaDocs);
+    }
+
+    public void addToSetMediaDocs(Document mediaDoc) {
+        this.setMediaDocs.add(mediaDoc);
+    }
 
     
-
+    
     public void prepareNewSearch() {
         Map<String, Object> map = FacesContext.getCurrentInstance().getExternalContext().getApplicationMap();
 
@@ -540,11 +551,7 @@ public class ControllerBean implements Serializable {
         updateQueryPA = ds.createQuery(PersistingAcademic.class).field("fullNameWithComma").equal(search.getFullnameWithComma());
         opsPA = ds.createUpdateOperations(PersistingAcademic.class).inc("searchCount", 1);
 
-        ds.update(updateQueryPA, opsPA,true);
-    }
-
-    public String getFeedback() {
-        return feedback;
+        ds.update(updateQueryPA, opsPA, true);
     }
 
     public void setFeedback(String feedback) {
@@ -571,5 +578,15 @@ public class ControllerBean implements Serializable {
         ds.save(pf);
         System.out.println("feedback persisted: " + toBePersisted.toString());
 
+    }
+
+    public synchronized void pushCounter() {
+//        int count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
+//        System.out.println("counter in pushCounter method in ControllerBean is:" + count);
+//        PushContext pushContext = PushContextFactory.getDefault().getPushContext();
+//        pushContext.push("/counter", String.valueOf(count).trim());
+//        System.out.println("string value of count: ");
+//        System.out.println("string value of count: " + String.valueOf(count).trim());
+        count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
     }
 }

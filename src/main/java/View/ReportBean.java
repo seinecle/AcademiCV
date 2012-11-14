@@ -4,13 +4,14 @@
  */
 package View;
 
-import BL.APIs.NYT.*;
 import Controller.ControllerBean;
 import Model.Author;
+import Model.Document;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
@@ -100,10 +101,13 @@ public class ReportBean implements Serializable {
         } else {
             sb.append(controllerBean.getSearch().getFullname());
             sb.append(" is mentioned in the following article(s) fron the New York Times:<br>");
-            for (NYTDoc element : NYTAPIController.getNYTDocs().getDocuments()) {
-                sb.append(element.getDate().substring(0, 4));
+            for (Document element : controllerBean.getSetMediaDocs()) {
+                if (!element.getPublication_outlet().equals("New York Times")) {
+                    continue;
+                }
+                sb.append(element.getYear());
                 sb.append(". \"<a href=\"");
-                sb.append(element.getUrl());
+                sb.append(element.getNyt_url());
                 sb.append("\">");
                 sb.append(element.getTitle());
                 sb.append("</a>.\"");
@@ -149,16 +153,16 @@ public class ReportBean implements Serializable {
         toReturn.append(controllerBean.getSetDocs().size());
         if (controllerBean.getSetDocs().size() == 1) {
             toReturn.append(" document in ");
-            toReturn.append(controllerBean.minYear);
+            toReturn.append(controllerBean.getSearch().getYearFirstCollab());
 
-        } else if (controllerBean.minYear == controllerBean.maxYear) {
+        } else if (controllerBean.getSearch().getYearFirstCollab() == controllerBean.getSearch().getYearLastCollab()) {
             toReturn.append(" documents in ");
-            toReturn.append(controllerBean.minYear);
+            toReturn.append(controllerBean.getSearch().getYearFirstCollab());
         } else {
             toReturn.append(" documents between ");
-            toReturn.append(controllerBean.minYear);
+            toReturn.append(controllerBean.getSearch().getYearFirstCollab());
             toReturn.append(" and ");
-            toReturn.append(controllerBean.maxYear);
+            toReturn.append(controllerBean.getSearch().getYearLastCollab());
         }
         if (controllerBean.getSetDocs().size() > 0) {
             toReturn.append(", with a total of ");
@@ -210,7 +214,7 @@ public class ReportBean implements Serializable {
     }
 
     public String getMostFrequentCoAuthors() {
-        HashSet<Author> mostFrequentCoAuthors = controllerBean.mostFrequentCoAuthors;
+        Set<Author> mostFrequentCoAuthors = controllerBean.getSearch().getSetMostFrequentCoAuthors();
         StringBuilder toReturn = new StringBuilder();
 
         if (mostFrequentCoAuthors == null) {
@@ -235,7 +239,7 @@ public class ReportBean implements Serializable {
             } else {
                 toReturn.append(" documents");
             }
-            if (controllerBean.minYear == controllerBean.maxYear) {
+            if (controllerBean.getSearch().getYearFirstCollab() == controllerBean.getSearch().getYearLastCollab()) {
                 toReturn.append(" in  ");
                 toReturn.append(mostFrequentCoAuthor.getYearFirstCollab());
             } else {

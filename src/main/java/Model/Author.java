@@ -4,6 +4,7 @@
  */
 package Model;
 
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -15,6 +16,7 @@ public class Author extends Quidam {
     private int yearFirstCollab;
     private int yearLastCollab;
     private int timesMentioned;
+    private Set<Author> setMostFrequentCoAuthors;
 
     public Author() {
     }
@@ -62,6 +64,15 @@ public class Author extends Quidam {
     public void setTimesMentioned(int timesMentioned) {
         this.timesMentioned = timesMentioned;
     }
+
+    public Set<Author> getSetMostFrequentCoAuthors() {
+        return setMostFrequentCoAuthors;
+    }
+
+    public void setSetMostFrequentCoAuthors(Set<Author> setMostFrequentCoAuthors) {
+        this.setMostFrequentCoAuthors = setMostFrequentCoAuthors;
+    }
+    
     
     
 }

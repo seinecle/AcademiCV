@@ -8,6 +8,7 @@ import Controller.ControllerBean;
 import Model.Author;
 import com.google.common.collect.HashMultiset;
 import java.util.Iterator;
+import javax.faces.bean.ManagedProperty;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -15,6 +16,13 @@ import org.apache.commons.lang3.StringUtils;
  * @author C. Levallois
  */
 public class AuthorNamesCleaner {
+
+    @ManagedProperty("#{controllerBean}")
+    private ControllerBean controllerBean;
+
+    public void setcontrollerBean(ControllerBean controllerBean) {
+        this.controllerBean = controllerBean;
+    }
 
     public HashMultiset<Author> clean(HashMultiset<Author> setAuthors) {
         HashMultiset<Author> returnedSet = HashMultiset.create();
@@ -31,7 +39,7 @@ public class AuthorNamesCleaner {
             }
 
             //we don't keep in the set of authors the badly spelled versions of the author's name
-            if (StringUtils.stripAccents(currAuthor.getFullname()).toLowerCase().replaceAll("-", " ").trim().equals(StringUtils.stripAccents(ControllerBean.getSearch().getFullname().toLowerCase().replaceAll("-", " ").trim()))) {
+            if (StringUtils.stripAccents(currAuthor.getFullname()).toLowerCase().replaceAll("-", " ").trim().equals(StringUtils.stripAccents(controllerBean.getSearch().getFullname().toLowerCase().replaceAll("-", " ").trim()))) {
                 continue;
             }
 
