@@ -41,10 +41,12 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
     private String currBirthYear;
     private String currSearchName;
     HashSet<String> setIdentitiesFound;
+    private Author search;
 
-    public WorldCatAPIresponseParser(InputSource newIs) {
+    public WorldCatAPIresponseParser(InputSource newIs, Author search) {
         this.is = newIs;
-        currSearchName = ControllerBean.getSearch().getFullname();
+        this.search  =search;
+        currSearchName = search.getFullname();
         currSearchName = StringUtils.stripAccents(currSearchName);
         currSearchName = RemoveNonASCII.remove(currSearchName);
         setIdentitiesFound = new HashSet();
@@ -139,9 +141,9 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
 
             yearFound = currURI.matches(".*\\(\\d\\d\\d\\d.*");
             if (yearFound) {
-                Author currMainSearchAuthor = ControllerBean.getSearch();
-                currMainSearchAuthor.setBirthYear(Integer.parseInt(currEstablishedForm.replaceAll(".*(\\(\\d\\d\\d\\d).*", "$1").substring(1)));
-                ControllerBean.setSearch(currMainSearchAuthor);
+//                Author currMainSearchAuthor = ControllerBean.getSearch();
+//                currMainSearchAuthor.setBirthYear(Integer.parseInt(currEstablishedForm.replaceAll(".*(\\(\\d\\d\\d\\d).*", "$1").substring(1)));
+//                ControllerBean.setSearch(currMainSearchAuthor);
             } else {
                 currBirthYear = null;
             }
@@ -163,11 +165,11 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
                     if (termsInURI[1].matches(".*\\$\\d\\d\\d\\d.*")) {
                         termsInURI[1] = termsInURI[1].replaceAll("(.*)(\\$\\d\\d\\d\\d)(.*)", "$1");
                     }
-                    if (!termsInURI[1].equals(StringUtils.stripAccents(ControllerBean.getSearch().getForename()))) {
+                    if (!termsInURI[1].equals(StringUtils.stripAccents(search.getForename()))) {
                         termsInURI[1] = "do not include in the set!";
                     }
 
-                    if (!termsInURI[0].equals(StringUtils.stripAccents(ControllerBean.getSearch().getSurname()))) {
+                    if (!termsInURI[0].equals(StringUtils.stripAccents(search.getSurname()))) {
                         termsInURI[0] = "do not include in the set!";
                     }
 

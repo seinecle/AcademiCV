@@ -12,14 +12,14 @@ import Model.Document;
  */
 public class DocumentMerger {
 
-    static Document merge(Document doc1, Document doc2) {
+    Document merge(Document doc1, Document doc2) {
         Document mergedDoc = new Document();
 
         //set Title
         mergedDoc.setTitle(doc1.getTitle());
 
         //set Authors
-        mergedDoc.setAuthors(AuthorMerger.mergeAuthorSets(doc1.getAuthors(), doc2.getAuthors()));
+        mergedDoc.setAuthors(new AuthorMerger().mergeAuthorSets(doc1.getAuthors(), doc2.getAuthors()));
 
         //set Year
         mergedDoc.setYear(doc1.getYear());

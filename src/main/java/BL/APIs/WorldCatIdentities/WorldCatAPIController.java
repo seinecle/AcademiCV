@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
 import org.xml.sax.InputSource;
+import Model.Author;
 
 /**
  *
@@ -21,8 +22,10 @@ public class WorldCatAPIController implements Callable, Serializable {
 
     private InputSource worldcatInputSource;
     private int currBirthYear;
+    private Author search;
 
-    public WorldCatAPIController() {
+    public WorldCatAPIController(Author search) {
+        this.search = search;
     }
 
     @Override
@@ -30,8 +33,8 @@ public class WorldCatAPIController implements Callable, Serializable {
         Clock gettingWorldCat = new Clock("calling WorldCat...");
 
         currBirthYear = 0;
-        worldcatInputSource = WorldCatAPICaller.run(ControllerBean.getSearch().getForename(), ControllerBean.getSearch().getSurname());
-        HashSet<String> setIdentities = new WorldCatAPIresponseParser(worldcatInputSource).parse();
+        worldcatInputSource = WorldCatAPICaller.run(search.getForename(), search.getSurname());
+        HashSet<String> setIdentities = new WorldCatAPIresponseParser(worldcatInputSource,search).parse();
         System.out.println("nb of identities found: " + setIdentities.size());
 //        ProgressBarMessenger.updateMsg("<p>hello from the worldcatAPI call!</p>");
         ProgressBarMessenger.setProgress("worldcat in progress");
@@ -42,12 +45,11 @@ public class WorldCatAPIController implements Callable, Serializable {
             currIdentity = setIdentitiesIterator.next();
             System.out.println("launching a second phase of WorldCat call: looking at the identity: " + currIdentity);
             worldcatInputSource = WorldCatAPICallerWithIdentityCode.run(currIdentity);
-            WorldCatAPIIdentityresponseParser worldcatIdentitiesParser = new WorldCatAPIIdentityresponseParser(worldcatInputSource);
+            WorldCatAPIIdentityresponseParser worldcatIdentitiesParser = new WorldCatAPIIdentityresponseParser(worldcatInputSource, search);
             worldcatIdentitiesParser.parse();
         }
 
         System.out.println("setting Temp Birth Year: " + currBirthYear);
-        ControllerBean.setTempBirthYear(currBirthYear);
         ProgressBarMessenger.setProgress("worldcat returned");
 
         gettingWorldCat.closeAndPrintClock();

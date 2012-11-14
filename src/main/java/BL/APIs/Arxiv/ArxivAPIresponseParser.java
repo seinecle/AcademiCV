@@ -11,6 +11,7 @@ import Model.Document;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import javax.faces.bean.ManagedProperty;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -48,6 +49,12 @@ public class ArxivAPIresponseParser extends DefaultHandler {
     private HashSet<Affiliation> currSetAffiliations;
     private InputSource is;
     private int nbArxivDocs = 0;
+    @ManagedProperty("#{controllerBean}")
+    private ControllerBean controllerBean;
+
+    public void setcontrollerBean(ControllerBean controllerBean) {
+        this.controllerBean = controllerBean;
+    }
 
     public ArxivAPIresponseParser(InputSource newIs) {
         this.is = newIs;
@@ -68,7 +75,6 @@ public class ArxivAPIresponseParser extends DefaultHandler {
             //parse the file and also register this class for call backs
             sp.parse(is, this);
 
-            ControllerBean.nbArxivDocs = nbArxivDocs;
 
         } catch (SAXException se) {
             System.out.println("SAXException: " + se);
@@ -149,7 +155,7 @@ public class ArxivAPIresponseParser extends DefaultHandler {
 
         //case when an affiliation is provided with the author
         if (qName.equalsIgnoreCase("author") & authorBuilder != null & currDocCurrAuthorAffiliation != null) {
-            currAuthor = new Author(authorBuilder.toString(), ControllerBean.uuid);
+            currAuthor = new Author(authorBuilder.toString());
             System.out.println("affiliation detected:");
             System.out.println(currDocCurrAuthorAffiliation);
             System.out.println(currDocYearPublished);
@@ -167,7 +173,7 @@ public class ArxivAPIresponseParser extends DefaultHandler {
 
         //case when no affiliation is provided with the author
         if (qName.equalsIgnoreCase("author") & authorBuilder != null & currDocCurrAuthorAffiliation == null) {
-            currAuthor = new Author(authorBuilder.toString(), ControllerBean.uuid);
+            currAuthor = new Author(authorBuilder.toString());
             currDocSetAuthors.add(currAuthor);
             newAuthor = false;
         }
@@ -201,11 +207,10 @@ public class ArxivAPIresponseParser extends DefaultHandler {
             currDocument.setTitle(currDocTitle);
             currDocument.setYear(currDocYearPublished);
             currDocument.setWhereFrom("arxiv");
-            currDocument.setUuid(ControllerBean.uuid);
             currDocument.setTopicArxiv(currDocPrimaryCategory);
 //            currDocument.setCreationDateTime(new DateTime());
             if (currDocSetAuthors != null & currDocTitle != null & currDocYearPublished != null) {
-                ControllerBean.setDocs.add(currDocument);
+                controllerBean.addToSetDocs(currDocument);
             }
             newEntry = false;
             nbArxivDocs++;
@@ -213,8 +218,6 @@ public class ArxivAPIresponseParser extends DefaultHandler {
 
         }
     }
-
-
 
     private void populateMapPrimaryCategories() {
 

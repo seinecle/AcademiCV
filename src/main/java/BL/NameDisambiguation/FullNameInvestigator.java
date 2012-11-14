@@ -21,10 +21,10 @@ import java.util.TreeSet;
  */
 public class FullNameInvestigator {
 
-    FullNameInvestigator() {
+    public FullNameInvestigator() {
     }
 
-    public static Set<Author> investigate(Set<Author> originalSet) {
+    public Set<Author> investigate(Set<Author> originalSet) {
 
         Set<Author> setAuthorsWithJustAFullname = new HashSet();
         Set<Author> setAuthorsWithFirstAndLastName = new HashSet();
@@ -73,7 +73,7 @@ public class FullNameInvestigator {
 
                 // if an identical name is found, end the search and copy the first and last name
                 if (distance == 0) {
-                    mergedAuthor = AuthorMerger.mergeAuthors(currAuthorWithJustFullName, currAuthorWithFirstnandLastName);
+                    mergedAuthor = new AuthorMerger().mergeAuthors(currAuthorWithJustFullName, currAuthorWithFirstnandLastName);
                     mergedAuthor.setForename(currAuthorWithFirstnandLastName.getForename());
                     mergedAuthor.setSurname(currAuthorWithFirstnandLastName.getSurname());
 //                    System.out.println("perfect match found");

@@ -9,6 +9,7 @@ import Utils.Clock;
 import View.ProgressBarMessenger;
 import java.io.Serializable;
 import java.util.concurrent.Callable;
+import Model.Author;
 
 /**
  *
@@ -16,17 +17,21 @@ import java.util.concurrent.Callable;
  */
 public class MendeleyAPIController implements Callable, Serializable {
 
-    public ContainerMendeleyDocuments mendeleyDocs;
+    private ContainerMendeleyDocuments mendeleyDocs;
+    private Author search;
+    
+    public MendeleyAPIController(Author search){
+        this.search = search;
+    }
 
     @Override
     public Integer call() throws Exception {
 
         Clock gettingMendeleyData = new Clock("calling Mendeley...");
-        mendeleyDocs = MendeleyAPICaller.run(ControllerBean.getSearch().getForename(), ControllerBean.getSearch().getSurname());
+        mendeleyDocs = MendeleyAPICaller.run(search.getForename(), search.getSurname());
         ProgressBarMessenger.setProgress("mendeley returned");
-        MendeleyAPIresponseParser parser = new MendeleyAPIresponseParser(mendeleyDocs);
+        MendeleyAPIresponseParser parser = new MendeleyAPIresponseParser(mendeleyDocs, search);
         parser.parse();
-        System.out.println("nb Mendeley docs found: " + ControllerBean.nbMendeleyDocs);
         gettingMendeleyData.closeAndPrintClock();
 
         return null;

@@ -9,9 +9,11 @@ minor features
 - improve the name suggestion for Wouter De Nooy, Sarah De Rijcke and such
 - add a button to the last page to go back to first page, when no coauthors are found
 - add a landing page where we suggest to add middle initials to the first name, if the search produces too few / too many results (as in Paul Glimcher vs Paul W Glimcher)
+- deal with year of birth collected in worldcat
+- deal with NYT found or not in the NYT controller
+- deal with year found in worldcatAPIidentities response parser
 
 not so minor features
-- progress bar in the first page
 - add info about disciplines
 - persist statistics about age, affiliation and discipline: how many papers, how many co-authors, how many media mentions, 
 - add methodology section to the pdf report.

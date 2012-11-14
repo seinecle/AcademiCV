@@ -21,11 +21,11 @@ public class AuthorsExtractor {
     public AuthorsExtractor() {
     }
 
-    public static HashSet<Author> extractFromOneDoc(Document doc) {
+    public HashSet<Author> extractFromOneDoc(Document doc) {
         return doc.getAuthors();
     }
 
-    public static HashMultiset<Author> extractFromSetDocs(Set<Document> setDocs) {
+    public HashMultiset<Author> extractFromSetDocs(Set<Document> setDocs) {
 
         HashMultiset<Author> setAllAuthors = HashMultiset.create();
         Iterator<Document> setDocsIterator = setDocs.iterator();
@@ -42,7 +42,7 @@ public class AuthorsExtractor {
         while (setAuthorsIterator.hasNext()) {
             currAuthor = setAuthorsIterator.next();
             if (currAuthor.getFullname().equals(ControllerBean.getSearch().getFullname())) {
-                mergedAuthor = AuthorMerger.mergeAuthors(currAuthor, ControllerBean.getSearch());
+                mergedAuthor = new AuthorMerger().mergeAuthors(currAuthor, ControllerBean.getSearch());
                 ControllerBean.setSearch(mergedAuthor);
             }
         }

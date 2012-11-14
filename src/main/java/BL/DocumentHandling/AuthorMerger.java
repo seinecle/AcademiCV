@@ -14,7 +14,7 @@ import java.util.HashSet;
  */
 public class AuthorMerger {
 
-    public static HashSet<Author> mergeAuthorSets(HashSet<Author> authorSet1, HashSet<Author> authorSet2) {
+    public HashSet<Author> mergeAuthorSets(HashSet<Author> authorSet1, HashSet<Author> authorSet2) {
         HashSet<Author> setMergedAuthors = new HashSet();
         Author mergedAuthor;
 
@@ -34,7 +34,7 @@ public class AuthorMerger {
         return setMergedAuthors;
     }
 
-    public static Author mergeAuthors(Author author1, Author author2) {
+    public Author mergeAuthors(Author author1, Author author2) {
         Author currMergedAuthor;
         HashSet<Affiliation> setAffiliations = new HashSet();
 //        System.out.println("mergeAuthors, author1 is:");

@@ -66,44 +66,44 @@ import org.apache.commons.lang3.StringUtils;
 @SessionScoped
 public class ControllerBean implements Serializable {
 
-    private static Pair<String, Integer> mostFreqSource;
-    private static Query<PersistingAcademic> updateQueryPA;
-    private static UpdateOperations<PersistingAcademic> opsPA;
+    private Pair<String, Integer> mostFreqSource;
+    private Query<PersistingAcademic> updateQueryPA;
+    private UpdateOperations<PersistingAcademic> opsPA;
     DBCollection quidamDocsColl;
     DBCollection quidamPartnersColl;
-    static public Datastore ds;
-    static public TreeSet<CloseMatchBean> setCloseMatches;
+    public static Datastore ds;
+    private TreeSet<CloseMatchBean> setCloseMatches;
     List<CloseMatchBean> listCloseMatches;
-    public static TreeMap<Author, Author> mapCloseMatches;
+    public TreeMap<Author, Author> mapCloseMatches;
     private String forename;
     private String surname;
-    static public boolean wisdomCrowds = true;
-    static private String json;
-    static public UUID uuid;
-    static public boolean atleastOneMatchFound;
-    static private ArrayList<Segment> segments;
-    static String pageToNavigateTo;
-    static private Author search;
-    static private int count;
-    static public HashSet<Author> mostFrequentCoAuthors;
-    static public int nbDocs;
-    static public int minYear;
-    static public int maxYear;
-    static public int nbArxivDocs = 0;
-    static public int nbMendeleyDocs = 0;
-    static public HashMultiset<Author> multisetAuthors;
-    static public Set<Author> setAuthors;
-    static public HashSet<Document> setDocumentsUnFiltered;
-    static public Set<Document> setDocs;
-    static public TreeSet<MapLabels> setMapLabels;
-    static public HashMap<String, Pair<Integer, Integer>> mapAuthorToDates;
-    static private boolean NYTfound;
+    public boolean wisdomCrowds = true;
+    private String json;
+    public UUID uuid;
+    public boolean atleastOneMatchFound;
+    private ArrayList<Segment> segments;
+    String pageToNavigateTo;
+    private Author search;
+    private int count;
+    private HashSet<Author> mostFrequentCoAuthors;
+    private int nbDocs;
+    private int minYear;
+    private int maxYear;
+    private int nbArxivDocs = 0;
+    private int nbMendeleyDocs = 0;
+    private HashMultiset<Author> multisetAuthors;
+    private Set<Author> setAuthors;
+    private HashSet<Document> setDocumentsUnFiltered;
+    private Set<Document> setDocs;
+    private TreeSet<MapLabels> setMapLabels;
+    private HashMap<String, Pair<Integer, Integer>> mapAuthorToDates;
+    private boolean NYTfound;
     private Query<GlobalEditsCounter> updateQueryCounter;
     private UpdateOperations<GlobalEditsCounter> opsCounter;
-    static private int tempBirthYear = 0;
-    static private boolean coAuthorsFound = true;
+    private int tempBirthYear = 0;
+    private boolean coAuthorsFound = true;
     private String feedback;
-    static public List<Callable<Integer>> calls = new ArrayList<Callable<Integer>>();
+    private List<Callable<Integer>> calls = new ArrayList<Callable<Integer>>();
 
     @PostConstruct
     private void init() {
@@ -215,19 +215,19 @@ public class ControllerBean implements Serializable {
 
         //-2
         // Calling all APIS
-        Callable<Integer> worldcatCallable = new WorldCatAPIController();
-        Callable<Integer> arxivCallable = new ArxivAPIController();
-        Callable<Integer> mendeleyCallable = new MendeleyAPIController();
-        Callable<Integer> nytCallable = new NYTAPIController();
+        Callable<Integer> worldcatCallable = new WorldCatAPIController(search);
+        Callable<Integer> arxivCallable = new ArxivAPIController(search);
+        Callable<Integer> mendeleyCallable = new MendeleyAPIController(search);
+        Callable<Integer> nytCallable = new NYTAPIController(search);
         calls.add(worldcatCallable);
         calls.add(arxivCallable);
         calls.add(mendeleyCallable);
         calls.add(nytCallable);
     }
 
-    public static String treatmentAPIresults() {
+    public String treatmentAPIresults() {
         Clock aggregatorClock = new Clock("aggregating docs from different APIs into one single set");
-        setDocs = DocumentAggregator.aggregate(setDocs);
+        setDocs = new DocumentAggregator().aggregate(setDocs);
 
         aggregatorClock.closeAndPrintClock();
 
@@ -239,13 +239,13 @@ public class ControllerBean implements Serializable {
         //5
         // extract a set of authors from the set of docs
         Clock authorExtractorClock = new Clock("extracting authors from the set of docs");
-        multisetAuthors = AuthorsExtractor.extractFromSetDocs(setDocs);
+        multisetAuthors = new AuthorsExtractor().extractFromSetDocs(setDocs);
 
         authorExtractorClock.closeAndPrintClock();
         //6
         // cleans the authors names (deletes dots, etc.)
         Clock authorCleanerClock = new Clock("cleaning authors names");
-        multisetAuthors = AuthorNamesCleaner.cleanFullName(multisetAuthors);
+        multisetAuthors = new AuthorNamesCleaner().cleanFullName(multisetAuthors);
 
         authorCleanerClock.closeAndPrintClock();
 
@@ -258,7 +258,7 @@ public class ControllerBean implements Serializable {
         //8
         //finds first and last names when they are missing
         Clock findFirstLastNamesClock = new Clock("finds first and last names in the frequent case when they are missing");
-        setAuthors = FullNameInvestigator.investigate(multisetAuthors.elementSet());
+        setAuthors = new FullNameInvestigator().investigate(multisetAuthors.elementSet());
 
         findFirstLastNamesClock.closeAndPrintClock();
 
@@ -270,7 +270,7 @@ public class ControllerBean implements Serializable {
         //9
         //Detects pairs of names which are probably the same person, with different spellings / misspellings
         Clock spellCheckClock = new Clock("finding possible misspellings in names");
-        atleastOneMatchFound = new SpellingDifferencesChecker(setAuthors, wisdomCrowds).check();
+        atleastOneMatchFound = new SpellingDifferencesChecker(setAuthors, wisdomCrowds, search).check();
 
         spellCheckClock.closeAndPrintClock();
         //10
@@ -309,14 +309,14 @@ public class ControllerBean implements Serializable {
         return pageToNavigateTo;
     }
 
-    public static void computationsBeforeReport() {
+    public void computationsBeforeReport() {
 
         //1
         //generate descriptive stats at this stage
         Clock generateStats = new Clock("generating descriptive stats on the set of authors after user input");
-        setAuthors = AuthorStatsHandler.updateAuthorNamesAfterUserInput();
-        DocsStatsHandler.computeNumberDocs();
-        mostFreqSource = DocsStatsHandler.extractMostFrequentSource();
+        setAuthors = new AuthorStatsHandler().updateAuthorNamesAfterUserInput();
+        new DocsStatsHandler().computeNumberDocs();
+        mostFreqSource = new DocsStatsHandler().extractMostFrequentSource();
         generateStats.closeAndPrintClock();
 
 
@@ -327,7 +327,7 @@ public class ControllerBean implements Serializable {
         setJson(new Gson().toJson(segments));
     }
 
-    public static void transformToJson(ArrayList<Segment> segments) {
+    public void transformToJson(ArrayList<Segment> segments) {
 
 //        System.out.println("returning json");
 //        segments = (ArrayList<Segment>) ds.find(Segment.class).field("uuid").equal(uuid.toString()).asList();
@@ -338,15 +338,15 @@ public class ControllerBean implements Serializable {
 //        System.out.println("json: " + json);
     }
 
-    public static String getJson() {
+    public String getJson() {
         return json;
     }
 
-    public static void setJson(String newJson) {
+    public void setJson(String newJson) {
         json = newJson;
     }
 
-    public static boolean isAtleastOneMatchFound() {
+    public boolean isAtleastOneMatchFound() {
         return atleastOneMatchFound;
     }
 
@@ -366,11 +366,11 @@ public class ControllerBean implements Serializable {
         this.surname = StringUtils.capitalize(surname);
     }
 
-    public static void setSearch(Author newAuthor) {
+    public void setSearch(Author newAuthor) {
         search = newAuthor;
     }
 
-    public static Author getSearch() {
+    public Author getSearch() {
         return search;
     }
 
@@ -382,11 +382,13 @@ public class ControllerBean implements Serializable {
         this.wisdomCrowds = wisdomCrowds;
     }
 
-    public static int getCount() {
+    public int getCount() {
         return count;
     }
+    
+    
 
-    public static synchronized void pushCounter() {
+    public synchronized void pushCounter() {
 //        int count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
 //        System.out.println("counter in pushCounter method in ControllerBean is:" + count);
 //        PushContext pushContext = PushContextFactory.getDefault().getPushContext();
@@ -396,35 +398,35 @@ public class ControllerBean implements Serializable {
         count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
     }
 
-    public static int getMinYear() {
+    public int getMinYear() {
         return minYear;
     }
 
-    public static void setMinYear(int minYear) {
-        ControllerBean.minYear = minYear;
+    public void setMinYear(int minYear) {
+        this.minYear = minYear;
     }
 
-    public static int getMaxYear() {
+    public int getMaxYear() {
         return maxYear;
     }
 
-    public static void setMaxYear(int maxYear) {
-        ControllerBean.maxYear = maxYear;
+    public void setMaxYear(int maxYear) {
+        this.maxYear = maxYear;
     }
 
-    public static Pair<String, Integer> getMostFreqSource() {
+    public Pair<String, Integer> getMostFreqSource() {
         return mostFreqSource;
     }
 
-    public static int getTempBirthYear() {
+    public int getTempBirthYear() {
         return tempBirthYear;
     }
 
-    public static void setTempBirthYear(int newTempBirthYear) {
+    public void setTempBirthYear(int newTempBirthYear) {
         tempBirthYear = newTempBirthYear;
     }
 
-    public static String wereThereCoAuthorsFound() {
+    public String wereThereCoAuthorsFound() {
         if (!coAuthorsFound) {
             return "display:none; ";
         } else {
@@ -432,19 +434,79 @@ public class ControllerBean implements Serializable {
         }
     }
 
-    public static boolean isNYTfound() {
+    public boolean isNYTfound() {
         return NYTfound;
     }
 
-    public static void setNYTfound(boolean NYTfound) {
-        ControllerBean.NYTfound = NYTfound;
+    public void setNYTfound(boolean NYTfound) {
+        this.NYTfound = NYTfound;
+    }
+
+    public Set<Document> getSetDocs() {
+        return setDocs;
+    }
+
+    public void setSetDocs(Set<Document> setDocs) {
+        this.setDocs = setDocs;
     }
     
+    public void addToSetDocs(Set<Document> newSetDocs) {
+        this.setDocs.addAll(newSetDocs);
+    }
     
+    public void addToSetDocs(Document doc) {
+        this.setDocs.add(doc);
+    }
 
-    public static TreeSet<CloseMatchBean> getSetCloseMatches() {
+    public Set<Author> getSetAuthors() {
+        return setAuthors;
+    }
+
+    public void setSetAuthors(Set<Author> setAuthors) {
+        this.setAuthors = setAuthors;
+    }
+
+    public TreeSet<CloseMatchBean> getSetCloseMatches() {
         return setCloseMatches;
     }
+
+    public void setSetCloseMatches(TreeSet<CloseMatchBean> setCloseMatches) {
+        this.setCloseMatches = setCloseMatches;
+    }
+    
+    public void addToSetCloseMatches(TreeSet<CloseMatchBean> setCloseMatches) {
+        this.setCloseMatches.addAll(setCloseMatches);
+    }
+    
+    public void addToSetCloseMatches(CloseMatchBean closeMatch) {
+        this.setCloseMatches.add(closeMatch);
+    }
+
+    public TreeSet<MapLabels> getSetMapLabels() {
+        return setMapLabels;
+    }
+
+    public void setSetMapLabels(TreeSet<MapLabels> setMapLabels) {
+        this.setMapLabels = setMapLabels;
+    }
+    
+    public void addToSetMapLabels(TreeSet<MapLabels> setMapLabels) {
+        this.setMapLabels.addAll(setMapLabels);
+    }
+    
+    public void addToSetMapLabels(MapLabels mapLabel) {
+        this.setMapLabels.add(mapLabel);
+    }
+    
+    public void removeFromSetMapLabels(MapLabels mapLabel) {
+        this.setMapLabels.remove(mapLabel);
+    }
+
+    public List<Callable<Integer>> getCalls() {
+        return calls;
+    }
+    
+    
 
     
 
@@ -467,7 +529,7 @@ public class ControllerBean implements Serializable {
         }
     }
 
-    public static void persistAcademic() {
+    public void persistAcademic() {
         PersistingAcademic pa = new PersistingAcademic();
         pa.setFullNameWithComma(search.getFullnameWithComma());
         pa.setBirthYear(search.getBirthYear());
@@ -475,11 +537,10 @@ public class ControllerBean implements Serializable {
         pa.setCountDocuments(setDocs.size());
         pa.setSetAffiliations(search.getSetAffiliations());
 
-        updateQueryPA = ControllerBean.ds.createQuery(PersistingAcademic.class).field("fullNameWithComma").equal(search.getFullnameWithComma());
-        opsPA = ControllerBean.ds.createUpdateOperations(PersistingAcademic.class).inc("searchCount", 1);
+        updateQueryPA = ds.createQuery(PersistingAcademic.class).field("fullNameWithComma").equal(search.getFullnameWithComma());
+        opsPA = ds.createUpdateOperations(PersistingAcademic.class).inc("searchCount", 1);
 
-        ControllerBean.ds.update(updateQueryPA, opsPA,
-                true);
+        ds.update(updateQueryPA, opsPA,true);
     }
 
     public String getFeedback() {
@@ -494,7 +555,7 @@ public class ControllerBean implements Serializable {
         if (search != null) {
             toBePersisted.append("\nSEARCH:");
             toBePersisted.append("\n");
-            toBePersisted.append(ControllerBean.getSearch().getFullnameWithComma());
+            toBePersisted.append(search.getFullnameWithComma());
         }
         toBePersisted.append("\nBROWSER: ");
         toBePersisted.append("\n");
@@ -507,7 +568,7 @@ public class ControllerBean implements Serializable {
         toBePersisted.append(this.feedback);
         PersistingFeedback pf = new PersistingFeedback();
         pf.setComment(toBePersisted.toString());
-        ControllerBean.ds.save(pf);
+        ds.save(pf);
         System.out.println("feedback persisted: " + toBePersisted.toString());
 
     }

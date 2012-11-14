@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class AuthorNamesCleaner {
 
-    public static HashMultiset<Author> clean(HashMultiset<Author> setAuthors) {
+    public HashMultiset<Author> clean(HashMultiset<Author> setAuthors) {
         HashMultiset<Author> returnedSet = HashMultiset.create();
 
         Iterator<Author> setAuthorsIterator = setAuthors.iterator();
@@ -43,7 +43,7 @@ public class AuthorNamesCleaner {
 
     }
 
-    public static HashMultiset<Author> cleanFullNameWithComma(HashMultiset<Author> setAuthors) {
+    public HashMultiset<Author> cleanFullNameWithComma(HashMultiset<Author> setAuthors) {
         HashMultiset<Author> returnedSet = HashMultiset.create();
 
         Iterator<Author> setAuthorsIterator = setAuthors.iterator();
@@ -62,7 +62,7 @@ public class AuthorNamesCleaner {
 
     }
 
-    public static HashMultiset<Author> cleanFullName(HashMultiset<Author> setAuthors) {
+    public HashMultiset<Author> cleanFullName(HashMultiset<Author> setAuthors) {
         HashMultiset<Author> returnedSet = HashMultiset.create();
 
         Iterator<Author> setAuthorsIterator = setAuthors.iterator();

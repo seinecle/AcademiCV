@@ -21,7 +21,7 @@ import java.util.Set;
  */
 public class AuthorStatsHandler {
 
-    public static Set<Author> updateAuthorNamesAfterUserInput() {
+    public Set<Author> updateAuthorNamesAfterUserInput() {
 
         HashMap<Integer, Document> mapDocs;
         Iterator<Integer> mapDocsIterator;

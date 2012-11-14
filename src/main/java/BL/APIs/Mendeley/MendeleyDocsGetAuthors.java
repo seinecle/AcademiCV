@@ -39,8 +39,6 @@ public class MendeleyDocsGetAuthors {
         Set<Author> setAuthorsInCurrDoc;
         Integer docYear;
 
-        ControllerBean.nbDocs = listDocs.size();
-
 
         while (listDocsIterator.hasNext()) {
 
@@ -100,8 +98,6 @@ public class MendeleyDocsGetAuthors {
             element1.setTimesMentioned(count - 1);
 //            System.out.println("count for " + element1.getFullname() + ": " + count);
             setAuthors.add(element1);
-            ControllerBean.setMinYear(minYear);
-            ControllerBean.setMaxYear(maxYear);
 
         }
         return setAuthors;

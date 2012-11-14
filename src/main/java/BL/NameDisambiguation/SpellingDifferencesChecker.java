@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import javax.faces.bean.ManagedProperty;
 import org.apache.commons.lang3.StringUtils;
 
 public class SpellingDifferencesChecker {
@@ -45,11 +46,17 @@ public class SpellingDifferencesChecker {
     static private HashMap<String, Pair<String, Integer>> mapEdits;
     static private boolean wisdomCrowd;
     private Set<Author> setAuthorsOriginal;
+    private Author search;
+    @ManagedProperty("#{controllerBean}")
+    private ControllerBean controllerBean;
 
-    public SpellingDifferencesChecker(Set<Author> setAuthorsOriginal, boolean wisdomCrowd) {
+    public void setcontrollerBean(ControllerBean controllerBean) {
+        this.controllerBean = controllerBean;
+    }
 
-        this.mainFirstName = ControllerBean.getSearch().getForename().trim();
-        this.mainLastName = ControllerBean.getSearch().getSurname().trim();
+    public SpellingDifferencesChecker(Set<Author> setAuthorsOriginal, boolean wisdomCrowd, Author search) {
+
+        this.search = search;
         SpellingDifferencesChecker.wisdomCrowd = wisdomCrowd;
         this.setAuthorsOriginal = setAuthorsOriginal;
 
@@ -65,7 +72,7 @@ public class SpellingDifferencesChecker {
         //***********
 
         if (wisdomCrowd) {
-            List<PersistingEdit> listEdits = ControllerBean.ds.find(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma()).field("counter").greaterThan(1).asList();
+            List<PersistingEdit> listEdits = ControllerBean.ds.find(PersistingEdit.class).field("reference").equal(search.getFullnameWithComma()).field("counter").greaterThan(1).asList();
             mapEdits = new HashMap();
             int elementCounter;
             String elementEditedForm;
@@ -111,13 +118,13 @@ public class SpellingDifferencesChecker {
                 }
             }
             //we don't keep in the set of authors the badly spelled versions of the author's name
-            if (StringUtils.stripAccents(currAuth.getFullname()).toLowerCase().replaceAll("-", " ").trim().equals(StringUtils.stripAccents(ControllerBean.getSearch().getFullname().toLowerCase().replaceAll("-", " ").trim()))) {
+            if (StringUtils.stripAccents(currAuth.getFullname()).toLowerCase().replaceAll("-", " ").trim().equals(StringUtils.stripAccents(search.getFullname().toLowerCase().replaceAll("-", " ").trim()))) {
                 continue;
             }
 
             setAuthorsWithEdits.add(currAuth);
         }
-        ControllerBean.setAuthors = setAuthorsWithEdits;
+        controllerBean.setSetAuthors(setAuthorsWithEdits);
 
 
 
@@ -160,7 +167,6 @@ public class SpellingDifferencesChecker {
                 author3 = getSuggestion(author1, author2, match);
 
                 cmb = new CloseMatchBean();
-                cmb.setUuid(ControllerBean.uuid);
                 cmb.setAuthor1(author1.getFullnameWithComma());
                 cmb.setAuthor2(author2.getFullnameWithComma());
                 cmb.setAuthor3(author3.getFullnameWithComma());
@@ -173,8 +179,7 @@ public class SpellingDifferencesChecker {
                 setCloseMatches.add(new Author(cmb.getAuthor2()));
 
                 //PERSIST CLOSE MATCHES
-//                ControllerBean.ds.save(cmb);
-                ControllerBean.setCloseMatches.add(cmb);
+                controllerBean.addToSetCloseMatches(cmb);
 
             }
         }
@@ -198,7 +203,7 @@ public class SpellingDifferencesChecker {
 //                    System.out.println("unambiguous author: " + currAuthor.getFullname());
 //                    System.out.println("main Auth: " + mainFirstName + " " + mainLastName);
 
-                    ControllerBean.setMapLabels.add(new MapLabels(currAuthor.getFullnameWithComma(), currAuthor.getFullnameWithComma()));
+                    controllerBean.addToSetMapLabels(new MapLabels(currAuthor.getFullnameWithComma(), currAuthor.getFullnameWithComma()));
                 }
             }
         }

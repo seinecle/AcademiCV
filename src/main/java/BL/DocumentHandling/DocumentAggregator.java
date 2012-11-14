@@ -17,12 +17,12 @@ import java.util.Set;
  */
 public class DocumentAggregator {
 
-    private static Set<Pair<Document, Document>> setPairsDocs;
+    private Set<Pair<Document, Document>> setPairsDocs;
 
-    DocumentAggregator() {
+    public DocumentAggregator() {
     }
 
-    public static Set<Document> aggregate(Set<Document> setDocs) {
+    public Set<Document> aggregate(Set<Document> setDocs) {
 
 
 //        for (Document currDoc : setDocs) {
@@ -53,7 +53,7 @@ public class DocumentAggregator {
 //                System.out.println("title 1:" + currPair.getLeft().getTitle());
 //                System.out.println("title 2:" + currPair.getRight().getTitle());
 
-                mergedDoc = DocumentMerger.merge(currPair.getLeft(), currPair.getRight());
+                mergedDoc = new DocumentMerger().merge(currPair.getLeft(), currPair.getRight());
                 setDocs.remove(currPair.getLeft());
                 setDocs.remove(currPair.getRight());
                 setDocs.add(mergedDoc);
@@ -65,7 +65,7 @@ public class DocumentAggregator {
 //                System.out.println("similar titles spotted, with different year");
 //                System.out.println("title 1:" + currPair.getLeft().getTitle());
 //                System.out.println("title 2:" + currPair.getRight().getTitle());
-                mergedDoc = DocumentMerger.merge(currPair.getLeft(), currPair.getRight());
+                mergedDoc = new DocumentMerger().merge(currPair.getLeft(), currPair.getRight());
 
 
                 if (currPair.getLeft().getYear() > currPair.getRight().getYear()) {
@@ -85,25 +85,4 @@ public class DocumentAggregator {
         return setDocs;
     }
 
-//    public Set<Pair<Author, Author>> getAllPairs(Set<Author> setObjects) {
-//        Set<Author> setObjectsProcessed = new TreeSet<Author>();
-//        Set<Pair<Author, Author>> setPairs = new TreeSet<Pair<Author, Author>>();
-//        Iterator<Author> setObjectsIteratorA = setObjects.iterator();
-//        Iterator<Author> setObjectsIteratorB;
-//        Author currAuthorA;
-//        Author currAuthorB;
-//        while (setObjectsIteratorA.hasNext()) {
-//            currAuthorA = setObjectsIteratorA.next();
-//            setObjectsIteratorB = setObjects.iterator();
-//            while (setObjectsIteratorB.hasNext()) {
-//                currAuthorB = setObjectsIteratorB.next();
-//                if (!setObjectsProcessed.contains(currAuthorB) && (currAuthorA.getForename() != currAuthorB.getForename() | currAuthorA.getSurname() != currAuthorB.getSurname())) {
-//                    setPairs.add(new Pair(currAuthorA, currAuthorB));
-//                }
-//            }
-//            setObjectsProcessed.add(currAuthorA);
-//        }
-//        return setPairs;
-//
-//    }
 }

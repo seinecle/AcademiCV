@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 
 /**
@@ -44,12 +45,16 @@ public class FinalCheckBean implements Serializable {
     private TreeMap<String, String> mappingEditedLabels = new TreeMap();
     private TreeMap<String, String> mappingLabelsForSegments = new TreeMap();
 
+    @ManagedProperty("#{controllerBean}")
+    private ControllerBean controllerBean;
+
+    public void setcontrollerBean(ControllerBean controllerBean) {
+        this.controllerBean = controllerBean;
+    }
+
     public FinalCheckBean() {
         System.out.println("new FinalCheckBean!");
 
-        //deleting segments and labels that could be in storage due to the user landing on this page with the back button.
-        Query q3 = ControllerBean.ds.createQuery(Segment.class).field("uuid").equal(ControllerBean.uuid.toString());
-        ControllerBean.ds.delete(q3);
 
         setCheckedLabels = new TreeSet();
         listCheckedLabels = new ArrayList();
@@ -60,7 +65,7 @@ public class FinalCheckBean implements Serializable {
         //this is the reason for the "setLabelsToBeReinjected", which plays a role in the "moveon" function
         //I use "label2frozen" to keep a trace of the label2 even if it will be edited by the user (into label2 and label3, see the MapLabels class)
         MapLabels currMapLabels;
-        for (MapLabels mapLabels : ControllerBean.setMapLabels) {
+        for (MapLabels mapLabels : controllerBean.getSetMapLabels()) {
 //            System.out.println("currMapLabel is: ");
 //            System.out.println(mapLabels.getLabel1() + ", " + mapLabels.getLabel2());
             if (setCheckedLabels.add(mapLabels.getLabel2())) {
@@ -91,20 +96,20 @@ public class FinalCheckBean implements Serializable {
             currMapLabels.setEditable(false);
             if (currMapLabels.isDeleted()) {
                 //persisting this edit permanently
-                updateQuery = ControllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma());
+                updateQuery = controllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(controllerBean.getSearch().getFullnameWithComma());
                 updateQuery.field("originalForm").equal(currMapLabels.getLabel2());
                 updateQuery.field("editedForm").equal("deleted");
-                ops = ControllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
-                ControllerBean.ds.update(updateQuery, ops, true);
+                ops = controllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
+                controllerBean.ds.update(updateQuery, ops, true);
 
-                updateQueryCounter = ControllerBean.ds.createQuery(GlobalEditsCounter.class);
-                opsCounter = ControllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 1);
-                ControllerBean.ds.update(updateQueryCounter, opsCounter, true);
-                ControllerBean.pushCounter();
+                updateQueryCounter = controllerBean.ds.createQuery(GlobalEditsCounter.class);
+                opsCounter = controllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 1);
+                controllerBean.ds.update(updateQueryCounter, opsCounter, true);
+                controllerBean.pushCounter();
 
 
                 listCheckedLabelsIterator.remove();
-                ControllerBean.setMapLabels.remove(currMapLabels);
+                controllerBean.removeFromSetMapLabels(currMapLabels);
             }
 
         }
@@ -122,7 +127,7 @@ public class FinalCheckBean implements Serializable {
 
         //puts all the cases presented to the user in the final check page into a set
         for (MapLabels element : listCheckedLabels) {
-            ControllerBean.setMapLabels.add(new MapLabels(element.getLabel1(), element.getLabel2()));
+            controllerBean.addToSetMapLabels(new MapLabels(element.getLabel1(), element.getLabel2()));
         }
 
 
@@ -140,13 +145,13 @@ public class FinalCheckBean implements Serializable {
             currLabel2 = bufferMap.get(element.getLabel2());
 //            System.out.println("currLabel2: " + currLabel2);
 
-            ControllerBean.setMapLabels.add(new MapLabels(currLabel1, currLabel2));
+            controllerBean.addToSetMapLabels(new MapLabels(currLabel1, currLabel2));
         }
 
         //launch of the methods to compute metrics useful to the final report
-        ControllerBean.computationsBeforeReport();
+        controllerBean.computationsBeforeReport();
 //
-//        ControllerBean.transformToJson(segments);
+//        controllerBean.transformToJson(segments);
         return "report?faces-redirect=true";
     }
 }

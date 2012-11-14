@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import javax.faces.bean.ManagedProperty;
 import javax.imageio.ImageIO;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -29,9 +30,15 @@ import sun.misc.BASE64Decoder;
  */
 public class PDFCreator {
 
-    static private StreamedContent file;
-    
-    static public StreamedContent getPDF(String dataURL) throws IOException, DocumentException {
+    private StreamedContent file;
+    @ManagedProperty("#{controllerBean}")
+    private ControllerBean controllerBean;
+
+    public void setcontrollerBean(ControllerBean controllerBean) {
+        this.controllerBean = controllerBean;
+    }
+
+    public StreamedContent getPDF(String dataURL) throws IOException, DocumentException {
         //GETS THE PIC OF THE CIRCLE
 //        System.out.println("dataURL: " + dataURL);
 //        ExternalContext external = FacesContext.getCurrentInstance().getExternalContext();
@@ -67,18 +74,18 @@ public class PDFCreator {
         imgIText.scaleAbsolute(300, 300);
 //        imgIText.setCompressionLevel(9);
 
-        document.add(ParagraphBuilder.getHeader());
-        document.add(ParagraphBuilder.getSubHeader());
+        ParagraphBuilder pb = new ParagraphBuilder();
+        document.add(pb.getHeader());
+        document.add(pb.getSubHeader());
         document.add(imgIText);
-        document.add(ParagraphBuilder.getCountPapers());
-        document.add(ParagraphBuilder.getMostFrequentCoAuthor());
+        document.add(pb.getCountPapers());
+        document.add(pb.getMostFrequentCoAuthor());
 
         document.close();
         docWriter.close();
 
         InputStream stream = new ByteArrayInputStream(baosPDF.toByteArray());
-        file = new DefaultStreamedContent(stream, "application/pdf", "academicv " + ControllerBean.getSearch().getFullname());
-
+        file = new DefaultStreamedContent(stream, "application/pdf", "academicv " + controllerBean.getSearch().getFullname());
 
         return file;
     }

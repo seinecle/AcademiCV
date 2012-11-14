@@ -11,6 +11,7 @@ import Model.Document;
 import Utils.RemoveNonASCII;
 import java.io.IOException;
 import java.util.HashSet;
+import javax.faces.bean.ManagedProperty;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -54,10 +55,16 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
     private boolean yearFound;
     private InputSource is;
     private Author currAuthor;
+    @ManagedProperty("#{controllerBean}")
+    private ControllerBean controllerBean;
 
-    public WorldCatAPIIdentityresponseParser(InputSource newIs) {
+    public void setcontrollerBean(ControllerBean controllerBean) {
+        this.controllerBean = controllerBean;
+    }
+
+    public WorldCatAPIIdentityresponseParser(InputSource newIs, Author search) {
         this.is = newIs;
-        currSearchName = ControllerBean.getSearch().getFullnameWithComma();
+        currSearchName = search.getFullnameWithComma();
         currSearchName = StringUtils.stripAccents(currSearchName);
         currSearchName = RemoveNonASCII.remove(currSearchName);
 
@@ -185,10 +192,9 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
                 System.out.println("currSub analized at end of citation...");
                 yearFound = currSub.matches(".*\\d\\d\\d\\d.*");
                 if (yearFound) {
-                    Author currMainSearchAuthor = ControllerBean.getSearch();
-                    currMainSearchAuthor.setBirthYear((Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1"))));
-                    ControllerBean.setSearch(currMainSearchAuthor);
-
+//                    Author currMainSearchAuthor = ControllerBean.getSearch();
+//                    currMainSearchAuthor.setBirthYear((Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1"))));
+//                    ControllerBean.setSearch(currMainSearchAuthor);
                 } else {
                     //nothing
                 }
@@ -208,7 +214,7 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
             System.out.println("(title is:");
             System.out.println(currDoc.getTitle());
             if (currDoc.getYear() != null & currDoc.getTitle() != null & currDoc.getAuthors() != null) {
-                ControllerBean.setDocs.add(currDoc);
+                controllerBean.addToSetDocs(currDoc);
             }
 
 
@@ -263,9 +269,9 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
                 System.out.println("currSub analized at end of citation...");
                 yearFound = currSub.matches(".*\\d\\d\\d\\d.*");
                 if (yearFound) {
-                    Author currMainSearchAuthor = ControllerBean.getSearch();
-                    currMainSearchAuthor.setBirthYear((Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1"))));
-                    ControllerBean.setSearch(currMainSearchAuthor);
+//                    Author currMainSearchAuthor = ControllerBean.getSearch();
+//                    currMainSearchAuthor.setBirthYear((Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1"))));
+//                    ControllerBean.setSearch(currMainSearchAuthor);
                 } else {
                     //nothing
                 }
@@ -280,9 +286,9 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
                 System.out.println("currSub analized at end of citation...");
                 yearFound = currSub.matches(".*\\d\\d\\d\\d.*");
                 if (yearFound) {
-                    Author currMainSearchAuthor = ControllerBean.getSearch();
-                    currMainSearchAuthor.setBirthYear((Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1"))));
-                    ControllerBean.setSearch(currMainSearchAuthor);
+//                    Author currMainSearchAuthor = ControllerBean.getSearch();
+//                    currMainSearchAuthor.setBirthYear((Integer.parseInt(currSub.replaceFirst(".*(\\d\\d\\d\\d).*", "$1"))));
+//                    ControllerBean.setSearch(currMainSearchAuthor);
                 } else {
                     //nothing
                 }

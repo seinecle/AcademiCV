@@ -15,6 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 
 /**
@@ -26,7 +27,7 @@ import javax.faces.bean.ViewScoped;
 public class ProgressBarMessenger implements Serializable {
 
     private static StringBuilder sb = new StringBuilder();
-    private List<Callable<Integer>> calls = ControllerBean.calls;
+    private List<Callable<Integer>> calls = controllerBean.getCalls();
     private List<Future<Integer>> futures;
     private Callable<Integer> currCall;
     private boolean callsComplete = false;
@@ -36,13 +37,19 @@ public class ProgressBarMessenger implements Serializable {
     private List<Future<Integer>> listResults;
     private static StringBuilder msg;
     private String progressMessage = "not set yet";
+    @ManagedProperty("#{controllerBean}")
+    private ControllerBean controllerBean;
+
+    public void setcontrollerBean(ControllerBean controllerBean) {
+        this.controllerBean = controllerBean;
+    }
 
     public ProgressBarMessenger() {
 
         sb = new StringBuilder();
         msg = new StringBuilder();
         countCalls = 0;
-        sb.append("<p>Looking up information on ").append(ControllerBean.getSearch().getFullname()).append(" on very large databases... </p>");
+        sb.append("<p>Looking up information on ").append(controllerBean.getSearch().getFullname()).append(" on very large databases... </p>");
 //        sb.append("<p>Currently searching WorldCat: a catalogue of publications in thousands of libraries in the world </p>");
 //        sb.append("<p>(please be patient while it loads...)</p>");
         System.out.println("new ProgressBarMessenger initialized!");
@@ -105,11 +112,11 @@ public class ProgressBarMessenger implements Serializable {
         }
         callsComplete = true;
         if (!processingComplete) {
-            updateMsg("The search across the web is over. We found xx documents.<br> Moving now to the disambiguation of names...<br>"+
-                    "[of course this message needs to be improved. And I'll add a button, instead of an automatic transition]");
+            updateMsg("The search across the web is over. We found xx documents.<br> Moving now to the disambiguation of names...<br>"
+                    + "[of course this message needs to be improved. And I'll add a button, instead of an automatic transition]");
             System.out.println("all API calls returned");
         }
-        String nextPage = ControllerBean.treatmentAPIresults();
+        String nextPage = controllerBean.treatmentAPIresults();
 
         if (!processingComplete) {
             processingComplete = true;

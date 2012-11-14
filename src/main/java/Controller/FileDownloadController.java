@@ -39,8 +39,9 @@ public class FileDownloadController implements Serializable {
     }
 
     public StreamedContent getFile() throws IOException, DocumentException {
-
-        file = PDFCreator.getPDF(dataURL);
+        
+        PDFCreator pdfCreator = new PDFCreator();
+        file = pdfCreator.getPDF(dataURL);
         return file;
     }
 }

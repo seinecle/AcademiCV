@@ -3,7 +3,6 @@
  * and open the template in the editor.
  */
 package View;
-
 import Controller.ControllerBean;
 import Model.CloseMatchBean;
 import Model.GlobalEditsCounter;
@@ -17,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import org.primefaces.push.PushContext;
 
@@ -40,6 +40,15 @@ public class TableMatchesBean implements Serializable {
     private boolean renderNextButton = true;
     private int countUpdated;
     private PushContext pushContext;
+    
+    @ManagedProperty("#{controllerBean}")
+    private ControllerBean controllerBean;
+
+    public void setControllerBean(ControllerBean controllerBean) {
+        this.controllerBean = controllerBean;
+    }
+    
+    
 
     public int getCountUpdated() {
         return countUpdated;
@@ -58,12 +67,12 @@ public class TableMatchesBean implements Serializable {
 
 
             //RETRIEVE MATCHES FROM THIS UUID
-//            setClosematchesOriginal.addAll(ControllerBean.ds.find(CloseMatchBean.class).field("uuid").equal(ControllerBean.uuid.toString()).asList());
-            setClosematchesOriginal = ControllerBean.getSetCloseMatches();
+//            setClosematchesOriginal.addAll(controllerBean.ds.find(CloseMatchBean.class).field("uuid").equal(controllerBean.uuid.toString()).asList());
+            setClosematchesOriginal = controllerBean.getSetCloseMatches();
 
             System.out.println("number of ambiguous cases: " + setClosematchesOriginal.size());
 
-            ControllerBean.pushCounter();
+            controllerBean.pushCounter();
 
             Iterator<CloseMatchBean> setClosematchesOriginalIterator = setClosematchesOriginal.descendingIterator();
             if (setClosematchesOriginalIterator.hasNext()) {
@@ -116,34 +125,34 @@ public class TableMatchesBean implements Serializable {
 
             case 1: // keep both
 //                System.out.println("we keep both");
-                ControllerBean.setMapLabels.add(new MapLabels(closeMatch.getAuthor1(), closeMatch.getAuthor1()));
-                ControllerBean.setMapLabels.add(new MapLabels(closeMatch.getAuthor2(), closeMatch.getAuthor2()));
+                controllerBean.addToSetMapLabels(new MapLabels(closeMatch.getAuthor1(), closeMatch.getAuthor1()));
+                controllerBean.addToSetMapLabels(new MapLabels(closeMatch.getAuthor2(), closeMatch.getAuthor2()));
 
                 //persisting these edits permanently
-                updateQuery = ControllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma());
+                updateQuery = controllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(controllerBean.getSearch().getFullnameWithComma());
                 updateQuery.field("originalForm").equal(closeMatch.getAuthor1());
                 updateQuery.field("editedForm").equal(closeMatch.getAuthor1());
-                ops = ControllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
-                ControllerBean.ds.update(updateQuery, ops, true);
+                ops = controllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
+                controllerBean.ds.update(updateQuery, ops, true);
 
 
-                updateQuery = ControllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma());
+                updateQuery = controllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(controllerBean.getSearch().getFullnameWithComma());
                 updateQuery.field("originalForm").equal(closeMatch.getAuthor2());
                 updateQuery.field("editedForm").equal(closeMatch.getAuthor2());
-                ops = ControllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
-                ControllerBean.ds.update(updateQuery, ops, true);
+                ops = controllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
+                controllerBean.ds.update(updateQuery, ops, true);
 
-                updateQueryCounter = ControllerBean.ds.createQuery(GlobalEditsCounter.class);
-                opsCounter = ControllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 2);
-                ControllerBean.ds.update(updateQueryCounter, opsCounter, true);
-                ControllerBean.pushCounter();
+                updateQueryCounter = controllerBean.ds.createQuery(GlobalEditsCounter.class);
+                opsCounter = controllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 2);
+                controllerBean.ds.update(updateQueryCounter, opsCounter, true);
+                controllerBean.pushCounter();
 
 
 
                 System.out.println("global counter for edit \"we keep "
                         + closeMatch.getAuthor1()
                         + "as a distinct name: "
-                        + ControllerBean.ds.find(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma())
+                        + controllerBean.ds.find(PersistingEdit.class).field("reference").equal(controllerBean.getSearch().getFullnameWithComma())
                         .field("originalForm").equal(closeMatch.getAuthor1())
                         .field("editedForm").equal(closeMatch.getAuthor1()).get().getCounter());
 
@@ -153,29 +162,29 @@ public class TableMatchesBean implements Serializable {
 //                System.out.println("we delete both");
 
                 //persisting these edits permanently
-                updateQuery = ControllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma());
+                updateQuery = controllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(controllerBean.getSearch().getFullnameWithComma());
                 updateQuery.field("originalForm").equal(closeMatch.getAuthor1());
                 updateQuery.field("editedForm").equal("deleted");
-                ops = ControllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
-                ControllerBean.ds.update(updateQuery, ops, true);
+                ops = controllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
+                controllerBean.ds.update(updateQuery, ops, true);
 
-                updateQuery = ControllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma());
+                updateQuery = controllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(controllerBean.getSearch().getFullnameWithComma());
                 updateQuery.field("originalForm").equal(closeMatch.getAuthor2());
                 updateQuery.field("editedForm").equal("deleted");
-                ops = ControllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
-                ControllerBean.ds.update(updateQuery, ops, true);
+                ops = controllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
+                controllerBean.ds.update(updateQuery, ops, true);
 
-                updateQueryCounter = ControllerBean.ds.createQuery(GlobalEditsCounter.class);
-                opsCounter = ControllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 2);
-                ControllerBean.ds.update(updateQueryCounter, opsCounter, true);
-                ControllerBean.pushCounter();
+                updateQueryCounter = controllerBean.ds.createQuery(GlobalEditsCounter.class);
+                opsCounter = controllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 2);
+                controllerBean.ds.update(updateQueryCounter, opsCounter, true);
+                controllerBean.pushCounter();
 
 
                 break;
 
             case 3: //merge them
 
-                if (mergedAuthor.equals(ControllerBean.getSearch().getFullnameWithComma())) {
+                if (mergedAuthor.equals(controllerBean.getSearch().getFullnameWithComma())) {
                     break;
                 }
                 mergedAuthor = mergedAuthor.replace("  ", " ");
@@ -183,68 +192,68 @@ public class TableMatchesBean implements Serializable {
                 System.out.println("label 2: \"" + closeMatch.getAuthor2() + "\"");
                 System.out.println("merged into: \"" + mergedAuthor + "\"");
 
-                ControllerBean.setMapLabels.add(new MapLabels(closeMatch.getAuthor1(), mergedAuthor));
-                ControllerBean.setMapLabels.add(new MapLabels(closeMatch.getAuthor2(), mergedAuthor));
+                controllerBean.addToSetMapLabels(new MapLabels(closeMatch.getAuthor1(), mergedAuthor));
+                controllerBean.addToSetMapLabels(new MapLabels(closeMatch.getAuthor2(), mergedAuthor));
 
                 //persisting these edits permanently
                 //we persist only the edits if the merged solution is different from the original.
 
                 if (closeMatch.getAuthor2().equals(mergedAuthor)) {
-                    updateQuery = ControllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma());
+                    updateQuery = controllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(controllerBean.getSearch().getFullnameWithComma());
                     updateQuery.field("originalForm").equal(closeMatch.getAuthor1());
                     updateQuery.field("editedForm").equal(mergedAuthor);
-                    ops = ControllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
-                    ControllerBean.ds.update(updateQuery, ops, true);
+                    ops = controllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
+                    controllerBean.ds.update(updateQuery, ops, true);
 
-                    updateQueryCounter = ControllerBean.ds.createQuery(GlobalEditsCounter.class);
-                    opsCounter = ControllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 1);
-                    ControllerBean.ds.update(updateQueryCounter, opsCounter, true);
-                    ControllerBean.pushCounter();
+                    updateQueryCounter = controllerBean.ds.createQuery(GlobalEditsCounter.class);
+                    opsCounter = controllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 1);
+                    controllerBean.ds.update(updateQueryCounter, opsCounter, true);
+                    controllerBean.pushCounter();
 
-                    System.out.println("global counter of edits after a merge: " + ControllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter());
+                    System.out.println("global counter of edits after a merge: " + controllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter());
 
 
                     break;
                 }
                 if (closeMatch.getAuthor1().equals(mergedAuthor)) {
-                    updateQuery = ControllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma());
+                    updateQuery = controllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(controllerBean.getSearch().getFullnameWithComma());
                     updateQuery.field("originalForm").equal(closeMatch.getAuthor2());
                     updateQuery.field("editedForm").equal(mergedAuthor);
-                    ops = ControllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
+                    ops = controllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
                     try {
-                        ControllerBean.ds.update(updateQuery, ops, true);
+                        controllerBean.ds.update(updateQuery, ops, true);
                     } catch (com.mongodb.MongoException e) {
                         System.out.println("exception with MongoDB when saving the mergedAuthor");
                     }
 
-                    updateQueryCounter = ControllerBean.ds.createQuery(GlobalEditsCounter.class);
-                    opsCounter = ControllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 1);
-                    ControllerBean.ds.update(updateQueryCounter, opsCounter, true);
-                    ControllerBean.pushCounter();
+                    updateQueryCounter = controllerBean.ds.createQuery(GlobalEditsCounter.class);
+                    opsCounter = controllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 1);
+                    controllerBean.ds.update(updateQueryCounter, opsCounter, true);
+                    controllerBean.pushCounter();
 
-                    System.out.println("global counter of edits after a merge: " + ControllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter());
+                    System.out.println("global counter of edits after a merge: " + controllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter());
 
                     break;
                 }
-                updateQuery = ControllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma());
+                updateQuery = controllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(controllerBean.getSearch().getFullnameWithComma());
                 updateQuery.field("originalForm").equal(closeMatch.getAuthor1());
                 updateQuery.field("editedForm").equal(mergedAuthor);
-                ops = ControllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
-                ControllerBean.ds.update(updateQuery, ops, true);
+                ops = controllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
+                controllerBean.ds.update(updateQuery, ops, true);
 
 
-                updateQuery = ControllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(ControllerBean.getSearch().getFullnameWithComma());
+                updateQuery = controllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(controllerBean.getSearch().getFullnameWithComma());
                 updateQuery.field("originalForm").equal(closeMatch.getAuthor2());
                 updateQuery.field("editedForm").equal(mergedAuthor);
-                ops = ControllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
-                ControllerBean.ds.update(updateQuery, ops, true);
+                ops = controllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
+                controllerBean.ds.update(updateQuery, ops, true);
 
-                updateQueryCounter = ControllerBean.ds.createQuery(GlobalEditsCounter.class);
-                opsCounter = ControllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 2);
-                ControllerBean.ds.update(updateQueryCounter, opsCounter, true);
-                ControllerBean.pushCounter();
+                updateQueryCounter = controllerBean.ds.createQuery(GlobalEditsCounter.class);
+                opsCounter = controllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 2);
+                controllerBean.ds.update(updateQueryCounter, opsCounter, true);
+                controllerBean.pushCounter();
 
-//                System.out.println("global counter of edits after a merge: " + ControllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter());
+//                System.out.println("global counter of edits after a merge: " + controllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter());
 
 
 
@@ -252,9 +261,9 @@ public class TableMatchesBean implements Serializable {
 
             case 4: //merge them the two, but don't persist them.
 
-                ControllerBean.setMapLabels.add(new MapLabels(closeMatch.getAuthor1(), mergedAuthor));
+                controllerBean.addToSetMapLabels(new MapLabels(closeMatch.getAuthor1(), mergedAuthor));
                 System.out.println("mapLabel added: " + closeMatch.getAuthor1() + ", " + mergedAuthor);
-                ControllerBean.setMapLabels.add(new MapLabels(closeMatch.getAuthor2(), mergedAuthor));
+                controllerBean.addToSetMapLabels(new MapLabels(closeMatch.getAuthor2(), mergedAuthor));
                 System.out.println("mapLabel added: " + closeMatch.getAuthor2() + ", " + mergedAuthor);
 
                 break;
@@ -313,7 +322,7 @@ public class TableMatchesBean implements Serializable {
         this.renderNextButton = renderNextButton;
     }
 //    public synchronized boolean pushCounter() {
-//        countUpdated = ControllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
+//        countUpdated = controllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
 ////        countUpdated++;
 //        System.out.println("counter in pushCounter method is:" + countUpdated);
 //

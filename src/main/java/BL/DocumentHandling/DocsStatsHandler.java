@@ -16,12 +16,12 @@ import java.util.Iterator;
  */
 public class DocsStatsHandler {
 
-    public static void computeNumberDocs() {
+    public void computeNumberDocs() {
 
         ControllerBean.nbDocs = ControllerBean.setDocs.size();
     }
 
-    public static Pair<String, Integer> extractMostFrequentSource() {
+    public Pair<String, Integer> extractMostFrequentSource() {
         HashMultiset multisetTitles = HashMultiset.create();
         Iterator<Document> setDocsIterator = ControllerBean.setDocs.iterator();
         Document currDoc;
