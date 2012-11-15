@@ -107,8 +107,21 @@ function initVisualization(){
         });
         worldcatLayer.add(worldcatPicOriginal);
         stage.add(worldcatLayer);
+        var worldcatz = new Image();
+
+        worldcatPicOriginal.on("mouseover", function() {
+            worldcatPicOriginal.setImage(worldcatz);
+            worldcatLayer.draw();
+        });
+        worldcatPicOriginal.on("mouseout", function() {
+            worldcatPicOriginal.setImage(worldcatPic);
+            worldcatLayer.draw();
+        });
+        worldcatz.src = 'resources/img/worldcatz.jpg';
+
     }
     worldcatPic.src = 'resources/img/worldcat.jpg';
+
  
     var nytPic = new Image();
     nytPic.onload = function() {
