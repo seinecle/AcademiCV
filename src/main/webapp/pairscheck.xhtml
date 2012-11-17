@@ -5,8 +5,6 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
     <h:head>
-        <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-        </link>
         <h:outputStylesheet name="css/default.css" />
         <h:outputStylesheet name="css/show.css" />
         <title>AcademiCV - data cleaning</title>
@@ -45,13 +43,14 @@
                       ">
             <h:outputText styleClass="testPush" style="padding-left: 5px;" value="live counter of edits made by the community: #{controllerBean.getCount()}" rendered ="#{controllerBean.wisdomCrowds}" />
             <br></br>
-            <p:commandButton value="Feedback? Here!" onclick="bar.show()" type="button" />  
+            <h:commandButton value="Feedback? Here!" onclick="bar.show()" />  
 
         </h:panelGroup>
         <h:form id ="currMatch">
 
             <div id="containerOutside">
-                <h:outputText styleClass="ui-widget" style="padding-left: 5px;" value="2. We found names in duplicate! Ready for a tiny bit of data cleaning?"/>
+                <h:outputText styleClass="ui-widget" style="padding-left: 5px;" escape ="false" value="#{tableMatchesBean.getInitialNumberMatches()}" />
+                <h:outputText styleClass="ui-widget" style="padding-left: 5px;" value="#{tableMatchesBean.getNumberPairs()}"/>
                 <div id="containerShow">
 
                     <h:panelGrid columns="4" style="margin-bottom:10px; margin-left: auto; margin-right: auto;" cellpadding="5">
@@ -109,7 +108,7 @@
             <p:notificationBar position="bottom" effect="slide" widgetVar="bar">  
                 <h:outputText value="Any comment you have, really!" style=" font-size:15px;" /><br></br>  
                 <p:inputTextarea value="#{controllerBean.feedback}" rows="2" cols="90" />
-                <p:commandButton value="Save" onclick="bar.hide();" type="button"/>  
+                <h:commandButton value="Save" onclick="bar.hide();"/>  
             </p:notificationBar>  
         </h:form>
 

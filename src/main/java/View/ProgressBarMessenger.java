@@ -45,6 +45,12 @@ public class ProgressBarMessenger implements Serializable {
     private String progressMessage = "not set yet";
     @ManagedProperty("#{controllerBean}")
     private ControllerBean controllerBean;
+    private boolean firstProcessingUpdate = true;
+    private boolean toggleButtonCorrections = false;
+    private String nextPage = null;
+    private boolean toggleButtonReport = false;
+    private boolean toggleButtonFinalCheck = false;
+    private boolean buttonsDisplayed = false;
 
     public void setcontrollerBean(ControllerBean controllerBean) {
         this.controllerBean = controllerBean;
@@ -97,14 +103,10 @@ public class ProgressBarMessenger implements Serializable {
             System.out.println("new Call submitted: " + countCalls);
             callsIterator.remove();
         }
-        callsComplete = true;
         //            Timer.waitSeconds(5);
         System.out.println("API calls have been placed");
 
         return null;
-
-
-
     }
 
     public String checkUpdates() throws InterruptedException {
@@ -126,29 +128,50 @@ public class ProgressBarMessenger implements Serializable {
             try {
                 Future<Set<Document>> future = futuresIterator.next();
                 controllerBean.addToSetDocs(future.get());
+                futuresIterator.remove();
             } catch (ExecutionException ex) {
                 Logger.getLogger(ProgressBarMessenger.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        System.out.println("all API calls returned");
 
-        callsComplete = true;
-        if (!processingComplete) {
-            updateMsg("The search across the web is over. We found xx documents.<br> Moving now to the disambiguation of names...<br>"
-                    + "[of course this message needs to be improved. And I'll add a button, instead of an automatic transition]");
-            System.out.println("all API calls returned");
-        }
-        String nextPage = controllerBean.treatmentAPIresults();
-
-        if (!processingComplete) {
-            processingComplete = true;
+        if (firstProcessingUpdate) {
+            updateMsg("The search across the web is over. We found " + controllerBean.getSetDocs().size() + " documents.<br>"
+                    + "<br>"
+                    + "Performing important cleaning operations. If many publications were found, this can take a few seconds, be patient");
+            firstProcessingUpdate = false;
             return null;
+        } else {
+            if (!processingComplete) {
+                updateMsg(".");
+            }
         }
 
-        Timer.waitSeconds(6);
 
-        System.out.println(
-                "nextpage:" + nextPage);
-        return nextPage;
+        if (!processingComplete) {
+            nextPage = controllerBean.treatmentAPIresults();
+            System.out.println("treatment API data is over!");
+            processingComplete = true;
+        } else {
+            if (!buttonsDisplayed) {
+                updateMsg("<br>Cleaning is now complete.<br>");
+
+                if (nextPage.equals("pairscheck?faces-redirect=true")) {
+                    toggleButtonCorrections = true;
+                    updateMsg("Some co-authors of " + controllerBean.getSearch().getFullname() + " appear to be mispelled. We recommend that you help us make the necessary corrections.<br>");
+
+                }
+                if (nextPage.equals("report?faces-redirect=true")) {
+                    toggleButtonReport = true;
+                }
+
+                if (nextPage.equals("finalcheck?faces-redirect=true")) {
+                    toggleButtonFinalCheck = true;
+                }
+                buttonsDisplayed = true;
+            }
+        }
+        return null;
     }
 
     public String getProgressMessage() {
@@ -159,5 +182,21 @@ public class ProgressBarMessenger implements Serializable {
     public void setProgressMessage(String newMsg) {
 //        System.out.println("setting progress msg");
         this.progressMessage = msg.toString();
+    }
+
+    public boolean isToggleButtonCorrections() {
+        return toggleButtonCorrections;
+    }
+
+    public boolean isToggleButtonReport() {
+        return toggleButtonReport;
+    }
+
+    public boolean isToggleButtonFinalCheck() {
+        return toggleButtonFinalCheck;
+    }
+
+    public String getNextPage() {
+        return nextPage;
     }
 }

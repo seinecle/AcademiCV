@@ -33,6 +33,10 @@ public class Author extends Quidam {
         super(fullname.trim(), uuid);
     }
 
+    public Author(String fullname, boolean isFullName) {
+        super(fullname.trim(), isFullName);
+    }
+
     public Author(String fullnameWithComma) {
         super(fullnameWithComma.trim());
     }

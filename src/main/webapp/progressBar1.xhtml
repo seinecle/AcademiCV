@@ -15,16 +15,21 @@
         <h:form id="formID">
             <p:remoteCommand name="launchSearch" action="#{progressBarMessenger.processCalls()}"/>
             <p:remoteCommand name="checkUpdates" action="#{progressBarMessenger.checkUpdates()}"/>
-            <p:poll interval="1" update=":txt,counter" oncomplete="checkUpdates(); updateVisualization();"/>
+            <p:poll interval="1" update="text,counter" oncomplete="checkUpdates(); updateVisualization();"/>
             <h:inputHidden id="counter" value="#{progressBarMessenger.progressMessage}"/>
 
+            <div style="margin-left: 50px;font-size: 130%;">
+
+                <div id="container"></div>
+                <h:panelGrid id="text">
+                    <h:outputText id="txt" value="#{progressBarMessenger.returnMsg()}" escape="false"/>
+                    <h:commandButton id="button1" value="Look at probable mistakes" action ="#{progressBarMessenger.getNextPage()}" rendered ="#{progressBarMessenger.toggleButtonCorrections}"/>
+                    <h:commandButton id="button2" value="Let our algorithms do the corrections, go to the final result" action ="#{controllerBean.skipPairs()}" rendered ="#{progressBarMessenger.toggleButtonCorrections}"/>
+                    <h:commandButton id="button3" value="Check the list of co-authors of #{controllerBean.getSearch().getFullName}" action ="#{progressBarMessenger.getNextPage()}" rendered ="#{progressBarMessenger.toggleButtonFinalCheck}"/>
+                    <h:commandButton id="button4" value="Open #{controllerBean.getSearch().getFullName}'s AcademiCV" action ="#{progressBarMessenger.getNextPage()}" rendered ="#{progressBarMessenger.toggleButtonReport}"/>
+                </h:panelGrid>
+            </div>
         </h:form>
-        <div style="margin-left: 50px;font-size: 130%;">
-
-            <div id="container"></div>
-            <h:outputText id="txt" value="#{progressBarMessenger.returnMsg()}" escape="false"/>
-
-        </div>
 
     </h:body>
     <script type="text/javascript">

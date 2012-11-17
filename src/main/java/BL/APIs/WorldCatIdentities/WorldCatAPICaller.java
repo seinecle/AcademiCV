@@ -66,7 +66,7 @@ public class WorldCatAPICaller {
         if (debug) {
             System.out.println("WorldCat API call in debugging mode");
             content = new StringBuilder();
-            BufferedReader br = new BufferedReader(new FileReader("D:\\Docs Pro Clement\\E-projects\\Olympics\\worldcatClement.txt"));
+            BufferedReader br = new BufferedReader(new FileReader("D:\\Docs Pro Clement\\E-projects\\Olympics\\worldcatAndrea.xml"));
             while ((line = br.readLine()) != null) {
                 content.append(line);
                 content.append(lineSeparator);

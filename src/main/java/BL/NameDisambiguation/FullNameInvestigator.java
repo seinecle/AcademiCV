@@ -39,6 +39,7 @@ public class FullNameInvestigator {
             currAuthor = originalSetIterator.next();
             if (currAuthor.getForename() == null & currAuthor.getSurname() == null) {
                 setAuthorsWithJustAFullname.add(currAuthor);
+//                System.out.println("author with just full name: " + setAuthorsWithJustAFullname.iterator().next().getFullname());
             } else {
                 setAuthorsWithFirstAndLastName.add(currAuthor);
             }

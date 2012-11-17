@@ -227,7 +227,6 @@ public class ControllerBean implements Serializable {
     public String treatmentAPIresults() {
         Clock aggregatorClock = new Clock("aggregating docs from different APIs into one single set");
         setDocs = new DocumentAggregator().aggregate(setDocs);
-
         aggregatorClock.closeAndPrintClock();
 
         //4
@@ -245,7 +244,6 @@ public class ControllerBean implements Serializable {
         // cleans the authors names (deletes dots, etc.)
         Clock authorCleanerClock = new Clock("cleaning authors names");
         multisetAuthors = new AuthorNamesCleaner().cleanFullName(multisetAuthors);
-
         authorCleanerClock.closeAndPrintClock();
 
         //7
@@ -258,6 +256,7 @@ public class ControllerBean implements Serializable {
         //finds first and last names when they are missing
         Clock findFirstLastNamesClock = new Clock("finds first and last names in the frequent case when they are missing");
         setAuthors = new FullNameInvestigator().investigate(multisetAuthors.elementSet());
+        findFirstLastNamesClock.closeAndPrintClock();
 
 //        Iterator<Author> setAuthorsIterator = setAuthors.iterator();
 //        while (setAuthorsIterator.hasNext()) {
@@ -265,7 +264,6 @@ public class ControllerBean implements Serializable {
 //            System.out.println("currAuthor:" + currAuthor.getFullnameWithComma());
 //        }
 
-        findFirstLastNamesClock.closeAndPrintClock();
 
         //8 bis
         //extracts the author being currently researched from the set of Authors and puts it in a field in the controllerBean: currSearch
@@ -275,13 +273,19 @@ public class ControllerBean implements Serializable {
         //9
         //Detects pairs of names which are probably the same person, with different spellings / misspellings
         Clock wotcClock = new Clock("bring edits from the wisdom of the crowds to author names");
-        setAuthors = new AuthorSpellingEditor(setAuthors, wisdomCrowds, search).check();
+        try {
+            setAuthors = new AuthorSpellingEditor(setAuthors, wisdomCrowds, search).check();
+            System.out.println("number of authors found before processing: " + setAuthors.size());
+        } catch (IOException ex) {
+            Logger.getLogger(ControllerBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
         wotcClock.closeAndPrintClock();
         Clock closeMatchesClock = new Clock("detecting close matches in author names, and making suggestions for their resolution");
         setCloseMatches = new CloseMatchesDetector().check(setAuthors);
         closeMatchesClock.closeAndPrintClock();
         Clock initializingMapLabelsClock = new Clock("initializing a map of original author names and their correct version");
         setMapLabels = new MapLabelsInitiator().check(setAuthors, setCloseMatches);
+        System.out.println("size of setMapLabels: " + setMapLabels.size());
         initializingMapLabelsClock.closeAndPrintClock();
 
         //10
@@ -524,6 +528,17 @@ public class ControllerBean implements Serializable {
 
     public void addToSetMediaDocs(Document mediaDoc) {
         this.setMediaDocs.add(mediaDoc);
+    }
+
+    public String skipPairs() {
+        Iterator<CloseMatchBean> setCloseMatchesIterator = setCloseMatches.iterator();
+        while (setCloseMatchesIterator.hasNext()) {
+            CloseMatchBean closeMatchBean = setCloseMatchesIterator.next();
+            addToSetMapLabels(new MapLabels(closeMatchBean.getAuthor1(), closeMatchBean.getAuthor3()));
+            addToSetMapLabels(new MapLabels(closeMatchBean.getAuthor2(), closeMatchBean.getAuthor3()));
+        }
+        computationsBeforeReport();
+        return "report?faces-redirect=true";
     }
 
     public void prepareNewSearch() {

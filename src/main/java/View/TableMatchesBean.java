@@ -44,6 +44,7 @@ public class TableMatchesBean implements Serializable {
     private PushContext pushContext;
     @ManagedProperty("#{controllerBean}")
     private ControllerBean controllerBean;
+    private int initialNumberMatches;
 
     public void setControllerBean(ControllerBean controllerBean) {
         this.controllerBean = controllerBean;
@@ -73,6 +74,7 @@ public class TableMatchesBean implements Serializable {
             //RETRIEVE MATCHES FROM THIS UUID
 //            setClosematchesOriginal.addAll(controllerBean.ds.find(CloseMatchBean.class).field("uuid").equal(controllerBean.uuid.toString()).asList());
             setClosematchesOriginal.addAll(controllerBean.getSetCloseMatches());
+            initialNumberMatches = setClosematchesOriginal.size();
 
             System.out.println("number of ambiguous cases: " + setClosematchesOriginal.size());
 
@@ -324,6 +326,23 @@ public class TableMatchesBean implements Serializable {
 
     public void setRenderNextButton(boolean renderNextButton) {
         this.renderNextButton = renderNextButton;
+    }
+
+    public String getInitialNumberMatches() {
+        String toReturn = "<b>We found " + initialNumberMatches + " cases where names look strangely similar. Ready for a tiny bit of data cleaning?</b><br>";
+        return toReturn;
+    }
+
+    public String getNumberPairs() {
+        int casesLeft = setClosematchesOriginal.size();
+        String singularPlural;
+        if (setClosematchesOriginal.size() == 1) {
+            singularPlural = " case left";
+        } else {
+            singularPlural = " cases left";
+        }
+        String toReturn = casesLeft + singularPlural;
+        return toReturn;
     }
 //    public synchronized boolean pushCounter() {
 //        countUpdated = controllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter();

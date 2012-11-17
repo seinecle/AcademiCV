@@ -4,14 +4,12 @@
  */
 package BL.APIs.WorldCatIdentities;
 
-import Controller.ControllerBean;
 import Model.Author;
 import Model.Document;
 import Utils.RemoveNonASCII;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import javax.faces.bean.ManagedProperty;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -208,7 +206,7 @@ public class WorldCatAPIIdentityresponseParser extends DefaultHandler {
             currDoc.setLanguage(currLanguage);
 //            System.out.println("document added to the set");
 //            System.out.println("(title is:");
-            System.out.println(currDoc.getTitle());
+//            System.out.println(currDoc.getTitle());
             if (currDoc.getYear() != null & currDoc.getTitle() != null & currDoc.getAuthors() != null) {
                 setWorldcatDocs.add(currDoc);
             }

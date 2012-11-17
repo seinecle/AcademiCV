@@ -171,7 +171,7 @@ public class ArxivAPIresponseParser extends DefaultHandler {
 
         //case when no affiliation is provided with the author
         if (qName.equalsIgnoreCase("author") & authorBuilder != null & currDocCurrAuthorAffiliation == null) {
-            currAuthor = new Author(authorBuilder.toString());
+            currAuthor = new Author(authorBuilder.toString(), true);
             currDocSetAuthors.add(currAuthor);
             newAuthor = false;
         }

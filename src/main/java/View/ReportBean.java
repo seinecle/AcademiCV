@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
@@ -38,6 +39,10 @@ public class ReportBean implements Serializable {
     }
 
     public ReportBean() {
+    }
+
+    @PostConstruct
+    private void init() {
         this.json = controllerBean.getJson();
         authorClicked = new Author("fake name");
         authorClicked.setYearFirstCollab(0);

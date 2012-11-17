@@ -39,8 +39,8 @@ public class WorldCatAPICallerWithIdentityCode {
 
         if (!debug) {
 
-            
-            String APIcall = "http://worldcat.org"+ currIdentity + "/identity.xml";
+
+            String APIcall = "http://worldcat.org" + currIdentity + "/identity.xml";
             System.out.println("WorldCat Identity API call is:");
             System.out.println(APIcall);
 
@@ -56,17 +56,18 @@ public class WorldCatAPICallerWithIdentityCode {
             } catch (IOException e) {
                 System.err.println("Caught IOException: " + e.getMessage());
             }
+
+            is = new InputSource(APIresult);
 //            while ((line = APIresult.readLine()) != null) {
 //                System.out.println(line);
 //            }
 
-            is = new InputSource(APIresult);
 
         }
         if (debug) {
             System.out.println("WorldCat API call in debugging mode");
             content = new StringBuilder();
-            BufferedReader br = new BufferedReader(new FileReader("D:\\Docs Pro Clement\\E-projects\\Olympics\\worldcatClement.txt"));
+            BufferedReader br = new BufferedReader(new FileReader("D:\\Docs Pro Clement\\E-projects\\Olympics\\worldcatIdentityAndrea.xml"));
             while ((line = br.readLine()) != null) {
                 content.append(line);
                 content.append(lineSeparator);

@@ -3,7 +3,7 @@
     font-size: 90%;
 }
 .ui-widget .ui-widget {
-    font-family: 'Lora',serif,Verdana,Arial,sans-serif;
+    font-family: Verdana,Arial,sans-serif;
     font-size: 100%;
 }
 
@@ -20,17 +20,17 @@
 
 #containerOutside {
     position:fixed;
-    top:205px;
+    top:200px;
     left:25%;
     text-align: left;
     margin: 0px auto;
     width:700px;
-    height:230px;
+    height:500px;
 }
 
 #helpPairs {
     position:fixed;
-    top:560px;
+    bottom:0px;
     left:25%;
     text-align: left;
     margin: 0px auto;
@@ -40,12 +40,12 @@
 
 #container {
     position:fixed;
-    top:230px;
+    top:220px;
     left:25%;
     text-align: left;
     margin: 0px auto;
-    width:400px;
-    height:190px;
+    width:700px;
+    height:400px;
     padding-left: 50px;
     padding-top: 50px;
     border-radius: 5px; 
@@ -55,7 +55,7 @@
 }
 #containerShow {
     position:fixed;
-    top:230px;
+    top:240px;
     left:25%;
     text-align: left;
     margin: 0px auto;

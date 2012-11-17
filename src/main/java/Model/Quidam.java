@@ -39,6 +39,12 @@ public class Quidam implements Comparable<Quidam>, Serializable {
         this.uuid = uuid.toString();
     }
 
+    public Quidam(String fullname, boolean isFullName) {
+        if (isFullName) {
+            this.fullname = fullname.trim();
+        }
+    }
+
     public Quidam(String fullname, Affiliation affiliation, UUID uuid) {
         this.fullname = fullname.trim();
         this.uuid = uuid.toString();

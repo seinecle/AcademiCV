@@ -44,7 +44,7 @@
         <h:form id ="formId">
 
             <div id="containerOutside">
-                <h:outputText styleClass="ui-widget" style="padding-left: 5px;" value="3. Final step: a last chance to correct mispellings and delete irrelevant terms"/>
+                <h:outputText styleClass="ui-widget" style="padding-left: 5px;" value="Final step: a last chance to correct mispellings in the names of co-authors"/>
                 <h:commandButton value="next" title="next" action="#{finalCheckBean.moveon()}" style="width:100px;float:right;margin-top: -15px;"/>
                 <div id="containerShow">
                     <p:dataTable id ="dataId" value ="#{finalCheckBean.listCheckedLabels}" var ="m" scrollable ="true" scrollHeight="250">

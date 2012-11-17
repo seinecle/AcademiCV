@@ -9,6 +9,7 @@ import Controller.ControllerBean;
 import Model.Author;
 import Model.PersistingEdit;
 import Utils.Pair;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,17 +33,6 @@ public class AuthorSpellingEditor {
     String mainFirstName;
     String mainLastName;
     boolean debug;
-    private TreeMap<String, String> mapLabels = new TreeMap();
-    private boolean atLeastOneMatchFound = false;
-    private String[] arrayTermsInFullnameInAuthor1;
-    private String[] arrayTermsInFullnameInAuthor2;
-    private HashSet<String> setTermsInFullnameAuthor1;
-    private HashSet<String> setTermsInFullnameAuthor2;
-    private String[] arrayTermsInSurnameInAuthor1;
-    private String[] arrayTermsInSurnameInAuthor2;
-    private HashSet<String> setTermsInSurnameAuthor1;
-    private HashSet<String> setTermsInSurnameAuthor2;
-    private HashSet<String> intersectFullNamesAuthor1And2;
     private HashMap<String, Pair<String, Integer>> mapEdits;
     private boolean wisdomCrowd;
     private Set<Author> setAuthorsOriginal;
@@ -56,7 +46,7 @@ public class AuthorSpellingEditor {
 
     }
 
-    public Set<Author> check() {
+    public Set<Author> check() throws IOException{
 
         debug = AdminPanel.wisdomCrowdsDebugStateTrueOrFalse();
 

@@ -59,10 +59,11 @@ public class ArxivAPICaller {
 //            currLine = APIresult.readLine();
 //            currLine = convertUnicode(currLine);
             is = new InputSource(APIresult);
+
         }
 
         if (debug) {
-            is = new InputSource(new StringReader(getFileContents("C:\\Users\\C. Levallois\\Downloads\\query.webintents")));
+            is = new InputSource(new StringReader(getFileContents("D:\\Docs Pro Clement\\E-projects\\Olympics\\arxivAndrea.xml")));
 
         }
 
