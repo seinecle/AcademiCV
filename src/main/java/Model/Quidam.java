@@ -115,6 +115,9 @@ public class Quidam implements Comparable<Quidam>, Serializable {
 //        } 
 //        else {
         this.fullnameWithComma = newFullnameWithComma;
+        if (!newFullnameWithComma.contains(",")) {
+            System.out.println("newFullNameWithComma:" + newFullnameWithComma);
+        }
         this.forename = arrayTerms[1].trim();
         this.surname = arrayTerms[0].trim();
         this.fullname = arrayTerms[1].trim() + " " + arrayTerms[0].trim();
@@ -152,7 +155,11 @@ public class Quidam implements Comparable<Quidam>, Serializable {
     }
 
     public Integer getBirthYear() {
-        return birthYear;
+        if (birthYear == null) {
+            return 0;
+        } else {
+            return birthYear;
+        }
     }
 
     public void setBirthYear(int birthYear) {

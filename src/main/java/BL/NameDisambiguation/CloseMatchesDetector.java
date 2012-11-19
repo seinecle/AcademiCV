@@ -36,8 +36,6 @@ public class CloseMatchesDetector {
     private HashSet<String> intersectFullNamesAuthor1And2;
     private HashMap<String, Pair<String, Integer>> mapEdits;
     private Author search;
-    private TreeMap<String, String> mapLabels = new TreeMap();
-    private boolean atLeastOneMatchFound = false;
     private Set<CloseMatchBean> setCloseMatches = new HashSet();
 
     public Set<CloseMatchBean> check(Set<Author> setAuthorsWithEdits) {
@@ -70,7 +68,6 @@ public class CloseMatchesDetector {
 
             if (match != -1) {
 
-                atLeastOneMatchFound = true;
                 // ----------------------------
 
                 author3 = getSuggestion(author1, author2, match);

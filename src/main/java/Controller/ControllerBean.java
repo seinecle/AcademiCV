@@ -68,7 +68,6 @@ import org.apache.commons.lang3.StringUtils;
 @SessionScoped
 public class ControllerBean implements Serializable {
 
-    private Pair<String, Integer> mostFreqSource;
     private Query<PersistingAcademic> updateQueryPA;
     private UpdateOperations<PersistingAcademic> opsPA;
     DBCollection quidamDocsColl;
@@ -238,8 +237,8 @@ public class ControllerBean implements Serializable {
         // extract a set of authors from the set of docs
         Clock authorExtractorClock = new Clock("extracting authors from the set of docs");
         multisetAuthors = new AuthorsExtractor().extractFromSetDocs(setDocs);
-
         authorExtractorClock.closeAndPrintClock();
+
         //6
         // cleans the authors names (deletes dots, etc.)
         Clock authorCleanerClock = new Clock("cleaning authors names");
@@ -256,19 +255,22 @@ public class ControllerBean implements Serializable {
         //finds first and last names when they are missing
         Clock findFirstLastNamesClock = new Clock("finds first and last names in the frequent case when they are missing");
         setAuthors = new FullNameInvestigator().investigate(multisetAuthors.elementSet());
+        Iterator<Author> setAuthorsIterator = setAuthors.iterator();
+        while (setAuthorsIterator.hasNext()) {
+            Author author = setAuthorsIterator.next();
+            if (!author.getFullnameWithComma().contains(",")) {
+                System.out.println("author without comma: " + author.getFullnameWithComma());
+            }
+        }
         findFirstLastNamesClock.closeAndPrintClock();
-
-//        Iterator<Author> setAuthorsIterator = setAuthors.iterator();
-//        while (setAuthorsIterator.hasNext()) {
-//            Author currAuthor = setAuthorsIterator.next();
-//            System.out.println("currAuthor:" + currAuthor.getFullnameWithComma());
-//        }
 
 
         //8 bis
         //extracts the author being currently researched from the set of Authors and puts it in a field in the controllerBean: currSearch
         AuthorsExtractor authorsExtractor = new AuthorsExtractor();
         search = authorsExtractor.extractCurrSearchedAuthor(setAuthors, search);
+        search.setNumberOfDocs(setDocs.size());
+
 
         //9
         //Detects pairs of names which are probably the same person, with different spellings / misspellings
@@ -282,9 +284,10 @@ public class ControllerBean implements Serializable {
         wotcClock.closeAndPrintClock();
         Clock closeMatchesClock = new Clock("detecting close matches in author names, and making suggestions for their resolution");
         setCloseMatches = new CloseMatchesDetector().check(setAuthors);
+        System.out.println("size of setCloseMatches after close Matches detector: " + setCloseMatches.size());
         closeMatchesClock.closeAndPrintClock();
         Clock initializingMapLabelsClock = new Clock("initializing a map of original author names and their correct version");
-        setMapLabels = new MapLabelsInitiator().check(setAuthors, setCloseMatches);
+        setMapLabels = new MapLabelsInitiator().check(setAuthors, setCloseMatches, search);
         System.out.println("size of setMapLabels: " + setMapLabels.size());
         initializingMapLabelsClock.closeAndPrintClock();
 
@@ -314,13 +317,6 @@ public class ControllerBean implements Serializable {
                 pageToNavigateTo = "report?faces-redirect=true";
             }
         }
-//            computationsBeforeReport();
-//            AuthorStatsHandler.updateAuthorNamesAfterUserInput();
-//            segments = new ConvertToSegments().convert();
-//            segments.add(new Segment(forename + " " + surname, 1, true));
-//            json = new Gson().toJson(segments);
-//
-//            pageToNavigateTo = "report?faces-redirect=true";
         return pageToNavigateTo;
     }
 
@@ -330,9 +326,10 @@ public class ControllerBean implements Serializable {
         //generate descriptive stats at this stage
         Clock generateStats = new Clock("generating descriptive stats on the set of authors after user input");
         setAuthors = new AuthorStatsHandler().updateAuthorNamesAfterUserInput(setDocs, setMapLabels, search);
-        search = new AuthorStatsHandler().findMosFrequentCoauthor(setDocs, setAuthors, search);
+        search = new AuthorStatsHandler().findMostFrequentCoauthor(setDocs, setAuthors, search);
         DocsStatsHandler docsStatsHandler = new DocsStatsHandler();
-        mostFreqSource = docsStatsHandler.extractMostFrequentSource(setDocs);
+        search.setMostFrequentOutlet(docsStatsHandler.extractMostFrequentSource(setDocs));
+        search.setNumberCoAuthors(setAuthors.size());
         generateStats.closeAndPrintClock();
 
 
@@ -416,10 +413,6 @@ public class ControllerBean implements Serializable {
 
     public void setMaxYear(int maxYear) {
         this.maxYear = maxYear;
-    }
-
-    public Pair<String, Integer> getMostFreqSource() {
-        return mostFreqSource;
     }
 
     public int getTempBirthYear() {

@@ -5,8 +5,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
     <h:head>
-        <h:outputStylesheet name="css/default.css" />
-        <h:outputStylesheet name="css/show.css" />
+        <h:outputStylesheet name="css/otherpages.css" />
         <title>AcademiCV - final check on data</title>
     </h:head>
     <h:body style ="width:100%">
@@ -47,9 +46,9 @@
                 <h:outputText styleClass="ui-widget" style="padding-left: 5px;" value="Final step: a last chance to correct mispellings in the names of co-authors"/>
                 <h:commandButton value="next" title="next" action="#{finalCheckBean.moveon()}" style="width:100px;float:right;margin-top: -15px;"/>
                 <div id="containerShow">
-                    <p:dataTable id ="dataId" value ="#{finalCheckBean.listCheckedLabels}" var ="m" scrollable ="true" scrollHeight="250">
+                    <p:dataTable id ="dataId" value ="#{finalCheckBean.listCheckedLabels}" var ="m" scrollable ="true" scrollHeight="250" width="600">
 
-                        <p:column headerText="edit" width="100" style="font-size: 50%;">
+                        <p:column headerText="edit" width="150" style="font-size: 50%;">
                             <h:panelGroup id="editCol">
                                 <p:selectBooleanCheckbox value="#{m.editable}" >
                                     <f:ajax execute="editCol :formId:dataId:authorCol" render="editCol :formId:dataId:authorCol" />
@@ -58,7 +57,7 @@
 
                         </p:column>
 
-                        <p:column headerText="Name of researcher" width="220" style="font-size: 50%;">
+                        <p:column headerText="Name of researcher" width="240" style="font-size: 50%;">
                             <h:panelGroup id="authorCol"  >
                                 <p:inputText value="#{m.label3}" style="font-size: 200%;" rendered="#{m.editable}" size="40"/>
                                 <h:outputText value="#{m.label2}" style="font-size: 200%;text-align: center;" rendered="#{not m.editable}"/>
@@ -67,7 +66,7 @@
                             </h:panelGroup>
                         </p:column>
 
-                        <p:column headerText="delete" width="100" style="font-size: 50%;">
+                        <p:column headerText="delete" width="150" style="font-size: 50%;">
                             <h:panelGroup id="deleteCol">
                                 <p:selectBooleanCheckbox value="#{m.deleted}">
                                     <f:ajax execute ="@form" render="@form"/>

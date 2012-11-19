@@ -4,7 +4,6 @@
  */
 package BL.APIs.Arxiv;
 
-import Controller.ControllerBean;
 import Utils.Clock;
 import View.ProgressBarMessenger;
 import java.io.Serializable;

@@ -5,7 +5,7 @@
       xmlns:p="http://primefaces.org/ui"
       >
     <h:head>
-        <h:outputStylesheet name="css/default.css" />
+        <h:outputStylesheet name="css/index.css" />
         <title>AcademiCV</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
@@ -31,71 +31,40 @@
 
     </h:head>
     <h:body>
-        <div id ="bannerTitleBackground"></div>
-        <div id ="bannerTitle">
-            <h:outputText  style="padding-left: 5px;" value="academiCV">
-            </h:outputText>
-            <br></br>
-        </div>
-        <div id="messageCounter">
+        <h:panelGrid id="grid1">
+            <h:outputText  style="padding-left: 5px;" value="counter of edits made by the community: #{controllerBean.getCount()}" rendered ="#{controllerBean.wisdomCrowds}"/>
+        </h:panelGrid>
+        <h:form id ="form1">
+            <h:commandButton value="Feedback? Here!" onclick="bar.show()" type="button" />  
+        </h:form>
 
-        </div>
+        <div id="title">
+            <h:outputText styleClass="ui-widget" style="font-size: 600%" value="AcademiCV"/>
 
-        <div style="    background-color:rgba(0,0,0,0);
-             position:fixed;
-             top:1%;
-             left:1%;
-             text-align: left;
-             font-size: 100%;
-             margin: 0px auto;
-             width:96%;
-             height:80px;
-             padding-left: 50px;
-             padding-top: 70px;
-             z-index: 2;
-             ">
-            <h:panelGrid id="grid1">
-                <h:outputText  style="padding-left: 5px;" value="counter of edits made by the community: #{controllerBean.getCount()}" rendered ="#{controllerBean.wisdomCrowds}"/>
-            </h:panelGrid>
-            <h:form id ="form1">
-                <h:commandButton value="Feedback? Here!" onclick="bar.show()" type="button" />  
+            <h:form id="form2">
+                <h:inputText id ="foreName" value="#{controllerBean.forename}" size="40"/>
+                <p:watermark for="foreName" value="First name(s)" />
+
+                <h:inputText id="surName" value="#{controllerBean.surname}" size="40"/><br/>
+                <p:watermark for="surName" value="Last name" />
+                <br/>
+
+<!--                <h:outputText styleClass="ui-widget" style="padding-left: 5px;vertical-align:20%;" value="you contribute and benefit from the wisdom of the crowds" rendered ="#{controllerBean.wisdomCrowds}"/>
+                <h:outputText styleClass="ui-widget" style="padding-left: 5px;vertical-align:20%;" value="you do not benefit from the wisdom of the crowds" rendered ="#{not controllerBean.wisdomCrowds}"/>
+                <p:spacer width="10"></p:spacer>
+                <p:selectBooleanCheckbox id="wisdom" value="#{controllerBean.wisdomCrowds}" onchange="toggleCounter();">
+                    <p:ajax update=":grid1"/>
+                </p:selectBooleanCheckbox>-->
+                <br/>
+                <br/>
+
+                <h:commandButton 
+
+                    action="#{controllerBean.launchNewSearch()}"
+                    title="Go!"
+                    value="go!"
+                    />
             </h:form>
-
-        </div>
-
-
-        <div id="containerOutside">
-            <h:outputText styleClass="ui-widget" style="padding-left: 5px;" value="1. Fill in the name of a researcher "/>
-
-            <div id="container">
-                <h:form id="form2">
-                    <h:inputText id ="foreName" value="#{controllerBean.forename}" size="40"/><br/>
-                    <p:watermark for="foreName" value="First name(s)" />
-                    <br/>
-
-                    <h:inputText id="surName" value="#{controllerBean.surname}" size="40"/><br/>
-                    <p:watermark for="surName" value="Last name" />
-                    <br/>
-
-                    <h:outputText styleClass="ui-widget" style="padding-left: 5px;vertical-align:20%;" value="you contribute and benefit from the wisdom of the crowds" rendered ="#{controllerBean.wisdomCrowds}"/>
-                    <h:outputText styleClass="ui-widget" style="padding-left: 5px;vertical-align:20%;" value="you do not benefit from the wisdom of the crowds" rendered ="#{not controllerBean.wisdomCrowds}"/>
-                    <p:spacer width="10"></p:spacer>
-                    <p:selectBooleanCheckbox id="wisdom" value="#{controllerBean.wisdomCrowds}" onchange="toggleCounter();">
-                        <p:ajax update=":grid1"/>
-                    </p:selectBooleanCheckbox>
-                    <br/>
-                    <br/>
-
-                    <h:commandButton 
-
-                        action="#{controllerBean.launchNewSearch()}"
-                        title="Add"
-                        value="create academiCV"
-                        />
-                </h:form>
-            </div>
-
-
         </div>
         <div id="credits">
             <h:form id="form3">

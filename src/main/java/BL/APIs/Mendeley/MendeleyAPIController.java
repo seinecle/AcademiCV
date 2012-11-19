@@ -4,14 +4,12 @@
  */
 package BL.APIs.Mendeley;
 
-import Controller.ControllerBean;
 import Utils.Clock;
 import View.ProgressBarMessenger;
 import java.io.Serializable;
 import java.util.concurrent.Callable;
 import Model.Author;
 import Model.Document;
-import java.util.HashSet;
 import java.util.Set;
 
 /**

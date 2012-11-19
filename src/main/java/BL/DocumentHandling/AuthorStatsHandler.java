@@ -176,7 +176,7 @@ public class AuthorStatsHandler {
     //-----------------------------------------------------------------------------------------------------------------------------
     //find most frequent co-author
 
-    public Author findMosFrequentCoauthor(Set<Document> setDocs, Set<Author> setAuthors, Author search) {
+    public Author findMostFrequentCoauthor(Set<Document> setDocs, Set<Author> setAuthors, Author search) {
 
         Iterator<Author> setAuthorsIterator = setAuthors.iterator();
         HashSet<Author> setMostFrequentCoAuthors = new HashSet();

@@ -4,9 +4,7 @@
  */
 package BL.APIs.WorldCatIdentities;
 
-import Controller.ControllerBean;
 import Model.Author;
-import View.ProgressBarMessenger;
 import Utils.RemoveNonASCII;
 import java.io.IOException;
 import java.util.HashSet;
@@ -14,7 +12,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.apache.commons.lang3.StringUtils;
-import org.primefaces.context.RequestContext;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -91,7 +88,7 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
         // their value can be tested with attributes.getValue(indexNumber);
 
         if (qName.equals("match") && (attributes.getValue(0).equals("ExactMatches") | attributes.getValue(0).equals("FuzzyFirstName"))) {
-            System.out.println("new Match found");
+//            System.out.println("new Match found");
             newMatch = true;
         }
 
@@ -103,14 +100,14 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
         if (qName.equals("establishedForm")) {
             newEstablishedForm = true;
             establishedFormBuilder = new StringBuilder();
-            System.out.println("start of established form");
+//            System.out.println("start of established form");
         }
 
 
         if (qName.equals("uri")) {
             newURI = true;
             URIBuilder = new StringBuilder();
-            System.out.println("uri found");
+//            System.out.println("uri found");
 
         }
     }

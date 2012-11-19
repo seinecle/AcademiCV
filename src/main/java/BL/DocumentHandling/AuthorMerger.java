@@ -37,6 +37,7 @@ public class AuthorMerger {
     public Author mergeAuthors(Author author1, Author author2) {
         Author currMergedAuthor;
         HashSet<Affiliation> setAffiliations = new HashSet();
+
 //        System.out.println("mergeAuthors, author1 is:");
 //        System.out.println(author1.getFullname());
 //        System.out.println(author1.getMostRecentAffiliation());
@@ -46,7 +47,7 @@ public class AuthorMerger {
 
 
         // start by taking as a basis for mergedAuthor the author that has a distinction between first and last name
-        if (author1.getForename() == null) {
+        if (author1.getForename() == null || author1.getSurname() == null) {
             currMergedAuthor = author2;
         } else {
             currMergedAuthor = author1;
@@ -56,10 +57,6 @@ public class AuthorMerger {
         setAffiliations.addAll(author1.getSetAffiliations());
         setAffiliations.addAll(author2.getSetAffiliations());
         currMergedAuthor.setSetAffiliations(setAffiliations);
-//        if (setAffiliations.iterator().hasNext()) {
-//            System.out.println("printing affiliations in the author merge method");
-//            System.out.println(setAffiliations.iterator().next().toString());
-//        }
 
         return currMergedAuthor;
 

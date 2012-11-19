@@ -9,6 +9,7 @@ import com.itextpdf.text.DocumentException;
 import java.io.IOException;
 import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
 import org.primefaces.model.StreamedContent;
 
@@ -20,6 +21,12 @@ import org.primefaces.model.StreamedContent;
 @RequestScoped
 public class FileDownloadController implements Serializable {
 
+    @ManagedProperty("#{controllerBean}")
+    private ControllerBean controllerBean;
+
+    public void setcontrollerBean(ControllerBean controllerBean) {
+        this.controllerBean = controllerBean;
+    }
     private String dataURL;
     private StreamedContent file;
 
@@ -39,9 +46,9 @@ public class FileDownloadController implements Serializable {
     }
 
     public StreamedContent getFile() throws IOException, DocumentException {
-        
+
         PDFCreator pdfCreator = new PDFCreator();
-        file = pdfCreator.getPDF(dataURL);
+        file = pdfCreator.getPDF(dataURL, controllerBean.getSearch());
         return file;
     }
 }

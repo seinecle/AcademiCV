@@ -43,7 +43,7 @@ public class NYTAPIresponseParser {
             currDoc = currListIterator.next();
 
             //this skips the documents that have incomplete data. They will simply not be considered by the application.
-            if (currDoc.getTitle() == null || currDoc.getDate() == null) {
+            if (currDoc.getTitle() == null || currDoc.getDate() == null || currDoc.getYear() == null) {
                 continue;
             }
             newDoc = new Document();

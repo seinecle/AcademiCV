@@ -4,7 +4,6 @@
  */
 package BL.APIs.Arxiv;
 
-import Controller.ControllerBean;
 import Model.Affiliation;
 import Model.Author;
 import Model.Document;
@@ -12,7 +11,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import javax.faces.bean.ManagedProperty;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -153,7 +151,7 @@ public class ArxivAPIresponseParser extends DefaultHandler {
 
         //case when an affiliation is provided with the author
         if (qName.equalsIgnoreCase("author") & authorBuilder != null & currDocCurrAuthorAffiliation != null) {
-            currAuthor = new Author(authorBuilder.toString());
+            currAuthor = new Author(authorBuilder.toString(),true);
 //            System.out.println("affiliation detected:");
 //            System.out.println(currDocCurrAuthorAffiliation);
 //            System.out.println(currDocYearPublished);

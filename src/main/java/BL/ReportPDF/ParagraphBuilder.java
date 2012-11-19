@@ -4,18 +4,14 @@
  */
 package BL.ReportPDF;
 
-import Controller.ControllerBean;
 import Model.Author;
-import View.ReportBean;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Font.FontFamily;
 import com.itextpdf.text.Paragraph;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import javax.faces.bean.ManagedProperty;
 import org.joda.time.DateTime;
 
 /**
@@ -33,12 +29,13 @@ public class ParagraphBuilder {
     public static final Font TEXTNORMALSIZE =
             new Font(FontFamily.TIMES_ROMAN,
             12);
+    
+    private Author search;
 
-    @ManagedProperty("#{controllerBean}")
-    private ControllerBean controllerBean;
-
-    public void setcontrollerBean(ControllerBean controllerBean) {
-        this.controllerBean = controllerBean;
+    public ParagraphBuilder(Author search) {
+    
+        this.search = search;
+    
     }
 
     public Paragraph getHeader() {
@@ -46,7 +43,7 @@ public class ParagraphBuilder {
         header.setFont(HEADERFONT);
         header.setAlignment(Element.ALIGN_CENTER);
         header.add(new Chunk("AcademiCV for "));
-        header.add(new Chunk(controllerBean.getSearch().getFullname()));
+        header.add(new Chunk(search.getFullname()));
         return header;
     }
 
@@ -70,18 +67,29 @@ public class ParagraphBuilder {
         subHeader.setFont(SUBHEADERFONT);
         subHeader.setAlignment(Element.ALIGN_LEFT);
 
-        subHeader.add(new Chunk(controllerBean.getSearch().getFullname()));
+        subHeader.add(new Chunk(search.getFullname()));
         subHeader.add(new Chunk(" has written "));
-        subHeader.add(new Chunk(String.valueOf(controllerBean.getSetDocs().size())));
+        subHeader.add(new Chunk(String.valueOf(search.getNumberOfDocs())));
         subHeader.add(new Chunk(" documents between "));
-        subHeader.add(new Chunk(String.valueOf(controllerBean.getMinYear())));
+        subHeader.add(new Chunk(String.valueOf(search.getYearFirstCollab())));
         subHeader.add(new Chunk(" and "));
-        subHeader.add(new Chunk(String.valueOf(controllerBean.getMaxYear())));
+        subHeader.add(new Chunk(String.valueOf(search.getYearLastCollab())));
         subHeader.add(new Chunk(", with a total of "));
-        subHeader.add(new Chunk(String.valueOf(controllerBean.getSetAuthors().size())));
+        subHeader.add(new Chunk(String.valueOf(search.getNumberCoAuthors())));
         subHeader.add(new Chunk(" co-authors."));
 
         return subHeader;
+    }
+
+    public Paragraph getIdentity() {
+        Paragraph identity = new Paragraph();
+        identity.setFont(SUBHEADERFONT);
+        identity.setAlignment(Element.ALIGN_LEFT);
+        identity.add(new Chunk("Last known affiliation: "));
+        identity.add(new Chunk(search.getMostRecentAffiliation()));
+        identity.add(new Chunk("."));
+
+        return identity;
     }
 
     public Paragraph getMostFrequentCoAuthor() {
@@ -95,7 +103,7 @@ public class ParagraphBuilder {
     }
 
     public String getMostFrequentCoAuthors() {
-        Set<Author> mostFrequentCoAuthors = controllerBean.getSearch().getSetMostFrequentCoAuthors();
+        Set<Author> mostFrequentCoAuthors = search.getSetMostFrequentCoAuthors();
         StringBuilder toReturn = new StringBuilder();
         if (mostFrequentCoAuthors.size() == 1) {
             Author mostFrequentCoAuthor = mostFrequentCoAuthors.iterator().next();

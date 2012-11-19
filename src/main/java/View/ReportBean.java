@@ -196,7 +196,7 @@ public class ReportBean implements Serializable {
 
     public String getMostFrequentSource() {
         StringBuilder toReturn = new StringBuilder();
-        int countTitle = controllerBean.getMostFreqSource().getRight();
+        int countTitle = controllerBean.getSearch().getMostFrequentOutlet().getRight();
         if (countTitle == 0) {
             return toReturn.toString();
         }
@@ -205,7 +205,7 @@ public class ReportBean implements Serializable {
         toReturn.append("<b>Journal with most publications by this researcher</b><br>");
         toReturn.append("</div>");
 
-        toReturn.append(controllerBean.getMostFreqSource().getLeft());
+        toReturn.append(controllerBean.getSearch().getMostFrequentOutlet().getLeft());
         toReturn.append(" (");
         toReturn.append(countTitle);
         if (countTitle == 1) {

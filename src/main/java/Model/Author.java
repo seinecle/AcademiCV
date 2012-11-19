@@ -6,6 +6,7 @@ package Model;
 
 import java.util.Set;
 import java.util.UUID;
+import Utils.Pair;
 
 /**
  *
@@ -17,6 +18,9 @@ public class Author extends Quidam {
     private int yearLastCollab;
     private int timesMentioned;
     private Set<Author> setMostFrequentCoAuthors;
+    private int numberCoAuthors;
+    private int numberOfDocs;
+    private Pair<String,Integer> mostFrequentOutlet;
 
     public Author() {
     }
@@ -76,6 +80,31 @@ public class Author extends Quidam {
     public void setSetMostFrequentCoAuthors(Set<Author> setMostFrequentCoAuthors) {
         this.setMostFrequentCoAuthors = setMostFrequentCoAuthors;
     }
+
+    public int getNumberCoAuthors() {
+        return numberCoAuthors;
+    }
+
+    public void setNumberCoAuthors(int numberCoAuthors) {
+        this.numberCoAuthors = numberCoAuthors;
+    }
+
+    public int getNumberOfDocs() {
+        return numberOfDocs;
+    }
+
+    public void setNumberOfDocs(int numberOfDocs) {
+        this.numberOfDocs = numberOfDocs;
+    }
+
+    public Pair<String, Integer> getMostFrequentOutlet() {
+        return mostFrequentOutlet;
+    }
+
+    public void setMostFrequentOutlet(Pair<String, Integer> mostFrequentOutlet) {
+        this.mostFrequentOutlet = mostFrequentOutlet;
+    }
+
     
     
     

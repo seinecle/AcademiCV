@@ -4,7 +4,7 @@
  */
 package BL.ReportPDF;
 
-import Controller.ControllerBean;
+import Model.Author;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
@@ -15,10 +15,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.faces.bean.ManagedProperty;
 import javax.imageio.ImageIO;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -31,14 +29,11 @@ import sun.misc.BASE64Decoder;
 public class PDFCreator {
 
     private StreamedContent file;
-    @ManagedProperty("#{controllerBean}")
-    private ControllerBean controllerBean;
 
-    public void setcontrollerBean(ControllerBean controllerBean) {
-        this.controllerBean = controllerBean;
+    public PDFCreator() {
     }
 
-    public StreamedContent getPDF(String dataURL) throws IOException, DocumentException {
+    public StreamedContent getPDF(String dataURL, Author search) throws IOException, DocumentException {
         //GETS THE PIC OF THE CIRCLE
 //        System.out.println("dataURL: " + dataURL);
 //        ExternalContext external = FacesContext.getCurrentInstance().getExternalContext();
@@ -74,10 +69,13 @@ public class PDFCreator {
         imgIText.scaleAbsolute(300, 300);
 //        imgIText.setCompressionLevel(9);
 
-        ParagraphBuilder pb = new ParagraphBuilder();
+        ParagraphBuilder pb = new ParagraphBuilder(search);
         document.add(pb.getHeader());
         document.add(pb.getSubHeader());
         document.add(imgIText);
+        if (search.getMostRecentAffiliation() != null) {
+            document.add(pb.getIdentity());
+        }
         document.add(pb.getCountPapers());
         document.add(pb.getMostFrequentCoAuthor());
 
@@ -85,7 +83,7 @@ public class PDFCreator {
         docWriter.close();
 
         InputStream stream = new ByteArrayInputStream(baosPDF.toByteArray());
-        file = new DefaultStreamedContent(stream, "application/pdf", "academicv " + controllerBean.getSearch().getFullname());
+        file = new DefaultStreamedContent(stream, "application/pdf", "academicv " + search.getFullname());
 
         return file;
     }

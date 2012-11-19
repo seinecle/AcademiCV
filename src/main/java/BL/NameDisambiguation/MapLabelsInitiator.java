@@ -11,20 +11,17 @@ import java.util.TreeSet;
 
 public class MapLabelsInitiator {
 
-    Set<Author> setCloseMatches = new TreeSet();
+    Set<String> setCloseMatches = new TreeSet();
     Set<Author> setAuthorsWithEdits = new TreeSet();
     TreeSet<MapLabels> setMapLabels = new TreeSet();
     ArrayList authorsInOneDoc;
     Author currAuth;
-    String mainFirstName;
-    String mainLastName;
     boolean debug;
-    private boolean atLeastOneMatchFound = false;
 
     public MapLabelsInitiator() {
     }
 
-    public TreeSet<MapLabels> check(Set<Author> setAuthors, Set<CloseMatchBean> setcmb) {
+    public TreeSet<MapLabels> check(Set<Author> setAuthors, Set<CloseMatchBean> setcmb, Author search) {
 
 
 
@@ -32,28 +29,30 @@ public class MapLabelsInitiator {
         setCloseMatches = new HashSet();
         while (setcmbIterator.hasNext()) {
             CloseMatchBean closeMatchBean = setcmbIterator.next();
-            setCloseMatches.add(new Author(closeMatchBean.getAuthor1()));
-            setCloseMatches.add(new Author(closeMatchBean.getAuthor2()));
+            setCloseMatches.add(closeMatchBean.getAuthor1());
+            setCloseMatches.add(closeMatchBean.getAuthor2());
         }
+        System.out.println("size of setcmb: " + setcmb.size());
         //***********
         // persist a map of labels
         // this is a map of the form ("original form of the author spelling in the set of Authors", "corrected form of this Author following user input")
         // this map is useful to keep a connection between original form an subsequent modifications
         // here, this map is populated with only the others that were not found to be similar to another.
-        // this map will be modified in the paircheck and finalcheck webpages, with user input.
+        // this map will be modified in the paircheck and finalcheck webpages, by user input.
         //***********        
 
         Iterator<Author> setAuthorsIterator = setAuthors.iterator();
         Author currAuthor;
-
+        String currAuthorFullNameWithComma;
         while (setAuthorsIterator.hasNext()) {
             currAuthor = setAuthorsIterator.next();
-            if (!setCloseMatches.contains(currAuthor)) {
-                if (!currAuthor.getFullnameWithComma().trim().equals(mainFirstName + ", " + mainLastName)) {
+            currAuthorFullNameWithComma = currAuthor.getFullnameWithComma();
+            if (!setCloseMatches.contains(currAuthorFullNameWithComma)) {
+                if (!currAuthorFullNameWithComma.equals(search.getFullnameWithComma())) {
 //                    System.out.println("unambiguous author: " + currAuthor.getFullname());
 //                    System.out.println("main Auth: " + mainFirstName + " " + mainLastName);
 
-                    setMapLabels.add(new MapLabels(currAuthor.getFullnameWithComma(), currAuthor.getFullnameWithComma()));
+                    setMapLabels.add(new MapLabels(currAuthorFullNameWithComma, currAuthorFullNameWithComma));
                 }
             }
         }

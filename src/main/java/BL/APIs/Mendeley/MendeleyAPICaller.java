@@ -2,7 +2,6 @@ package BL.APIs.Mendeley;
 
 import Controller.AdminPanel;
 import Utils.APIkeys;
-import Utils.RemoveNonASCII;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.File;
@@ -59,7 +58,7 @@ public class MendeleyAPICaller {
             currLine = convertUnicode(currLine);
 //            currLine = RemoveNonASCII.remove(currLine);
             currLine = WordUtils.capitalize(currLine);
-            System.out.println("Mendeley API response: " + currLine);
+//            System.out.println("Mendeley API response: " + currLine);
 
             //            System.out.println("Mendely API response: ");
 //            System.out.println(currLine);

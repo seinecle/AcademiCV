@@ -1,7 +1,6 @@
 package BL.APIs.Mendeley;
 
 import BL.APIs.Mendeley.MendeleyDocument.author;
-import Controller.ControllerBean;
 import Model.Author;
 import Model.Document;
 import java.util.ArrayList;
@@ -9,7 +8,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import javax.faces.bean.ManagedProperty;
 
 /**
  *
