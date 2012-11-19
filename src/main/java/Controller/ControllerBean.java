@@ -28,7 +28,7 @@ import Model.PersistingAcademic;
 import Model.PersistingEdit;
 import Model.PersistingFeedback;
 import Utils.Clock;
-import Utils.Pair;
+import Utils.PairSimple;
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
 import com.google.code.morphia.query.Query;
@@ -98,11 +98,11 @@ public class ControllerBean implements Serializable {
     private int tempBirthYear = 0;
     private boolean coAuthorsFound = true;
     private String feedback;
-    private List<Callable<Set<Document>>> calls;
-    private Callable<Set<Document>> worldcatCallable;
-    private Callable<Set<Document>> arxivCallable;
-    private Callable<Set<Document>> mendeleyCallable;
-    private Callable<Set<Document>> nytCallable;
+    private List<Callable<PairSimple<Set<Document>, Author>>> calls;
+    private Callable<PairSimple<Set<Document>, Author>> worldcatCallable;
+    private Callable<PairSimple<Set<Document>, Author>> arxivCallable;
+    private Callable<PairSimple<Set<Document>, Author>> mendeleyCallable;
+    private Callable<PairSimple<Set<Document>, Author>> nytCallable;
     private Set<Document> setMediaDocs;
 
     @PostConstruct
@@ -176,7 +176,7 @@ public class ControllerBean implements Serializable {
 
     public String launchNewSearch() throws Exception {
         setMediaDocs = new HashSet();
-        calls = new ArrayList<Callable<Set<Document>>>();
+        calls = new ArrayList<Callable<PairSimple<Set<Document>,Author>>>();
         multisetAuthors = HashMultiset.create();
         setAuthors = new HashSet();
         setDocs = new HashSet();
@@ -499,7 +499,7 @@ public class ControllerBean implements Serializable {
         this.setMapLabels.remove(mapLabel);
     }
 
-    public List<Callable<Set<Document>>> getCalls() {
+    public List<Callable<PairSimple<Set<Document>,Author>>> getCalls() {
         return calls;
     }
 

@@ -4,18 +4,19 @@
  */
 package BL.APIs.WorldCatIdentities;
 
+import Model.Author;
+import Model.Document;
 import Utils.Clock;
+import Utils.PairSimple;
 import View.ProgressBarMessenger;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.concurrent.Callable;
-import org.xml.sax.InputSource;
-import Model.Author;
-import Model.Document;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.xml.sax.InputSource;
 
 /**
  *
@@ -33,13 +34,17 @@ public class WorldCatAPIController implements Callable, Serializable {
     }
 
     @Override
-    public Set<Document> call() {
+    public PairSimple<Set<Document>,Author> call() {
         try {
             Clock gettingWorldCat = new Clock("calling WorldCat...");
             setWorldCatDocs = new HashSet();
             currBirthYear = 0;
             worldcatInputSource = WorldCatAPICaller.run(search.getForename(), search.getSurname());
-            HashSet<String> setIdentities = new WorldCatAPIresponseParser(worldcatInputSource, search).parse();
+            PairSimple<HashSet<String>, Author> ps = new WorldCatAPIresponseParser(worldcatInputSource, search).parse();
+            HashSet<String> setIdentities = ps.getLeft();
+            if (ps.getRight().getBirthYear() != null) {
+                search.setBirthYear(ps.getRight().getBirthYear());
+            }
             System.out.println("nb of identities found: " + setIdentities.size());
             //        ProgressBarMessenger.updateMsg("<p>hello from the worldcatAPI call!</p>");
             ProgressBarMessenger.setProgress("worldcat in progress");
@@ -62,8 +67,8 @@ public class WorldCatAPIController implements Callable, Serializable {
         } catch (Exception ex) {
             Logger.getLogger(WorldCatAPIController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("about to return the set of Worldcat docs, size is: "+setWorldCatDocs.size());
-        return setWorldCatDocs;
+        System.out.println("about to return the set of Worldcat docs, size is: " + setWorldCatDocs.size());
+        return new PairSimple(setWorldCatDocs,search);
 
     }
 

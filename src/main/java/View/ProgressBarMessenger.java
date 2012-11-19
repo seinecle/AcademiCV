@@ -5,8 +5,9 @@
 package View;
 
 import Controller.ControllerBean;
-import Utils.Timer;
+import Model.Author;
 import Model.Document;
+import Utils.PairSimple;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,14 +34,14 @@ import javax.faces.bean.ViewScoped;
 public class ProgressBarMessenger implements Serializable {
 
     private static StringBuilder sb = new StringBuilder();
-    private List<Future<Set<Document>>> futures;
-    private Callable<Set<Document>> currCall;
-    private List<Callable<Set<Document>>> calls;
+    private List<Future<PairSimple<Set<Document>, Author>>> futures;
+    private Callable<PairSimple<Set<Document>, Author>> currCall;
+    private List<Callable<PairSimple<Set<Document>, Author>>> calls;
     private boolean callsComplete = false;
     private boolean processingComplete = false;
     private int countCalls;
     private ExecutorService pool;
-    private List<Future<Set<Document>>> listResults;
+    private List<Future<PairSimple<Set<Document>, Author>>> listResults;
     private static StringBuilder msg;
     private String progressMessage = "not set yet";
     @ManagedProperty("#{controllerBean}")
@@ -51,6 +52,7 @@ public class ProgressBarMessenger implements Serializable {
     private boolean toggleButtonReport = false;
     private boolean toggleButtonFinalCheck = false;
     private boolean buttonsDisplayed = false;
+    private Author search;
 
     public void setcontrollerBean(ControllerBean controllerBean) {
         this.controllerBean = controllerBean;
@@ -64,6 +66,7 @@ public class ProgressBarMessenger implements Serializable {
         sb = new StringBuilder();
         msg = new StringBuilder();
         countCalls = 0;
+        search = controllerBean.getSearch();
         sb.append("<p>Looking up information on ").append(controllerBean.getSearch().getFullname()).append(" on very large databases... </p>");
 //        sb.append("<p>Currently searching WorldCat: a catalogue of publications in thousands of libraries in the world </p>");
 //        sb.append("<p>(please be patient while it loads...)</p>");
@@ -93,12 +96,12 @@ public class ProgressBarMessenger implements Serializable {
         System.out.println("APIs calls started");
         pool = Executors.newFixedThreadPool(10);
         futures = new ArrayList();
-        Iterator<Callable<Set<Document>>> callsIterator = calls.iterator();
+        Iterator<Callable<PairSimple<Set<Document>, Author>>> callsIterator = calls.iterator();
         while (callsIterator.hasNext()) {
             countCalls++;
             currCall = callsIterator.next();
 
-            Future<Set<Document>> future = pool.submit(currCall);
+            Future<PairSimple<Set<Document>, Author>> future = pool.submit(currCall);
             futures.add(future);
             System.out.println("new Call submitted: " + countCalls);
             callsIterator.remove();
@@ -115,9 +118,9 @@ public class ProgressBarMessenger implements Serializable {
             return null;
         }
 
-        Iterator<Future<Set<Document>>> futuresIterator = futures.iterator();
+        Iterator<Future<PairSimple<Set<Document>, Author>>> futuresIterator = futures.iterator();
         while (futuresIterator.hasNext()) {
-            Future<Set<Document>> future = futuresIterator.next();
+            Future<PairSimple<Set<Document>, Author>> future = futuresIterator.next();
             if (!future.isDone()) {
                 System.out.println("some API calls have not returned yet");
                 return null;
@@ -126,8 +129,14 @@ public class ProgressBarMessenger implements Serializable {
         futuresIterator = futures.iterator();
         while (futuresIterator.hasNext()) {
             try {
-                Future<Set<Document>> future = futuresIterator.next();
-                controllerBean.addToSetDocs(future.get());
+                Future<PairSimple<Set<Document>, Author>> future = futuresIterator.next();
+                PairSimple<Set<Document>, Author> ps = future.get();
+                controllerBean.addToSetDocs(ps.getLeft());
+                if (ps.getRight().getBirthYear() != 0 & ps.getRight().getBirthYear() != null) {
+                    System.out.println("year of birth added: " + ps.getRight().getBirthYear());
+                    search.setBirthYear(ps.getRight().getBirthYear());
+                    controllerBean.setSearch(search);
+                }
                 futuresIterator.remove();
             } catch (ExecutionException ex) {
                 Logger.getLogger(ProgressBarMessenger.class.getName()).log(Level.SEVERE, null, ex);
@@ -155,18 +164,19 @@ public class ProgressBarMessenger implements Serializable {
         } else {
             if (!buttonsDisplayed) {
                 updateMsg("<br>Cleaning is now complete.<br>");
-
-                if (nextPage.equals("pairscheck?faces-redirect=true")) {
-                    toggleButtonCorrections = true;
-                    updateMsg("Some co-authors of " + controllerBean.getSearch().getFullname() + " appear to be mispelled. We recommend that you help us make the necessary corrections.<br>");
-
-                }
-                if (nextPage.equals("report?faces-redirect=true")) {
-                    toggleButtonReport = true;
-                }
-
-                if (nextPage.equals("finalcheck?faces-redirect=true")) {
-                    toggleButtonFinalCheck = true;
+                switch (nextPage) {
+                    case "pairscheck?faces-redirect=true":
+                        toggleButtonCorrections = true;
+                        updateMsg("Some co-authors of " + controllerBean.getSearch().getFullname() + " appear to be mispelled. We recommend that you help us make the necessary corrections.<br>");
+                        break;
+                    case "report?faces-redirect=true":
+                        toggleButtonReport = true;
+                        break;
+                    case "finalcheck?faces-redirect=true":
+                        toggleButtonFinalCheck = true;
+                        break;
+                    default:
+                        return nextPage;
                 }
                 buttonsDisplayed = true;
             }

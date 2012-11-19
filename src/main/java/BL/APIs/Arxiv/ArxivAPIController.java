@@ -5,6 +5,7 @@
 package BL.APIs.Arxiv;
 
 import Utils.Clock;
+import Utils.PairSimple;
 import View.ProgressBarMessenger;
 import java.io.Serializable;
 import java.util.concurrent.Callable;
@@ -18,7 +19,7 @@ import java.util.Set;
  * @author C. Levallois
  */
 public class ArxivAPIController implements Callable, Serializable {
-    
+
     private Author search;
 
     public ArxivAPIController(Author search) {
@@ -26,7 +27,7 @@ public class ArxivAPIController implements Callable, Serializable {
     }
 
     @Override
-    public Set<Document> call() throws Exception {
+    public PairSimple<Set<Document>, Author> call() throws Exception {
         Clock gettingArxivData = new Clock("calling Arxiv...");
         InputSource readerArxivResults = ArxivAPICaller.run(search.getForename(), search.getSurname());
         ProgressBarMessenger.setProgress("arxiv returned");
@@ -35,6 +36,6 @@ public class ArxivAPIController implements Callable, Serializable {
         gettingArxivData.closeAndPrintClock();
         System.out.println("about to return the set of Arxiv docs, size is: " + arxivDocs.size());
 
-        return arxivDocs;
+        return new PairSimple(arxivDocs, search);
     }
 }

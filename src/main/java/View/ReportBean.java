@@ -8,7 +8,6 @@ import Controller.ControllerBean;
 import Model.Author;
 import Model.Document;
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;

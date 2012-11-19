@@ -58,6 +58,11 @@ public class AuthorMerger {
         setAffiliations.addAll(author2.getSetAffiliations());
         currMergedAuthor.setSetAffiliations(setAffiliations);
 
+        //add birth year
+        if (author1.getBirthYear() == null || author1.getBirthYear() == 0) {
+            currMergedAuthor.setBirthYear(author2.getBirthYear());
+        }
+
         return currMergedAuthor;
 
 

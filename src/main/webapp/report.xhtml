@@ -126,7 +126,7 @@
                              severity="info"
                              >
                 <h:outputText styleClass="ui-widget"  value="" escape="false" />
-                <p:commandButton value="Draw the ring of #{reportBean.obtainFullName()}?" actionListener ="#{controllerBean.prepareNewSearch()}" action ="index?faces-redirect=true" oncomplete="cd.hide();"/>
+                <p:commandButton value="Go to the academiCV of #{reportBean.obtainFullName()}?" actionListener ="#{controllerBean.prepareNewSearch()}" action ="index?faces-redirect=true" oncomplete="cd.hide();"/>
                 <p:commandButton value="No, stay on this page" onclick="cd.hide();" type="button" />
             </p:confirmDialog>
         </h:form>

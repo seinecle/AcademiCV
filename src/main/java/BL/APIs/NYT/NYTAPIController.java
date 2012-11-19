@@ -4,8 +4,8 @@
  */
 package BL.APIs.NYT;
 
-import Controller.ControllerBean;
 import Utils.Clock;
+import Utils.PairSimple;
 import Model.Document;
 import View.ProgressBarMessenger;
 import java.io.Serializable;
@@ -28,9 +28,9 @@ public class NYTAPIController implements Callable, Serializable {
     }
 
     @Override
-    public Set<Document> call() throws Exception {
+    public PairSimple<Set<Document>,Author> call() throws Exception {
 
-        Set<Document> setNYTDocs = new HashSet();
+        Set<Document> setNYTDocs;
         Clock gettingNYTData = new Clock("calling the NYT...");
         NYTDocs = NYTAPICaller.callAPI(search.getForename(), search.getSurname());
         NYTAPIresponseParser NYTparser = new NYTAPIresponseParser(NYTDocs);
@@ -40,7 +40,7 @@ public class NYTAPIController implements Callable, Serializable {
 
         gettingNYTData.closeAndPrintClock();
         System.out.println("about to return the set of NYT docs, size is: " + setNYTDocs.size());
-        return setNYTDocs;
+        return new PairSimple(setNYTDocs,search);
 
     }
 }

@@ -4,13 +4,14 @@
  */
 package BL.APIs.Mendeley;
 
-import Utils.Clock;
-import View.ProgressBarMessenger;
-import java.io.Serializable;
-import java.util.concurrent.Callable;
 import Model.Author;
 import Model.Document;
+import Utils.Clock;
+import Utils.PairSimple;
+import View.ProgressBarMessenger;
+import java.io.Serializable;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 /**
  *
@@ -20,13 +21,13 @@ public class MendeleyAPIController implements Callable, Serializable {
 
     private ContainerMendeleyDocuments mendeleyDocs;
     private Author search;
-    
-    public MendeleyAPIController(Author search){
+
+    public MendeleyAPIController(Author search) {
         this.search = search;
     }
 
     @Override
-    public Set<Document> call() throws Exception {
+    public PairSimple<Set<Document>, Author> call() throws Exception {
         Set<Document> setMendeleyDocs;
         Clock gettingMendeleyData = new Clock("calling Mendeley...");
         mendeleyDocs = MendeleyAPICaller.run(search.getForename(), search.getSurname());
@@ -36,6 +37,6 @@ public class MendeleyAPIController implements Callable, Serializable {
         gettingMendeleyData.closeAndPrintClock();
         System.out.println("about to return the set of Mendeley docs, size is: " + setMendeleyDocs.size());
 
-        return setMendeleyDocs;
+        return new PairSimple(setMendeleyDocs, search);
     }
 }

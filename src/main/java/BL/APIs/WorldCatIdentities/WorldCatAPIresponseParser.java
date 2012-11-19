@@ -6,6 +6,7 @@ package BL.APIs.WorldCatIdentities;
 
 import Model.Author;
 import Utils.RemoveNonASCII;
+import Utils.PairSimple;
 import java.io.IOException;
 import java.util.HashSet;
 import javax.xml.parsers.ParserConfigurationException;
@@ -42,7 +43,7 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
 
     public WorldCatAPIresponseParser(InputSource newIs, Author search) {
         this.is = newIs;
-        this.search  =search;
+        this.search = search;
         currSearchName = search.getFullname();
         currSearchName = StringUtils.stripAccents(currSearchName);
         currSearchName = RemoveNonASCII.remove(currSearchName);
@@ -50,7 +51,7 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
 
     }
 
-    public HashSet<String> parse() throws IOException {
+    public PairSimple<HashSet<String>, Author> parse() throws IOException {
 
 
 
@@ -75,7 +76,7 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
             System.out.println("IOException: " + ie);
         }
 
-        return setIdentitiesFound;
+        return new PairSimple(setIdentitiesFound, search);
 
 
     }
@@ -151,34 +152,39 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
 
         if (qName.equals("uri") && newMatch) {
             currURI = URIBuilder.toString();
+            String firstNameInURI = "";
             if (!currURI.contains("lccn")) {
 //            currURI = RemoveNonASCII.remove(currURI);
                 currURI = currURI.toLowerCase();
                 String[] termsInURI = currURI.split(",");
-                termsInURI[0] = termsInURI[0].replace("/identities/np-", "");
+                termsInURI[0] = termsInURI[0].replace("/identities/np-", "").trim();
+                System.out.println("termsInURI[0]: " + termsInURI[0]);
 
                 String URIreconstructed;
                 if (termsInURI.length > 1) {
                     if (termsInURI[1].matches(".*\\$\\d\\d\\d\\d.*")) {
-                        termsInURI[1] = termsInURI[1].replaceAll("(.*)(\\$\\d\\d\\d\\d)(.*)", "$1");
+                        firstNameInURI = termsInURI[1].replaceAll("(.*)(\\$\\d\\d\\d\\d)(.*)", "$1").trim();
+                        currBirthYear = termsInURI[1].replaceAll("(.*\\$)(\\d\\d\\d\\d)(.*)", "$2").trim();
+                        System.out.println("birth year found! " + currBirthYear);
+                        System.out.println("firstNameInURI" + firstNameInURI);
                     }
-                    if (!termsInURI[1].equals(StringUtils.stripAccents(search.getForename()))) {
-                        termsInURI[1] = "do not include in the set!";
+                    if (!firstNameInURI.equals(StringUtils.stripAccents(search.getForename().toLowerCase()))) {
+                        firstNameInURI = "do not include in the set!";
                     }
 
-                    if (!termsInURI[0].equals(StringUtils.stripAccents(search.getSurname()))) {
+                    if (!termsInURI[0].equals(StringUtils.stripAccents(search.getSurname().toLowerCase()))) {
                         termsInURI[0] = "do not include in the set!";
+                        System.out.println("termsInURI[0]: " + termsInURI[0]);
                     }
 
-                    URIreconstructed = termsInURI[1].trim() + "%20" + termsInURI[0].trim();
+                    URIreconstructed = firstNameInURI + "%20" + termsInURI[0].trim();
                 } else {
                     URIreconstructed = "do not include in the set!";
                 }
                 URIreconstructed = URIreconstructed.replaceAll(" ", "%20");
-//                System.out.println("currURI = " + currURI);
-//                System.out.println("URIreconstructed = " + URIreconstructed);
+                System.out.println("currURI = " + currURI);
+                System.out.println("URIreconstructed = " + URIreconstructed);
                 currSearchName = currSearchName.replaceAll(" ", "%20").toLowerCase();
-//                System.out.println("currSearchName: " + currSearchName);
 
                 if (!URIreconstructed.contains(currSearchName)) {
                     currURI = null;
@@ -186,6 +192,8 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
                     System.out.println("uri added to the set:" + currURI);
                     currURI = currURI.replaceAll(" ", "%20");
                     setIdentitiesFound.add(currURI);
+                    search.setBirthYear(Integer.parseInt(currBirthYear));
+
                 }
             } else {
                 setIdentitiesFound.add(currURI);
