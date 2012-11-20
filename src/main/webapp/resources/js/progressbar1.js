@@ -143,7 +143,8 @@ function initVisualization(){
 
 
 function updateVisualization(){
-    var progressMsg = document.getElementById('formID:counter').value;
+//    var progressMsg = document.getElementById('formID:counter').value;
+    var progressMsg = $('#counter').val();
     console.log("value of progressMsg is: "+progressMsg);
     var worldcat;
     if (progressMsg.indexOf("worldcat in progress")!=-1){

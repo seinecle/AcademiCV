@@ -104,7 +104,7 @@ function addSegments(json){
 
     //REDRAW THE SKETCH AT THESE NEW DIMENSIONS
     var stage = new Kinetic.Stage({
-        container: document.getElementById('container'),
+        container: document.getElementById('circleCoAuthors'),
         width: SKETCH_WIDTHf,
         height: SKETCH_HEIGTHf
     });

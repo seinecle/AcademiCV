@@ -12,7 +12,7 @@
     </h:head>
 
     <h:body>
-        <h:form id="formID">
+        <h:form id="formID" prependId="false">
             <p:remoteCommand name="launchSearch" action="#{progressBarMessenger.processCalls()}"/>
             <p:remoteCommand name="checkUpdates" action="#{progressBarMessenger.checkUpdates()}"/>
             <p:poll interval="1" update="text,counter" oncomplete="checkUpdates(); updateVisualization();"/>

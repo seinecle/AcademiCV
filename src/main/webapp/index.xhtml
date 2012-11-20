@@ -6,6 +6,8 @@
       >
     <h:head>
         <h:outputStylesheet name="css/index.css" />
+        <h:outputScript library="js" name="browserDetection.js" />
+
         <title>AcademiCV</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
@@ -117,5 +119,13 @@
             </p:confirmDialog>
         </h:form>
     </h:body>
+    <script type="text/javascript">
+        //<![CDATA[
+        $(function(){
+            browserDetection();
+        }); //end ready
+        //]]>
+    </script>
+
 </html>
 
