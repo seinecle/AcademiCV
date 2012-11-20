@@ -53,6 +53,7 @@ public class ProgressBarMessenger implements Serializable {
     private boolean toggleButtonFinalCheck = false;
     private boolean buttonsDisplayed = false;
     private Author search;
+    private int nbCase;
 
     public void setcontrollerBean(ControllerBean controllerBean) {
         this.controllerBean = controllerBean;
@@ -159,25 +160,40 @@ public class ProgressBarMessenger implements Serializable {
 
         if (!processingComplete) {
             nextPage = controllerBean.treatmentAPIresults();
+            if (nextPage.equals("pairscheck?faces-redirect=true")){
+                nbCase = 1;
+                }
+            else if(nextPage.equals("report?faces-redirect=true")){
+                nbCase = 2;
+            }
+            else if (nextPage.equals("finalcheck?faces-redirect=true")){
+                nbCase = 3;
+            }
+            else {
+                nbCase = -1;
+            }
+            
             System.out.println("treatment API data is over!");
             processingComplete = true;
         } else {
             if (!buttonsDisplayed) {
                 updateMsg("<br>Cleaning is now complete.<br>");
-                switch (nextPage) {
-                    case "pairscheck?faces-redirect=true":
+                switch (nbCase) {
+                    case 1:
                         toggleButtonCorrections = true;
                         updateMsg("Some co-authors of " + controllerBean.getSearch().getFullname() + " appear to be mispelled. We recommend that you help us make the necessary corrections.<br>");
                         break;
-                    case "report?faces-redirect=true":
+                    case 2:
                         toggleButtonReport = true;
                         break;
-                    case "finalcheck?faces-redirect=true":
+                    case 3:
                         toggleButtonFinalCheck = true;
                         break;
                     default:
                         return nextPage;
                 }
+                
+                
                 buttonsDisplayed = true;
             }
         }

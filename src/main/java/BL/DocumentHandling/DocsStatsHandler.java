@@ -22,7 +22,7 @@ public class DocsStatsHandler {
         Document currDoc;
         while (setDocsIterator.hasNext()) {
             currDoc = setDocsIterator.next();
-            if (currDoc.getPublication_outlet() != null) {
+            if (currDoc.getPublication_outlet() != null && !currDoc.getPublication_outlet().equals("publisher not identified")) {
                 multisetTitles.add(currDoc.getPublication_outlet());
             }
         }

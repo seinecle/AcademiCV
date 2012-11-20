@@ -45,7 +45,7 @@ public class DocumentAggregator {
 //            System.out.println("title 1:" + currPair.getLeft().getTitle());
 //            System.out.println("title 2:" + currPair.getRight().getTitle());
 
-            float distance = WeightedLevenstheinDistanceCalculator.compute(currPair.getLeft().getTitle(), currPair.getRight().getTitle());
+            float distance = WeightedLevenstheinDistanceCalculator.compute(currPair.getLeft().getTitle().toLowerCase(), currPair.getRight().getTitle().toLowerCase());
 
             //if two docs are very smilar (almost identical title, same year), merge the two
             if (distance < 0.10f && currPair.getLeft().getYear() == currPair.getRight().getYear()) {

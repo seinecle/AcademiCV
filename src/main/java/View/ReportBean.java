@@ -8,6 +8,9 @@ import Controller.ControllerBean;
 import Model.Author;
 import Model.Document;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -168,9 +171,9 @@ public class ReportBean implements Serializable {
             toReturn.append(" and ");
             toReturn.append(controllerBean.getSearch().getYearLastCollab());
         }
-        if (controllerBean.getSetDocs().size() > 0) {
+        if (controllerBean.getSearch().getNumberCoAuthors() > 0) {
             toReturn.append(", with a total of ");
-            toReturn.append(controllerBean.getSetDocs().size());
+            toReturn.append(controllerBean.getSearch().getNumberCoAuthors());
             toReturn.append(" co-authors");
         }
         toReturn.append(".");
@@ -187,6 +190,35 @@ public class ReportBean implements Serializable {
             sb.append(controllerBean.getSearch().getFullname());
             sb.append(" is ").append(currYear).append(" years old.");
             sb.append("<p></p>");
+        }
+
+        return sb.toString();
+
+    }
+
+    class DocSortByYear implements Comparator<Document> {
+
+        public int compare(Document d1, Document d2) {
+            return d1.getYear().compareTo(d2.getYear());
+        }
+    }
+
+    public String getListDocs() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<b>List of ");
+        sb.append(controllerBean.getSearch().getFullname());
+        sb.append("'s publications</b>:<br>");
+        ArrayList<Document> listDocs = new ArrayList();
+        listDocs.addAll(controllerBean.getSetDocs());
+        Collections.sort(listDocs, new DocSortByYear());
+        for (Document doc : listDocs) {
+            sb.append(doc.getAuthorsToString());
+            sb.append(" ");
+            sb.append("(<b>").append(doc.getYear()).append("</b>).");
+            sb.append(" \"").append(doc.getTitle()).append("\". ");
+            sb.append("<i>").append(doc.getPublication_outlet()).append("</i>.");
+            sb.append("<p></p>");
+
         }
 
         return sb.toString();
@@ -221,18 +253,19 @@ public class ReportBean implements Serializable {
         Set<Author> mostFrequentCoAuthors = controllerBean.getSearch().getSetMostFrequentCoAuthors();
         StringBuilder toReturn = new StringBuilder();
 
-        if (mostFrequentCoAuthors == null) {
+        if (mostFrequentCoAuthors == null || mostFrequentCoAuthors.isEmpty()) {
             return toReturn.toString();
         }
 
         toReturn.append("<div style=\"font-size:120%;\">");
-        toReturn.append("<b>Most frequent co-author(s)</b><b><br>");
+        toReturn.append("<b>Most frequent co-author(s)</b><br>");
         toReturn.append("</div>");
 
 
         if (mostFrequentCoAuthors.size() == 1) {
             Author mostFrequentCoAuthor = mostFrequentCoAuthors.iterator().next();
             int nbCollab = mostFrequentCoAuthor.getTimesMentioned();
+            toReturn.append("<b>");
             toReturn.append(mostFrequentCoAuthor.getFullname());
             toReturn.append("</b>");
             toReturn.append(".<br>");

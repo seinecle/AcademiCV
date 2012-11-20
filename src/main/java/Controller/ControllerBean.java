@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -176,10 +177,11 @@ public class ControllerBean implements Serializable {
 
     public String launchNewSearch() throws Exception {
         setMediaDocs = new HashSet();
-        calls = new ArrayList<Callable<PairSimple<Set<Document>,Author>>>();
+        calls = new ArrayList<Callable<PairSimple<Set<Document>, Author>>>();
         multisetAuthors = HashMultiset.create();
         setAuthors = new HashSet();
-        setDocs = new HashSet();
+//        setDocs = new TreeSet<Document>(new yearPublicationComparator());
+        setDocs = new TreeSet();
         setMapLabels = new TreeSet();
         mapCloseMatches = new TreeMap();
         setCloseMatches = new TreeSet();
@@ -499,7 +501,7 @@ public class ControllerBean implements Serializable {
         this.setMapLabels.remove(mapLabel);
     }
 
-    public List<Callable<PairSimple<Set<Document>,Author>>> getCalls() {
+    public List<Callable<PairSimple<Set<Document>, Author>>> getCalls() {
         return calls;
     }
 
@@ -601,5 +603,12 @@ public class ControllerBean implements Serializable {
 //        System.out.println("string value of count: ");
 //        System.out.println("string value of count: " + String.valueOf(count).trim());
         count = ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
+    }
+
+    class yearPublicationComparator implements Comparator<Document> {
+
+        public int compare(Document d1, Document d2) {
+            return d1.getYear().compareTo(d2.getYear());
+        }
     }
 }

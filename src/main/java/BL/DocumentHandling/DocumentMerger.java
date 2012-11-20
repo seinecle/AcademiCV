@@ -25,7 +25,7 @@ public class DocumentMerger {
         mergedDoc.setYear(doc1.getYear());
 
         //set publication.outlet
-        if (doc1.getPublication_outlet() == null) {
+        if (doc1.getPublication_outlet() == null || doc1.getPublication_outlet().toLowerCase().contains("ssrn") || doc1.getPublication_outlet().toLowerCase().contains("arxiv")) {
             mergedDoc.setPublication_outlet(doc2.getPublication_outlet());
         } else {
             mergedDoc.setPublication_outlet(doc1.getPublication_outlet());

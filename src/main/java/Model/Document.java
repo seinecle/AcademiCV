@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.UUID;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 /*
@@ -70,7 +71,12 @@ public class Document implements Comparable<Document>, Serializable {
     }
 
     public String getPublication_outlet() {
-        return publication_outlet;
+        if (publication_outlet == null) {
+            return "[publisher not identified]";
+        } else {
+            return publication_outlet;
+
+        }
     }
 
     public Integer getYear() {
@@ -83,6 +89,20 @@ public class Document implements Comparable<Document>, Serializable {
 
     public HashSet<Author> getAuthors() {
         return authors;
+    }
+
+    public String getAuthorsToString() {
+        StringBuilder sb = new StringBuilder();
+        if (!authors.isEmpty()) {
+            sb.append("with ");
+        }
+        Iterator<Author> authorsIterator = authors.iterator();
+        while (authorsIterator.hasNext()) {
+            Author author = authorsIterator.next();
+            sb.append(author.getFullname());
+            sb.append(", ");
+        }
+        return StringUtils.removeEnd(sb.toString(), ", ");
     }
 
     public String getWhereFrom() {
@@ -148,8 +168,6 @@ public class Document implements Comparable<Document>, Serializable {
     public void setNyt_url(String nyt_url) {
         this.nyt_url = nyt_url;
     }
-    
-    
 
     @Override
     public String toString() {
@@ -214,6 +232,12 @@ public class Document implements Comparable<Document>, Serializable {
         return true;
     }
 
+//    @Override
+//    public int compareTo(Document other) {
+//        int result;
+//        result = getYear().compareTo(other.getYear());
+//        return -result;
+//    }
     @Override
     public int compareTo(Document other) {
         int result;
