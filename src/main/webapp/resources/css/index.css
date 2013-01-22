@@ -19,7 +19,8 @@
 }
 
 body { 
-    background-image:url("../img/einstein_44.jpg");
+    background-image:url("../img/einstein_44_fading.jpg");
+    background-repeat:no-repeat;
     /*source: http://www.californiaindianeducation.org/native_profiles/albert_einstein/*/
 }
 

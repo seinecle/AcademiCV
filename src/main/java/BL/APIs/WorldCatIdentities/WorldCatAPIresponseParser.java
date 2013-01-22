@@ -40,6 +40,8 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
     private String currSearchName;
     HashSet<String> setIdentitiesFound;
     private Author search;
+    private boolean fuzzyFirstName;
+    private boolean exactMatch;
 
     public WorldCatAPIresponseParser(InputSource newIs, Author search) {
         this.is = newIs;
@@ -90,6 +92,12 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
 
         if (qName.equals("match") && (attributes.getValue(0).equals("ExactMatches") | attributes.getValue(0).equals("FuzzyFirstName"))) {
 //            System.out.println("new Match found");
+            if (attributes.getValue(0).equals("ExactMatches")) {
+                exactMatch = true;
+            }
+            if (attributes.getValue(0).equals("FuzzyFirstName")) {
+                fuzzyFirstName = true;
+            }
             newMatch = true;
         }
 
@@ -133,22 +141,6 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
 
-
-        //case when an affiliation is provided with the author
-        if (qName.equals("match") && newMatch && currNameType.equals("personal") && currURI != null) {
-
-            yearFound = currURI.matches(".*\\(\\d\\d\\d\\d.*");
-            if (yearFound) {
-//                Author currMainSearchAuthor = ControllerBean.getSearch();
-//                currMainSearchAuthor.setBirthYear(Integer.parseInt(currEstablishedForm.replaceAll(".*(\\(\\d\\d\\d\\d).*", "$1").substring(1)));
-//                ControllerBean.setSearch(currMainSearchAuthor);
-            } else {
-                currBirthYear = null;
-            }
-            currURI = null;
-            currNameType = null;
-            newMatch = false;
-        }
 
         if (qName.equals("uri") && newMatch) {
             currURI = URIBuilder.toString();
@@ -195,7 +187,7 @@ public class WorldCatAPIresponseParser extends DefaultHandler {
                     search.setBirthYear(Integer.parseInt(currBirthYear));
 
                 }
-            } else {
+            } else if (exactMatch) {
                 setIdentitiesFound.add(currURI);
             }
             newURI = false;

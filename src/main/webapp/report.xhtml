@@ -16,30 +16,29 @@
         <script type="text/javascript">
             //<![CDATA[
 
-            $(function(){
+            $(function() {
 
                 var json = '#{reportBean.json}';
-                if (json == null){
+                if (json == null) {
                     return;
                 }
                 addSegments(json);
-            
+
 
 
                 var timer = 0,
-                timeout = 3000,
-
-                memPDF = setInterval(function () {
+                        timeout = 3000,
+                        memPDF = setInterval(function() {
                     var sketchPDF = Processing.getInstanceById("canvasPDF");
                     if (sketchPDF) {
                         console.log("SKETCH PDF HAS LOADED");
                         clearInterval(memPDF);
                         var json = '#{reportBean.json}';
                         var data = $.parseJSON(json);
-                        if(data) {
-                            for(i=0; i<data.length; i++) {
+                        if (data) {
+                            for (i = 0; i < data.length; i++) {
                                 var segment = data[i];
-                                sketchPDF.addSegment(segment.label, segment.count,segment.isMain);
+                                sketchPDF.addSegment(segment.label, segment.count, segment.isMain);
                             }
                         }
                     } else {
@@ -50,17 +49,17 @@
                         }
                     }
                 }, 10);
-                
-                
+
+
             }); //end ready
 
             //]]>
         </script>
 
         <script type="text/javascript">
-            function handleOutcome(event){
+            function handleOutcome(event) {
                 var canvas = document.getElementById("canvasPDF");
-                var dataURL    = canvas.toDataURL("image/jpeg",0.9);
+                var dataURL = canvas.toDataURL("image/jpeg", 0.9);
                 var hidden = document.getElementById('form:dataURL');
                 hidden.value = dataURL;
 
@@ -70,49 +69,43 @@
     </h:head>
     <h:body>
 
+        <div style="float: left; width:590px; border: 1px solid blue;">
+            <h1>#{controllerBean.forename} #{controllerBean.surname}'s AcademicCV</h1>
+            <p>#{controllerBean.getSearch().mostRecentAffiliation}</p>
 
-        <h1>academiCV for #{controllerBean.forename} #{controllerBean.surname}</h1>
-        <p>#{controllerBean.getSearch().mostRecentAffiliation}</p>
+            <h:form id ="form">
+                <h:inputHidden id="dataURL" value="#{fileDownloadController.dataURL}" />
 
-        <h:form id ="form">
-            <h:inputHidden id="dataURL" value="#{fileDownloadController.dataURL}" />
+                <p:commandButton id="downloadLink" value="Download" ajax="false" onclick ="handleOutcome();"   
+                                 icon="ui-icon-arrowthichk-s">  
+                    <p:fileDownload value="#{fileDownloadController.file}" />  
+                </p:commandButton>  
+                <br></br>
+                <p:commandButton value="Feedback? Here!" onclick="bar.show();"/>  
+                <br></br>
+                <p:commandButton value="New Search" action="index?faces-redirect=true" rendered="#{!controllerBean.wereThereCoAuthorsFound()}" />  
 
-            <p:commandButton id="downloadLink" value="Download" ajax="false" onclick ="handleOutcome();"   
-                             icon="ui-icon-arrowthichk-s">  
-                <p:fileDownload value="#{fileDownloadController.file}" />  
-            </p:commandButton>  
-            <br></br>
-            <p:commandButton value="Feedback? Here!" onclick="bar.show()"/>  
-            <br></br>
-            <p:commandButton value="New Search" action="index?faces-redirect=true" rendered="#{!controllerBean.wereThereCoAuthorsFound()}" />  
+            </h:form>
+            <p:notificationBar position="bottom" effect="slide" widgetVar="bar">  
+                <h:outputText value="Any comment you have, really!" style=" font-size:15px;" />  
+                <h:inputText value="#{controllerBean.feedback}"/>  
+            </p:notificationBar>  
 
-        </h:form>
-        <p:notificationBar position="bottom" effect="slide" widgetVar="bar">  
-            <h:outputText value="Any comment you have, really!" style=" font-size:15px;" />  
-            <h:inputText value="#{controllerBean.feedback}"/>  
-        </p:notificationBar>  
 
-        <div style="#{controllerBean.wereThereCoAuthorsFound()}margin-left: auto; margin-right: auto;text-align: center;width:800px">
-            <p><b>(see also the report below the circle)</b></p>
+
+            <div id ="laius">
+                <p></p>
+                <h:outputText styleClass="ui-widget"  value="#{reportBean.getGeneralLaius()}" escape="false" /><br></br>
+                <h:outputText styleClass="ui-widget"  value="#{reportBean.getAge()}" escape="false" /><br></br>
+                <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentSource()}" escape="false" />
+                <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentCoAuthors()}" escape="false" />
+                <h:outputText styleClass="ui-widget"  value="#{reportBean.NYTLaius}" escape="false" />
+                <h:outputText styleClass="ui-widget"  value="#{reportBean.getListDocs()}" escape="false" />
+
+            </div>
         </div>
 
-        <div id="circleCoAuthors" style="#{controllerBean.wereThereCoAuthorsFound()}margin-left: auto; margin-right: auto;width:900px"></div>
-<!--        <div style="#{controllerBean.wereThereCoAuthorsFound()}margin-left: auto; margin-right: auto;text-align: center;width:800px">
-            <p><b>Do you spot some errors?</b> Click on the "previous page" button of your browser to make edits.</p>
-        </div>-->
-
-
-        <div id ="laius">
-            <p></p>
-            <h:outputText styleClass="ui-widget"  value="#{reportBean.getGeneralLaius()}" escape="false" /><br></br>
-            <h:outputText styleClass="ui-widget"  value="#{reportBean.getAge()}" escape="false" /><br></br>
-            <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentSource()}" escape="false" />
-            <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentCoAuthors()}" escape="false" />
-            <h:outputText styleClass="ui-widget"  value="#{reportBean.NYTLaius}" escape="false" />
-            <h:outputText styleClass="ui-widget"  value="#{reportBean.getListDocs()}" escape="false" />
-
-        </div>
-
+        <div id="circleCoAuthors" style="#{controllerBean.wereThereCoAuthorsFound()}margin-left: 700px; width:1200px; height:1200px; "></div>
 
 
 

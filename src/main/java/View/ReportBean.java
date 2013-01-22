@@ -199,7 +199,7 @@ public class ReportBean implements Serializable {
     class DocSortByYear implements Comparator<Document> {
 
         public int compare(Document d1, Document d2) {
-            return d1.getYear().compareTo(d2.getYear());
+            return -d1.getYear().compareTo(d2.getYear());
         }
     }
 

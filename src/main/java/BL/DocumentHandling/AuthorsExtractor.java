@@ -4,14 +4,12 @@
  */
 package BL.DocumentHandling;
 
-import Controller.ControllerBean;
 import Model.Author;
 import Model.Document;
 import com.google.common.collect.HashMultiset;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import javax.faces.bean.ManagedProperty;
 
 /**
  *

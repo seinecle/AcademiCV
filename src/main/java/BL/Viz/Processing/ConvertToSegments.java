@@ -4,7 +4,6 @@
  */
 package BL.Viz.Processing;
 
-import Controller.ControllerBean;
 import Model.Author;
 import Model.MapLabels;
 import Utils.Clock;
@@ -14,7 +13,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import javax.faces.bean.ManagedProperty;
 
 /**
  *

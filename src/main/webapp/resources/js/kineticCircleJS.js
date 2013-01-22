@@ -96,8 +96,8 @@ function addSegments(json){
     
     
     //RESIZE SKETCH ACCORDINGLY
-    SKETCH_WIDTHf = 700 + nbSegments*7;
-    SKETCH_HEIGTHf = SKETCH_WIDTHf;
+    SKETCH_WIDTHf = Math.min(800 + nbSegments*7,1200);
+    SKETCH_HEIGTHf = SKETCH_WIDTHf*0.75;
     SKETCH_CENTER_X = SKETCH_WIDTHf / 2;
     SKETCH_CENTER_Y = SKETCH_HEIGTHf / 2;
     
