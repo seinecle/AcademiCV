@@ -15,18 +15,18 @@
             //<![CDATA[
             bValue = 1
             function toggleCounter() {
-                                
-                if ((bValue+code)%2==0){
+
+                if ((bValue + code) % 2 == 0) {
                     $('.messageCounter').html("live counter of edits made by the community:  #{controllerBean.getCount()}");
                     console.log("message appears");
                 }
-                else{
+                else {
                     $('.messageCounter').html("");
                     console.log("message disappears");
                 }
             }
             //]]>
-        
+
         </script>
 
 
@@ -81,7 +81,8 @@
             <p:notificationBar position="bottom" effect="slide" widgetVar="bar">  
                 <h:outputText value="Any comment you have, really!" style=" font-size:15px;" /><br></br>  
                 <p:inputTextarea value="#{controllerBean.feedback}" rows="2" cols="90" />
-                <p:commandButton value="Save" onclick="submit(); bar.hide();" type="button"/>  
+                <p:commandButton value="Save" onclick="submit();
+                        bar.hide();" type="button"/>  
             </p:notificationBar>  
         </h:form>
 
@@ -118,10 +119,12 @@
                 <h:commandButton value="close" onclick="cd.hide();" type="button" />
             </p:confirmDialog>
         </h:form>
+        <br />
+        <h:link outcome="welcomePrimefaces" value="Primefaces welcome page" />
     </h:body>
     <script type="text/javascript">
         //<![CDATA[
-        $(function(){
+        $(function() {
             browserDetection();
         }); //end ready
         //]]>
