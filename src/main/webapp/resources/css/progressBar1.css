@@ -6,7 +6,113 @@
         Purpose of the stylesheet follows.
 */
 
-body { 
-    /*background-image:url("../img/pb.jpg");*/
+.progress_bar {
+     background-image:url("../img/bkg2.jpg");
 }
+#header {
+    width: 900px;
+    margin: 0 auto;
+    height: 320px;
+    background-image:url("../img/logo_lauriers.png");
+    background-repeat: no-repeat;
+    background-position: center 154px;
+}
+#animation {
+width: 900px;
+margin: 0 auto;
+color: #000;
+font-size: 14px;
+}
+#container {
+position: absolute;
+margin: 300px 0 0 177px;
+}
+#container .load_center1{ 
+position: absolute;
+margin-left: 260px;
+margin-top: -416px;
+}
+#container .load_center2{ 
+position: absolute;
+margin-left: 257px;
+margin-top: -200px;
+}
+#text {
+text-align: center;
+width: 480px;
+margin-left:215px;
+text-shadow: 1px 1px 1px #ccc;
+}
+#button1 {
+    margin: 30px 0 0 45px;
+    } 
+#button2{
+    margin: 25px 0 0 -245px;
+       } 
+#button1:active {
+    margin: 33px 0 0 48px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.63);
+    } 
+#button2:active {
+    margin: 28px 0 0 -243px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.63);
+    } 
+#button1:hover, #button2:hover {
+    background: rgba(0, 0, 0, 0.17);
+    cursor: pointer;
+    }    
+#button1, #button2 {
+    position: absolute;
+    border-radius: 170px;
+    height: 170px;
+    width: 170px;
+    background: rgba(0, 0, 0, 0.15);
+    border:none;
+    box-shadow: -6px 5px 10px 2px rgba(0, 0, 0, 0.42);
 
+     color: #fff;
+    font-size: 15px;
+     white-space: normal;
+     padding: 7px;
+}
+.search_name{
+position: absolute;
+top: 104px;
+font-size: 21px;
+margin-left: 57px; 
+color:#fff;
+text-shadow: none;
+}
+.results {
+    position: absolute;
+top: 195px;
+margin-left: -43px;
+font-size: 42px;
+color:#fff;
+text-shadow: none;
+    }
+.results2 {
+position: absolute;
+top: 195px;
+margin-left: 190px;
+font-size: 42px;
+color: #fff;
+text-shadow: none;
+text-align: center;
+width: 88px;
+background-image:url("../img/bkg2.jpg");
+    }
+.results3 {
+    position: absolute;
+top: 195px;
+margin-left: 325px;
+font-size: 42px;
+color:#fff;
+}
+.end {
+  background-image: url("../img/bkg2.jpg");
+width: 480px;
+height: 40px;
+z-index: 999;
+position: absolute;
+}

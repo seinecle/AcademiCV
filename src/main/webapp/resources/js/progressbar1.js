@@ -10,8 +10,8 @@ var vizInitiated;
 
 stage = new Kinetic.Stage({
     container: 'container',
-    width: 1100,
-    height: 500
+    width: 900,
+    height: 225
 });
 
 
@@ -21,8 +21,8 @@ stage = new Kinetic.Stage({
 var arxivRect = new Kinetic.Rect({
     x: 10,
     y: stage.getHeight() - 115 - 10,
-    width: 245,
-    height: 10,
+    width: 125,
+    height: 0,
     fill: 'green',
     //        stroke: 'black',
     //        strokeWidth: 0,
@@ -32,10 +32,10 @@ var arxivRect = new Kinetic.Rect({
 
 
 var mendeleyRect = new Kinetic.Rect({
-    x: 10 + 245 + 10,
+    x: 10 + 125 + 10,
     y: stage.getHeight() - 115 - 10,
-    width: 245,
-    height: 10,
+    width: 125,
+    height: 0,
     fill: 'green',
     //        stroke: 'black',
     //        strokeWidth: 0,
@@ -43,10 +43,10 @@ var mendeleyRect = new Kinetic.Rect({
 });
 
 var worldcatRect = new Kinetic.Rect({
-    x: 10 + 245 + 10 + 245 + 10,
+    x: 10 + 125 + 10 + 125 + 10,
     y: stage.getHeight() - 115 - 10,
-    width: 245,
-    height: 10,
+    width: 125,
+    height: 0,
     fill: 'green',
     //        stroke: 'black',
     //        strokeWidth: 0,
@@ -54,10 +54,10 @@ var worldcatRect = new Kinetic.Rect({
 });
 
 var nytRect = new Kinetic.Rect({
-    x: 10 + 245 + 10 + 245 + 10 + 245 + 10,
+    x: 10 + 125 + 10 + 125 + 10 + 125 + 10,
     y: stage.getHeight() - 115 - 10,
-    width: 245,
-    height: 10,
+    width: 125,
+    height: 0,
     fill: 'green',
     //        stroke: 'black',
     //        strokeWidth: 0,
@@ -78,8 +78,8 @@ arxivPic.onload = function() {
         x: 10,
         y: stage.getHeight() - 5 - 115,
         image: arxivPic,
-        width: 245,
-        height: 115
+        width: 125,
+        height: 75
 
     });
     arxivLayer.add(arxivPicOriginal);
@@ -92,11 +92,11 @@ arxivPic.src = 'resources/img/arxiv.jpg';
 var mendeleyPic = new Image();
 mendeleyPic.onload = function() {
     var mendeleyPicOriginal = new Kinetic.Image({
-        x: 10 + 245 + 10,
+        x: 10 + 125 + 10,
         y: stage.getHeight() - 5 - 115,
         image: mendeleyPic,
-        width: 245,
-        height: 115
+        width: 125,
+        height: 75
 
     });
     mendeleyLayer.add(mendeleyPicOriginal);
@@ -107,11 +107,11 @@ mendeleyPic.src = 'resources/img/mendeley.jpg';
 var worldcatPic = new Image();
 worldcatPic.onload = function() {
     var worldcatPicOriginal = new Kinetic.Image({
-        x: 10 + 245 + 10 + 245 + 10,
+        x: 10 + 125 + 10 + 125 + 10,
         y: stage.getHeight() - 5 - 115,
         image: worldcatPic,
-        width: 245,
-        height: 115
+        width: 125,
+        height: 75
 
     });
     worldcatLayer.add(worldcatPicOriginal);
@@ -135,11 +135,11 @@ worldcatPic.src = 'resources/img/worldcat.jpg';
 var nytPic = new Image();
 nytPic.onload = function() {
     var nytPicOriginal = new Kinetic.Image({
-        x: 10 + 245 + 10 + 245 + 10 + 245 + 10,
+        x: 10 + 125 + 10 + 125 + 10 + 125 + 10,
         y: stage.getHeight() - 5 - 115,
         image: nytPic,
-        width: 245,
-        height: 115
+        width: 125,
+        height: 75
 
     });
     nytLayer.add(nytPicOriginal);
@@ -171,7 +171,7 @@ function updateVisualization() {
             node: worldcat,
             duration: 2,
 //            y: -100,
-            scaleY: -10,
+            scaleY: -50,
             easing: Kinetic.Easings.ElasticEaseOut
         });
         tween.play();
@@ -182,7 +182,7 @@ function updateVisualization() {
             node: worldcat,
             duration: 2,
 //            y: -200,
-            scaleY: -20,
+            scaleY: -50,
             easing: Kinetic.Easings.ElasticEaseOut
         });
         tween.play();
@@ -193,7 +193,7 @@ function updateVisualization() {
             node: mendeley,
             duration: 2,
 //            y: -200,
-            scaleY: -20,
+            scaleY: -50,
             easing: Kinetic.Easings.ElasticEaseOut
         });
         tween.play();
@@ -205,7 +205,7 @@ function updateVisualization() {
             node: arxiv,
             duration: 2,
 //            y: -200,
-            scaleY: -20,
+            scaleY: -50,
             easing: Kinetic.Easings.ElasticEaseOut
         });
         tween.play();
@@ -217,7 +217,7 @@ function updateVisualization() {
             node: nyt,
             duration: 2,
 //            y: -200,
-            scaleY: -20,
+            scaleY: -50,
             easing: Kinetic.Easings.ElasticEaseOut
         });
         tween.play();

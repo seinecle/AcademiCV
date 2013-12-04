@@ -1,0 +1,143 @@
+/* 
+    Document   : main
+    Created on : 3 mars 2013, 22:14:31
+    Author     : antoinelevallois
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+    /* BODY */
+body {
+    margin:0 auto;
+    width: auto;
+    margin: 0 auto;
+    width: auto;
+    font: 16px Georgia, sans-serif;
+    color: white;
+    overflow-y: hidden;
+}
+.ui-widget {
+    font: 16px Georgia, sans-serif;
+    color: #000;
+}
+a, a:visited {
+    color:#fff;
+    text-decoration: none;
+}
+/* NAV BUTTONS */
+#nav1 {
+    position: absolute;
+    top:320px;
+    right: 7px;
+}
+#nav2 {
+    position: absolute;
+    top:1900px;
+    right: 7px;
+}
+#nav3 {
+    position: absolute;
+    top:3400px;
+    right: 7px;
+}
+/* TOP MENU */
+#menu1 {
+    position: absolute;
+    top:0;
+    left:0;
+}
+.top_bar_menu {
+    background: rgba(0, 0, 0, 0.35);
+    height: 65px;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    box-shadow: 0 3px 13px rgba(0, 0, 0, 0.63);
+    background-image:url("../img/logo_AC_top_left.png");
+    background-repeat: no-repeat;
+    background-position: 10px center;
+}
+.top_bar_menu2 {
+    background: rgba(0, 0, 0, 0.35);
+    height: 65px;
+    position: absolute;
+    top: 1572px;
+    width: 100%;
+    box-shadow: 0 3px 13px rgba(0, 0, 0, 0.63);
+    background-image:url("../img/logo_AC_top_left.png");
+    background-repeat: no-repeat;
+    background-position: 10px center;
+}
+.top_bar_menu3 {
+    background: rgba(0, 0, 0, 0.35);
+    height: 65px;
+    position: absolute;
+    top: 3072px;
+    width: 100%;
+    box-shadow: 0 3px 13px rgba(0, 0, 0, 0.63);
+    background-image:url("../img/logo_AC_top_left.png");
+    background-repeat: no-repeat;
+    background-position: 10px center;
+}
+.top_menu {
+    text-align: center; 
+    margin-top: 23px;
+    margin-left: -47px;
+}
+.top_menu li {
+    display: inline-block;
+    cursor:pointer;
+}
+.menu_about, .menu_credits, .menu_home, .menu_about2, .menu_credits2, .menu_home2 {
+    display: inline-block;
+    border-right: 1px solid #ffffff;
+    padding: 0 20px;
+}
+.menu_about a:hover .point,.menu_credits a:hover .point2, .menu_home a:hover .point, .menu_home a:hover .point, .menu_about2 a .point,.menu_credits2 a .point2, .menu_home2 a .point, .menu_home2 a .pointresearch{
+    display: block;
+}
+
+.point {
+background-image: url("../img/mini_point.png");
+background-repeat: no-repeat;
+display: none;
+position: absolute;
+width: 54px;
+height: 15px;
+background-position: 21px 12px;
+}
+.point2 {
+background-image: url("../img/mini_point.png");
+background-repeat: no-repeat;
+display: none;
+position: absolute;
+width: 54px;
+height: 15px;
+background-position: 25px 12px;
+}
+.pointresearch {
+background-image: url("../img/mini_point.png");
+background-repeat: no-repeat;
+display: none;
+position: absolute;
+width: 54px;
+height: 15px;
+background-position: 31px 11px;
+}
+.menu_facebook div, .menu_twitter div {
+    position: absolute;
+    margin-top: -13px;
+}
+.menu_facebook {
+    padding: 0 18px;
+}
+.menu_twitter {
+    padding: 0 7px;
+}
+
+#home_page_1 {
+    height: 1500px;
+}
+#about_page_1 {
+    height: 1420px;
+}

@@ -1,0 +1,129 @@
+
+.ui-widget {
+    font-size: 90%;
+}
+.ui-widget .ui-widget {
+    font-family: Verdana,Arial,sans-serif;
+    font-size: 100%;
+}
+ul li {
+    list-style: none;
+}
+
+.pairscheck{ 
+    background-image:url("../img/bkg3.jpg");
+}
+/* MAIN HOME */
+.main_home{
+    width: 990px;
+    height: 500px;
+    margin: 90px auto;
+    background-image:url("../img/logo_AC_middle.png");
+    background-repeat: no-repeat;
+    background-position: center 410px;
+}
+#logo_home{
+    background-image:url("../img/logo_lauriers_home.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 990px;
+    height: 265px;
+}
+#header {
+    width: 900px;
+    margin: 0 auto;
+    height: 272px;
+    background-image:url("../img/logo_lauriers.png");
+    background-repeat: no-repeat;
+    background-position: center 43px;
+}
+.edit_zone {
+    width: 400px;
+    margin: 110px auto;
+}
+.edit_zone p {
+    text-align:center;
+   color: #000;
+   font-size: 24px;
+}
+.cases_left {
+position: absolute;
+margin-left: 340px;
+margin-top: -243px;
+color: #000;
+width: 230px;
+font-size: 51px;
+text-align: center;
+line-height: 114px;
+}
+#currMatch {
+    width: 900px;
+    margin: 0 auto;
+}
+#containerOutside {
+border-top: 2px solid rgb(88, 88,88);
+padding: 18px 0 8px;
+border-bottom: 2px solid rgb(88, 88,88);
+}
+.counter{
+    font-size:40px;
+    color: #000;
+}
+.live_counter, .informations {
+    font-size:12px;
+    color: #000;
+}
+.informations1 { 
+    width: 300px
+}  
+.informations b {
+    font-weight: 400
+}
+#editCounterId {
+position: absolute;
+top: 90px;
+left: 40px;
+}
+#editCounterId .testPush {
+    color: #000;
+}
+.tableau {
+ margin: 0 auto 3px;
+ color: #000;
+}
+.ui-selectoneradio label {
+color: #000;
+margin-left: 9px;
+}
+
+.ui-widget {
+    font-size: 21px;
+}
+#helpPairs {
+color: #000;   
+font-size:11px;
+text-align: center;
+}
+form input[type="submit"] {
+color: white;
+border-radius: 60px;
+width: 60px;
+box-shadow: -2px 2px 4px 1px rgba(0, 0, 0, 0.25);
+background: rgba(0, 0, 0, 0.39);
+font-size: 18px;
+margin-left: 212px;
+cursor: pointer;
+border: none;
+}
+#editCounterId input[type="submit"] {
+color: white;
+border-radius: 28px;
+width: 28px;
+box-shadow: -2px 2px 4px 1px rgba(0, 0, 0, 0.25);
+background: rgba(0, 0, 0, 0.39);
+font-size: 18px;
+margin-left: 212px;
+cursor: pointer;
+border: none;
+margin-top: -73px;
+}

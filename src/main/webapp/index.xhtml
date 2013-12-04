@@ -5,6 +5,7 @@
       xmlns:p="http://primefaces.org/ui"
       >
     <h:head>
+        <h:outputStylesheet name="css/main.css" />
         <h:outputStylesheet name="css/index.css" />
         <h:outputScript library="js" name="browserDetection.js" />
 
@@ -32,17 +33,91 @@
 
 
     </h:head>
-    <h:body>
+    <h:body class="home_page">
+        <div id="nav1">
+            <ul>
+                <li>
+                    <img src="resources/img/full_circle.png"/>
+                </li>
+                <li>
+                    <a href="#menu2"><img src="resources/img/empty_circle.png"/></a>
+                </li>
+                <li>
+                    <a href="#menu3"><img src="resources/img/empty_circle.png"/></a>
+                </li>
+            </ul>
+         </div>
+        <div id="nav2">
+            <ul>
+                <li>
+                   <a href="#menu1"><img src="resources/img/empty_circle.png"/></a>
+                </li>
+                <li>
+                    <img src="resources/img/full_circle.png"/>
+                </li>
+                <li>
+                    <a href="#menu3"><img src="resources/img/empty_circle.png"/></a>
+                </li>
+            </ul>
+         </div>
+        <div id="nav3">
+            <ul>
+                <li>
+                    <a href="#menu1"><img src="resources/img/empty_circle.png"/></a>
+                </li>
+                <li>
+                    <a href="#menu2"><img src="resources/img/empty_circle.png"/></a>
+                </li>
+                <li>
+                    <img src="resources/img/full_circle.png"/>
+                </li>
+            </ul>
+         </div>
+ <div id="home_page_1"> 
+        <div class="top_bar_menu" id="menu1">
+            <ul class="top_menu">
+                <li class="menu_home2">
+                    <a href="#menu1">Home
+                        <div class="point"></div>
+                    </a>
+                    
+                </li>
+                <li class="menu_about">
+                    <a href='#menu2'>About
+                        <div class="point"></div>
+                    </a>
+                </li>
+                <li class="menu_credits">
+                    <a href='#menu3'>Credits
+                        <div class="point2"></div>
+                    </a>
+                </li>
+                <li class="menu_facebook">
+                    <div>
+                        <a><img src="resources/img/faceb.png" /></a>
+                      </div>
+                </li>
+                <li class="menu_twitter">
+                    <div>
+                        <a><img src="resources/img/twitter.png" /></a>
+                     </div>
+                </li>                
+            </ul>
+          </div>
+        <!--
         <h:panelGrid id="grid1">
             <h:outputText  style="padding-left: 5px;" value="counter of edits made by the community: #{controllerBean.getCount()}" rendered ="#{controllerBean.wisdomCrowds}"/>
         </h:panelGrid>
         <h:form id ="form1">
             <h:commandButton value="Feedback? Here!" onclick="bar.show()" type="button" />  
         </h:form>
-
-        <div id="title">
-            <h:outputText styleClass="ui-widget" style="font-size: 600%" value="AcademiCV"/>
-
+-->
+    <div class="main_home"> 
+    <div id="logo_home">
+         
+        <!--<h:outputText styleClass="ui-widget" style="font-size: 600%" value="AcademiCV"/> -->
+    </div>
+     <div id="form_home">
             <h:form id="form2">
                 <h:inputText id ="foreName" value="#{controllerBean.forename}" size="40"/>
                 <p:watermark for="foreName" value="First name(s)" />
@@ -57,32 +132,111 @@
                 <p:selectBooleanCheckbox id="wisdom" value="#{controllerBean.wisdomCrowds}" onchange="toggleCounter();">
                     <p:ajax update=":grid1"/>
                 </p:selectBooleanCheckbox>-->
-                <br/>
-                <br/>
-
                 <h:commandButton 
 
                     action="#{controllerBean.launchNewSearch()}"
-                    title="Go!"
-                    value="go!"
+                    title="Go !"
+                    value="Go!"
                     />
             </h:form>
+      </div>
+    </div>
+ </div>
+  <div id="about_page_1">
+        <div class="top_bar_menu2" id="menu2">
+            <ul class="top_menu">
+                <li class="menu_home">
+                    <a href="#menu1">Home
+                        <div class="point"></div>
+                    </a>
+                    
+                </li>
+                <li class="menu_about2">
+                    <a href='#menu2'>About
+                        <div class="point"></div>
+                    </a>
+                </li>
+                <li class="menu_credits">
+                    <a href='#menu3'>Credits
+                        <div class="point2"></div>
+                    </a>
+                </li>
+                <li class="menu_facebook">
+                    <div>
+                        <a><img src="resources/img/faceb.png" /></a>
+                      </div>
+                </li>
+                <li class="menu_twitter">
+                    <div>
+                        <a><img src="resources/img/twitter.png" /></a>
+                     </div>
+                </li>                
+            </ul>
+    </div>
+    <div class="main_about"> 
+    <div id="logo_about">
+    </div>
+        <p>
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+        </p>
+    </div>
+  </div>
+   <div id="credit_page_1">
+        <div class="top_bar_menu3" id="menu3">
+            <ul class="top_menu">
+                <li class="menu_home">
+                    <a href="#menu1">Home
+                        <div class="point"></div>
+                    </a>
+                    
+                </li>
+                <li class="menu_about">
+                    <a href='#menu2'>About
+                        <div class="point"></div>
+                    </a>
+                </li>
+                <li class="menu_credits2">
+                    <a href='#menu3'>Credits
+                        <div class="point2"></div>
+                    </a>
+                </li>
+                <li class="menu_facebook">
+                    <div>
+                        <a><img src="resources/img/faceb.png" /></a>
+                      </div>
+                </li>
+                <li class="menu_twitter">
+                    <div>
+                        <a><img src="resources/img/twitter.png" /></a>
+                     </div>
+                </li>                
+            </ul>
+    </div>
+     <div class="main_credits"> 
+        <div id="logo_credits">
         </div>
-        <div id="credits">
+        <p>
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+        </p>
+    </div>
+       <div id="humans">         
+       </div>  
+  </div>
+        <!-- <div id="credits">
             <h:form id="form3">
                 <p:commandLink onclick="cd.show()">
                     <h:outputText style="left:25%;top:510px;" value="  credits" />
                 </p:commandLink>
             </h:form>
         </div>
+        
 
         <h:form id="form4">
 
             <p:notificationBar position="bottom" effect="slide" widgetVar="bar">  
                 <h:outputText value="Any comment you have, really!" style=" font-size:15px;" /><br></br>  
                 <p:inputTextarea value="#{controllerBean.feedback}" rows="2" cols="90" />
-                <p:commandButton value="Save" onclick="submit();
-                        bar.hide();" type="button"/>  
+                <p:commandButton value="Save" onclick="submit(); bar.hide();" type="button"/>  
             </p:notificationBar>  
         </h:form>
 
@@ -118,17 +272,29 @@
                 <p></p>
                 <h:commandButton value="close" onclick="cd.hide();" type="button" />
             </p:confirmDialog>
-        </h:form>
-        <br />
-        <h:link outcome="welcomePrimefaces" value="Primefaces welcome page" />
+        </h:form>-->
     </h:body>
     <script type="text/javascript">
         //<![CDATA[
-        $(function() {
+        $(function(){
             browserDetection();
         }); //end ready
         //]]>
     </script>
-
+      <script type="text/javascript">
+$(document).ready(function(){
+	$('a[href^="#"]').bind('click.smoothscroll',function (e) {
+	    e.preventDefault();
+	 
+	    var target = this.hash,
+	    $target = $(target);
+	 
+	    $('html, body').stop().animate({
+	        'scrollTop': $target.offset().top
+	    }, 900, 'swing', function () {
+	        window.location.hash = target;
+	    });
+	});
+});
+ </script>
 </html>
-

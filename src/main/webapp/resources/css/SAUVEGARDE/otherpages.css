@@ -15,11 +15,14 @@
     margin: 0px auto;
     width:700px;
     height:230px;
-    
+
 }
 
 body { 
-    background-image:url("../img/bkg2.jpg");
+    background-image:url("../img/einstein_44_fading.jpg");
+    background-repeat:no-repeat;
+
+    /*source: http://www.californiaindianeducation.org/native_profiles/albert_einstein/*/
 }
 
 

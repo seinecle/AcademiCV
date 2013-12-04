@@ -6,144 +6,108 @@
     font-family: Verdana,Arial,sans-serif;
     font-size: 100%;
 }
-
-#credits{
-    position:fixed;
-    top:510px;
-    left:25%;
-    text-align: left;
-    margin: 0px auto;
-    width:700px;
-    height:230px;
-    
+ul li {
+    list-style: none;
 }
 
-body { 
-    background-image:url("../img/einstein_44_fading.jpg");
-    background-repeat:no-repeat;
-    /*source: http://www.californiaindianeducation.org/native_profiles/albert_einstein/*/
+.home_page{ 
+    background-image:url("../img/bkg1.jpg");
+}
+/* MAIN HOME */
+.main_home{
+    width: 990px;
+    height: 500px;
+    margin: 90px auto;
+    background-image:url("../img/logo_AC_middle.png");
+    background-repeat: no-repeat;
+    background-position: center 410px;
+}
+#logo_home{
+    background-image:url("../img/logo_lauriers_home.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 990px;
+    height: 265px;
+}
+#form2{
+    margin:0 0 0 264px;
+}
+#form_home{
+  background-image: url("../img/form_home.png");
+background-repeat: no-repeat;
+background-position: center 0;
+width: 990px;
 }
 
-
-#title{
-    position:fixed;
-    top:30%;
-    left:35%;
-    text-align: left;
+/* MAIN ABOUT */
+.main_about{
+    width: 990px;
+    height: 500px;
+    margin: 90px auto;
+    background-image:url("../img/logo_AC_middle.png");
+    background-repeat: no-repeat;
+    background-position: center 234px;
 }
-
-#containerOutside {
-    position:fixed;
-    top:200px;
-    left:25%;
-    text-align: left;
-    margin: 0px auto;
-    width:700px;
-    height:500px;
+#logo_about{
+    background-image:url("../img/logo_lauriers_about.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 990px;
+    height: 250px;
 }
-
-#helpPairs {
-    position:fixed;
-    bottom:0px;
-    left:25%;
-    text-align: left;
-    margin: 0px auto;
-    width:700px;
-    height:230px;
+.main_about p {
+    font-size: 13px;
+text-align: center;
+width: 775px;
+margin: 131px auto 0;
 }
-
-#container {
-    position:fixed;
-    top:220px;
-    left:25%;
-    text-align: left;
-    margin: 0px auto;
-    width:700px;
-    height:400px;
-    padding-left: 50px;
-    padding-top: 50px;
-    border-radius: 5px; 
-    -moz-border-radius: 5px; 
-    -webkit-border-radius: 5px; 
-    border: 1px solid #b2a266;
+/* MAIN CREDITS */
+.main_credits{
+    width: 990px;
+    height: 405px;
+    margin: 90px auto;
+    background-image:url("../img/logo_AC_middle.png");
+    background-repeat: no-repeat;
+    background-position: center 234px;
 }
-#containerShow {
-    position:fixed;
-    top:240px;
-    left:25%;
-    text-align: left;
-    margin: 0px auto;
-    width:700px;
-    height:300px;
-    padding-left: 50px;
-    padding-top: 50px;
-    border-radius: 5px; 
-    -moz-border-radius: 5px; 
-    -webkit-border-radius: 5px; 
-    border: 1px solid #b2a266;
+#logo_credits{
+    background-image:url("../img/logo_lauriers_about.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 990px;
+    height: 250px;
 }
-#bannerTitleBackground {
-    position:fixed;
-    top:1%;
-    left:1%;
-    text-align: left;
-    margin: 0px auto;
-    width:96%;
-    height:80px;
-    padding-left: 50px;
-    padding-top: 50px;
-    border-radius: 19px;
-    box-shadow: 0px 0px 16px #000000;
-    background-image: -moz-linear-gradient(top, #ffffff, #000000);
-    background-image: -ms-linear-gradient(top, #ffffff, #000000);
-    background-image: -o-linear-gradient(top, #ffffff, #000000);
-    background-image: -webkit-linear-gradient(top, #ffffff, #000000);
-    background-image: linear-gradient(top, #ffffff, #000000);
-    background-clip: padding-box;
-    opacity: 0.12;
-    z-index: 0
+.main_credits p {
+    font-size: 13px;
+text-align: center;
+width: 775px;
+margin: 115px auto 0;
 }
-
-#bannerTitle{
-    background-color:rgba(0,0,0,0);
-    position:fixed;
-    top:1%;
-    left:1%;
-    text-align: left;
-    font-size: 200%;
-    margin: 0px auto;
-    width:96%;
-    height:80px;
-    padding-left: 50px;
-    padding-top: 30px;
-    z-index: 1;
+#humans {
+width: 990px;
+height: 588px;
+margin: 0 auto;
+background-image: url("../img/hommes.png");
+background-repeat: no-repeat;
+background-position: center 0;
 }
-.editCounterId{
-    background-color:rgba(0,0,0,0);
-    position:fixed;
-    top:1%;
-    left:1%;
-    text-align: left;
-    font-size: 100%;
-    margin: 0px auto;
-    width:96%;
-    height:80px;
-    padding-left: 50px;
-    padding-top: 70px;
-    z-index: 2;
+/* SPECIALS FORM */
+input, input[type="password"] {
+height: 44px;
+text-align: center;
+background: none;
+border: none;
+width: 232px;
+font-family: Georgia;
+font-size: 14px;
 }
-
-
-.ui-widget-header {
-
-    font-size:200%;
-
-}
-
-ui-inputfield{
-    width:200px;
-}
-
-.ui-button{
-    width:200px;
+#form2 input[type="submit"] {
+color: white;
+border-radius: 46px;
+width: 46px;
+box-shadow: -2px 2px 4px 1px rgba(0, 0, 0, 0.25);
+background: rgba(0, 0, 0, 0.39);
+font-size: 18px;
+margin-left: 212px;
+cursor: pointer;
 }

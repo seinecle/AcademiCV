@@ -73,7 +73,7 @@ public class ProgressBarMessenger implements Serializable {
             msg = new StringBuilder();
             countCalls = 0;
             search = controllerBean.getSearch();
-            mainMessageStringBuilder.append("<p>Looking up information on ").append(controllerBean.getSearch().getFullname()).append(" on distant databases... </p>");
+            mainMessageStringBuilder.append("<div class=\'search_name\'>Looking up information on ").append(controllerBean.getSearch().getFullname()).append("!</div>");
             System.out.println("new ProgressBarMessenger initialized!");
             
             processCalls();
@@ -153,14 +153,14 @@ public class ProgressBarMessenger implements Serializable {
         System.out.println("all API calls returned");
 
         if (firstProcessingUpdate) {
-            updateMsg("The search across the web is over. We found " + controllerBean.getSetDocs().size() + " documents.<br>"
+            updateMsg("The search across the web is over. <div class=\'results\'>We found</div><div class=\'results2\'> " + controllerBean.getSetDocs().size() + "</div> <div class=\'results3\'>documents</div><br>"
                     + "<br>"
-                    + "Performing important cleaning operations. If many publications were found, this can take a few seconds, be patient");
+                    + "<div class=\'waiting\'>Performing important cleaning operations. <br>If many publications were found, this can take a few seconds, be patient.</div>");
             firstProcessingUpdate = false;
             return null;
         } else {
             if (!processingComplete) {
-                updateMsg(".");
+                updateMsg("Done !");
             }
         }
 
@@ -185,7 +185,7 @@ public class ProgressBarMessenger implements Serializable {
                 switch (nbCase) {
                     case 1:
                         toggleButtonCorrections = true;
-                        updateMsg("Some co-authors of " + controllerBean.getSearch().getFullname() + " appear to be mispelled. We recommend that you help us make the necessary corrections.<br>");
+                        updateMsg("<div class=\'end\'>Some co-authors of " + controllerBean.getSearch().getFullname() + " appear to be mispelled.<br>We recommend that you help us make the necessary corrections.</div><br>");
                         break;
                     case 2:
                         toggleButtonReport = true;
