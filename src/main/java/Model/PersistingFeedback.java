@@ -4,13 +4,10 @@
  */
 package Model;
 
-import Controller.ControllerBean;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
 import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import org.bson.types.ObjectId;
 
 @ManagedBean

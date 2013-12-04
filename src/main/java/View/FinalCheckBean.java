@@ -6,6 +6,7 @@ package View;
 
 import BL.Viz.Processing.Segment;
 import Controller.ControllerBean;
+import Model.Author;
 import Model.GlobalEditsCounter;
 import Model.MapLabels;
 import Model.PersistingEdit;
@@ -45,7 +46,6 @@ public class FinalCheckBean implements Serializable {
     private UpdateOperations<GlobalEditsCounter> opsCounter;
     private TreeMap<String, String> mappingEditedLabels = new TreeMap();
     private TreeMap<String, String> mappingLabelsForSegments = new TreeMap();
-
     @ManagedProperty("#{controllerBean}")
     private ControllerBean controllerBean;
 
@@ -53,10 +53,11 @@ public class FinalCheckBean implements Serializable {
         this.controllerBean = controllerBean;
     }
 
-    public FinalCheckBean() {}
-    
+    public FinalCheckBean() {
+    }
+
     @PostConstruct
-    private void init(){
+    private void init() {
         System.out.println("new FinalCheckBean!");
 
 
@@ -78,7 +79,6 @@ public class FinalCheckBean implements Serializable {
                 currMapLabels = new MapLabels(mapLabels.getLabel1(), mapLabels.getLabel2());
                 currMapLabels.setLabel2frozen(currMapLabels.getLabel2());
                 listCheckedLabels.add(currMapLabels);
-                Collections.sort(listCheckedLabels);
 //                System.out.println("mapLabel in list: " +mapLabels.getAuthor2().getFullname());
             } else {
                 System.out.println("mapLabel temporarily ignored:");
@@ -86,6 +86,8 @@ public class FinalCheckBean implements Serializable {
                 setLabelsToBeReinjected.add(mapLabels);
             }
         }
+        Collections.sort(listCheckedLabels);
+
     }
 
     public List<MapLabels> getListCheckedLabels() {
@@ -122,20 +124,40 @@ public class FinalCheckBean implements Serializable {
     public void saveedits() {
         //get all existing value but set "editable" to false 
         for (MapLabels mapLabels : listCheckedLabels) {
+            if (mapLabels.isEditable()) {
+
+                updateQuery = controllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(controllerBean.getSearch().getFullnameWithComma());
+                updateQuery.field("originalForm").equal(mapLabels.getLabel2());
+                updateQuery.field("editedForm").equal(mapLabels.getLabel3());
+                ops = controllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
+                controllerBean.ds.update(updateQuery, ops, true);
+
+                updateQueryCounter = ControllerBean.ds.createQuery(GlobalEditsCounter.class);
+                opsCounter = ControllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 2);
+                controllerBean.ds.update(updateQueryCounter, opsCounter, true);
+                controllerBean.pushCounter();
+
+            }
             mapLabels.setEditable(false);
         }
+
     }
 
     public String moveon() {
         System.out.println("next button clicked, should move to the report page");
 
-        //puts all the cases presented to the user in the final check page into a set
+        //puts all the cases presented to the user in the final check page into the set of labels of reference in controllerBean
         for (MapLabels element : listCheckedLabels) {
-            controllerBean.addToSetMapLabels(new MapLabels(element.getLabel1(), element.getLabel2()));
+            MapLabels newMapLabel = new MapLabels(element.getLabel1(), element.getLabel2());
+            boolean added = controllerBean.addToSetMapLabels(newMapLabel);
+            if (!added) {
+                controllerBean.getSetMapLabels().remove(newMapLabel);
+                controllerBean.getSetMapLabels().add(newMapLabel);
+            }
         }
 
 
-        //adds all the cases not peesented to the user (because duplicates), but still relevant if we want to count how many original authors there were
+        //adds all the cases not presented to the user (because duplicates), but still relevant if we want to count how many original authors there were
         for (MapLabels element : listCheckedLabels) {
             bufferMap.put(element.getLabel2frozen(), element.getLabel3());
         }

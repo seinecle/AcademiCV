@@ -49,7 +49,7 @@ public class ReportBean implements Serializable {
         authorClicked = new Author("fake name");
         authorClicked.setYearFirstCollab(0);
         authorClicked.setYearLastCollab(3000);
-        authorClicked.setTimesMentioned(666);
+        authorClicked.setTimesMentioned(888);
     }
 
     public String getJson() {
@@ -79,6 +79,7 @@ public class ReportBean implements Serializable {
             }
         }
         authorClicked = currAuthor;
+        this.countDocsCurrNameClicked = String.valueOf(authorClicked.getTimesMentioned());
 
         FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().put("clickedAuthor", this.nameClicked);
         FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().put("uuid", controllerBean.uuid.toString());

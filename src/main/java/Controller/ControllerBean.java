@@ -37,6 +37,7 @@ import com.google.common.collect.HashMultiset;
 import com.google.gson.Gson;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import java.io.IOException;
 import java.io.Serializable;
@@ -105,46 +106,28 @@ public class ControllerBean implements Serializable {
     private Callable<PairSimple<Set<Document>, Author>> mendeleyCallable;
     private Callable<PairSimple<Set<Document>, Author>> nytCallable;
     private Set<Document> setMediaDocs;
+    private MongoClient m;
+    private Morphia morphia;
 
     @PostConstruct
     private void init() {
         try {
             AdminPanel.setLocalMode(AdminPanel.isDebug_local());
-            Mongo m;
-            Morphia morphia;
-
-
-            //JELASTIC SETTINGS  
-//            Properties prop = new Properties();
-//            prop.load(new FileInputStream(System.getProperty("user.home") + "/mydb.cfg"));
-//            String host = prop.getProperty("host").toString();
-//            String dbname = prop.getProperty("dbname").toString();
-//            String user = prop.getProperty("user").toString();
-//            String password = prop.getProperty("password").toString();
-//            System.out.println("host: " + host + "\ndbname: " + dbname + "\nuser: " + user + "\npassword: " + password);
-//
-//            m = new Mongo(host, 27017);
-//            DB db = m.getDB(dbname);
-//            if (db.authenticate(user, password.toCharArray())) {
-//                System.out.println("Connected!");
-//            } else {
-//                System.out.println("Connection failed");
-//            }
 
             if (AdminPanel.isDebug_local()) {
 //             LOCAL SETTINGS
-                m = new Mongo();
+                m = new MongoClient();
                 morphia = new Morphia();
                 ds = morphia.createDatastore(m, "test");
 
 //
             } else {
-                //CLOUDBEES SETTINGS
-                m = new Mongo("alex.mongohq.com", 10003);
+                //SERVRR SETTINGS
+                m = new MongoClient("199.59.247.173", 27017);
                 morphia = new Morphia();
-                ds = morphia.createDatastore(m, Utils.APIkeys.getMongoHQDatabaseName(), "seinecle", Utils.APIkeys.getMongoHQDatabasePassWord().toCharArray());
+                ds = morphia.createDatastore(m, "academiCV");
                 if (ds != null) {
-                    System.out.println("Morphia datastore on CloudBees / MongoHQ created!!!!!!!");
+                    System.out.println("Morphia datastore created on server");
                 }
             }
 
@@ -153,15 +136,15 @@ public class ControllerBean implements Serializable {
             morphia.map(PersistingEdit.class);
             morphia.map(PersistingFeedback.class);
 
-            GlobalEditsCounter gec = ds.find(GlobalEditsCounter.class).get();
-            if (gec == null) {
+            GlobalEditsCounter globalEditCounter = ds.find(GlobalEditsCounter.class).get();
+            if (globalEditCounter == null) {
                 count = 0;
                 updateQueryCounter = ds.createQuery(GlobalEditsCounter.class);
                 opsCounter = ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 1);
                 ds.update(updateQueryCounter, opsCounter, true);
 
             } else {
-                count = gec.getGlobalCounter();
+                count = globalEditCounter.getGlobalCounter();
             }
             pushCounter();
 
@@ -200,6 +183,7 @@ public class ControllerBean implements Serializable {
                 "surname: " + surname);
 
         uuid = UUID.randomUUID();
+
         //PERSISTING THE MAIN FORENAME AND SURNAME;
         search = new Author();
         search.setForename(forename);
@@ -249,8 +233,7 @@ public class ControllerBean implements Serializable {
 
         //7
         //MORE THAN 300 CO-AUTHORS FOUND? moving to an error page
-        if (multisetAuthors.elementSet()
-                .size() > 250) {
+        if (multisetAuthors.elementSet().size() > 250) {
             return pageToNavigateTo = "tooManyCoAuthors?faces-redirect=true";
         }
         //8
@@ -284,10 +267,15 @@ public class ControllerBean implements Serializable {
             Logger.getLogger(ControllerBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         wotcClock.closeAndPrintClock();
+        
         Clock closeMatchesClock = new Clock("detecting close matches in author names, and making suggestions for their resolution");
         setCloseMatches = new CloseMatchesDetector().check(setAuthors);
         System.out.println("size of setCloseMatches after close Matches detector: " + setCloseMatches.size());
         closeMatchesClock.closeAndPrintClock();
+        
+        
+        //this whole step here looks silly.
+        //the setMapLabels does not need to exist now... not sure it needs to exist after?
         Clock initializingMapLabelsClock = new Clock("initializing a map of original author names and their correct version");
         setMapLabels = new MapLabelsInitiator().check(setAuthors, setCloseMatches, search);
         System.out.println("size of setMapLabels: " + setMapLabels.size());
@@ -315,7 +303,6 @@ public class ControllerBean implements Serializable {
                 System.out.println("Navigating directly to the report page");
                 computationsBeforeReport();
                 persistAcademic();
-
                 pageToNavigateTo = "report?faces-redirect=true";
             }
         }
@@ -337,20 +324,16 @@ public class ControllerBean implements Serializable {
 
 
         //PERSIST SEGMENTS
-        segments = new ConvertToSegments().convert(setAuthors, setMapLabels);
+        //Why do we need setMapLabels here? The setAuthors is uptodate...
+        segments = new ConvertToSegments().convert(setAuthors);
         segments.add(new Segment(search.getFullnameWithComma(), 1, true));
         setJson(new Gson().toJson(segments));
     }
 
     public void transformToJson(ArrayList<Segment> segments) {
 
-//        System.out.println("returning json");
-//        segments = (ArrayList<Segment>) ds.find(Segment.class).field("uuid").equal(uuid.toString()).asList();
-//        System.out.println("returning json // segments size is: " + segments.size());
-
         segments.add(new Segment(search.getFullnameWithComma(), 1, true));
         json = new Gson().toJson(segments);
-//        System.out.println("json: " + json);
     }
 
     public String getJson() {
@@ -493,8 +476,8 @@ public class ControllerBean implements Serializable {
         this.setMapLabels.addAll(setMapLabels);
     }
 
-    public void addToSetMapLabels(MapLabels mapLabel) {
-        this.setMapLabels.add(mapLabel);
+    public boolean addToSetMapLabels(MapLabels mapLabel) {
+        return this.setMapLabels.add(mapLabel);
     }
 
     public void removeFromSetMapLabels(MapLabels mapLabel) {

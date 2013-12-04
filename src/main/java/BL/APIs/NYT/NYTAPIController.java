@@ -11,7 +11,6 @@ import View.ProgressBarMessenger;
 import java.io.Serializable;
 import java.util.concurrent.Callable;
 import Model.Author;
-import java.util.HashSet;
 import java.util.Set;
 
 /**

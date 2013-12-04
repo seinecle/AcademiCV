@@ -1,0 +1,42 @@
+Each call to APIs:
+- adds documents to setDocs;
+- updates search.
+
+Documents are aggregated, returning a setDocs.
+
+A multiset of authors (multisetAuthors) is extracted from setDocs. It gets cleaned for punctuation but that's all.
+
+A set of authors (setAuthors) is extracted from this multiset: it contains improvements on authors: first names detected if possible etc.
+
+	Note: the multiset of Authors contains the authors as originally written in the docs (minus punctuation corrections), the set of Authors contains really different authors actually!
+
+The searched author is found in setAuthor, extracted, merged, and re-injected as the search author.
+
+Edits are retrieved from db and brought to the set of Authors (setAuthors).
+Misspelled versions of the search are discarded (in the edits operation method)
+
+--------------------------
+Detection of potential close matches based on setAuthors
+-> produce a "setMapLabels"
+Where:
+label1: the author identical to setAuthors
+label2: the author after the modification in the tableCloseMatch page
+
+If both names deleted, no action on setMapLabels? Should be!
+If names are merged or kept, the names and their updates are persisted as a MapLabels.
+
+----------------------------
+Final check
+Labels2 that are duplicate, because they appear twice after the corrections in the screen before, are isolated in a setLabelsToBeReInjected.
+
+labels that are deleted in final check are deleted from setLabels
+labels that are modified are put as label3 ***and label2*** (the previous version of label2 is preserved in label2Frozen).
+ 
+
+At the end,
+-> all labels are added in the controllerBean.setLabels
+-> labels that had been kept in the setToBReinjected are reinjected in controllerBean.setLabels, with the proper new Label3 modified.
+-> Question: why that? The controllerBean.setLabels should be create as a new Object, to which we add the list of Labels just treated + the setOfLabelsToReinject.
+
+-> computational methods are launched.
+The main method is the one that actually puts back the modified names into the list of docs, and into a new set of Authors (why is that useful?). And what about the multiset of Authors?

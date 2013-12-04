@@ -4,12 +4,8 @@
  */
 package Model;
 
-import Controller.ControllerBean;
-import com.google.code.morphia.query.Query;
-import com.google.code.morphia.query.UpdateOperations;
 import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 
 /**
@@ -26,19 +22,8 @@ public class MapLabels implements Comparable<MapLabels>, Serializable {
     private String label3;
     private String uuid;
     private boolean editable;
-    private Query<PersistingEdit> updateQuery;
-    private UpdateOperations<PersistingEdit> ops;
     private boolean deleted;
-    private Query<GlobalEditsCounter> updateQueryCounter;
-    private UpdateOperations<GlobalEditsCounter> opsCounter;
     
-    @ManagedProperty("#{controllerBean}")
-    private ControllerBean controllerBean;
-
-    public void setcontrollerBean(ControllerBean controllerBean) {
-        this.controllerBean = controllerBean;
-    }
-
     public MapLabels() {
     }
 
@@ -96,19 +81,9 @@ public class MapLabels implements Comparable<MapLabels>, Serializable {
     public void setLabel3(String label3) {
         System.out.println("author edited is set: " + label3);
         this.label3 = label3.trim();
+        this.label2 = label3.trim();
 
-        updateQuery = ControllerBean.ds.createQuery(PersistingEdit.class).field("reference").equal(controllerBean.getSearch().getFullnameWithComma());
-        updateQuery.field("originalForm").equal(label2);
-        updateQuery.field("editedForm").equal(label3);
-        ops = ControllerBean.ds.createUpdateOperations(PersistingEdit.class).inc("counter", 1);
-        ControllerBean.ds.update(updateQuery, ops, true);
 
-        updateQueryCounter = ControllerBean.ds.createQuery(GlobalEditsCounter.class);
-        opsCounter = ControllerBean.ds.createUpdateOperations(GlobalEditsCounter.class).inc("globalCounter", 2);
-        ControllerBean.ds.update(updateQueryCounter, opsCounter, true);
-        controllerBean.pushCounter();
-
-        this.label2 = label3;
 
     }
 

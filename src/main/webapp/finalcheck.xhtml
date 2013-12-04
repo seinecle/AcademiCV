@@ -45,6 +45,7 @@
             <div id="containerOutside">
                 <h:outputText styleClass="ui-widget" style="padding-left: 5px;" value="Final step: a last chance to correct mispellings in the names of co-authors"/>
                 <h:commandButton value="next" title="next" action="#{finalCheckBean.moveon()}" style="width:100px;float:right;margin-top: -15px;"/>
+                
                 <div id="containerShow">
                     <p:dataTable id ="dataId" value ="#{finalCheckBean.listCheckedLabels}" var ="m" scrollable ="true" scrollHeight="250">
 
@@ -59,9 +60,9 @@
 
                         <p:column headerText="Name of researcher" width="240" style="font-size: 50%;">
                             <h:panelGroup id="authorCol"  >
-                                <p:inputText value="#{m.label3}" style="font-size: 200%;" rendered="#{m.editable}" size="40"/>
+                                <p:inputText value="#{m.label3}" style="font-size: 200%;" rendered="#{m.editable}" size="20"/>
                                 <h:outputText value="#{m.label2}" style="font-size: 200%;text-align: center;" rendered="#{not m.editable}"/>
-                                <p:commandButton value="save edits" style="font-size: 180%;width:150px;" rendered="#{m.editable}" action ="#{finalCheckBean.saveedits()}" update="@form :editCounterId">
+                                <p:commandButton value="save edits" style="font-size: 180%;width:40px;" rendered="#{m.editable}" action ="#{finalCheckBean.saveedits()}" update="@form :editCounterId">
                                 </p:commandButton>
                             </h:panelGroup>
                         </p:column>

@@ -9,9 +9,81 @@
 
 
         <title>AcademiCV</title>
+    </h:head>
+    <h:body>
+
+        <div style="float: left; width:590px; border: 1px solid blue;">
+            <h1>#{controllerBean.forename} #{controllerBean.surname}'s AcademicCV</h1>
+            <p>#{controllerBean.getSearch().mostRecentAffiliation}</p>
+
+            <h:form id ="form">
+                <h:inputHidden id="dataURL" value="#{fileDownloadController.dataURL}" />
+
+                <p:commandButton id="downloadLink" value="Download" ajax="false" onclick ="handleOutcome();"   
+                                 icon="ui-icon-arrowthichk-s">  
+                    <p:fileDownload value="#{fileDownloadController.file}" />  
+                </p:commandButton>  
+                <br></br>
+                <p:commandButton value="Feedback? Here!" onclick="bar.show();"/>  
+                <br></br>
+                <p:commandButton value="New Search" action="index?faces-redirect=true" rendered="#{!controllerBean.wereThereCoAuthorsFound()}" />  
+
+            </h:form>
+            <p:notificationBar position="bottom" effect="slide" widgetVar="bar">  
+                <h:outputText value="Any comment you have, really!" style=" font-size:15px;" />  
+                <h:inputText value="#{controllerBean.feedback}"/>  
+            </p:notificationBar>  
+
+
+
+            <div id ="laius">
+                <p></p>
+                <h:outputText styleClass="ui-widget"  value="#{reportBean.getGeneralLaius()}" escape="false" /><br></br>
+                <h:outputText styleClass="ui-widget"  value="#{reportBean.getAge()}" escape="false" /><br></br>
+                <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentSource()}" escape="false" />
+                <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentCoAuthors()}" escape="false" />
+                <h:outputText styleClass="ui-widget"  value="#{reportBean.NYTLaius}" escape="false" />
+                <h:outputText styleClass="ui-widget"  value="#{reportBean.getListDocs()}" escape="false" />
+
+            </div>
+        </div>
+
+        <div id="circleCoAuthors" style="#{controllerBean.wereThereCoAuthorsFound()} margin-left: 700px; width:1200px; height:1200px; "></div>
+
+
+
+        <h:form id="form2" prependId="false">
+            <p:remoteCommand name="sendNameClicked" actionListener="#{reportBean.passName}"/>
+            <p:remoteCommand name="updateDialog" update=":form3:dialogBox" oncomplete="cd.show();"/>
+        </h:form>
+        <h:form id="form3">
+            <p:confirmDialog id ="dialogBox" message= "#{reportBean.getClickedAuthorLaius()}"
+                             header="#{reportBean.nameClicked}#{reportBean.authorClicked.mostRecentAffiliation}"
+                             widgetVar="cd"
+                             severity="info"
+                             >
+                <h:outputText styleClass="ui-widget"  value="" escape="false" />
+                <p:commandButton value="Go to the academiCV of #{reportBean.obtainFullName()}?" actionListener ="#{controllerBean.prepareNewSearch()}" action ="index?faces-redirect=true" oncomplete="cd.hide();"/>
+                <p:commandButton value="No, stay on this page" onclick="cd.hide();" type="button" />
+            </p:confirmDialog>
+        </h:form>
+
+        <p:notificationBar position="bottom" effect="slide" widgetVar="bar">  
+            <h:form>
+                <h:outputText value="Any comment you have, really!" style=" font-size:15px;" /><br></br>  
+                <p:inputTextarea value="#{controllerBean.feedback}" rows="2" cols="90" />
+                <p:commandButton value="Save" onclick="bar.hide();" type="button"/>  
+            </h:form>
+        </p:notificationBar>  
+
+
+
+        <canvas id ="canvasPDF" style="display:none" data-processing-sources="processingSketchForPDF.pde"></canvas>
+
         <h:outputScript library="js" name="processing-1.4.1.js" />
-        <h:outputScript library="js" name="kinetic-v4.0.5.js" />
-        <h:outputScript library="js" name="kineticCircleJS.js" />
+        <h:outputScript library="js" name="kinetic-v4.7.2.js" />
+        <h:outputScript library="js" name="test.js" />
+        <!--<h:outputScript library="js" name="circleCoAuthorsKinetic.js" />-->
 
         <script type="text/javascript">
             //<![CDATA[
@@ -65,79 +137,6 @@
 
             }
         </script>
-
-    </h:head>
-    <h:body>
-
-        <div style="float: left; width:590px; border: 1px solid blue;">
-            <h1>#{controllerBean.forename} #{controllerBean.surname}'s AcademicCV</h1>
-            <p>#{controllerBean.getSearch().mostRecentAffiliation}</p>
-
-            <h:form id ="form">
-                <h:inputHidden id="dataURL" value="#{fileDownloadController.dataURL}" />
-
-                <p:commandButton id="downloadLink" value="Download" ajax="false" onclick ="handleOutcome();"   
-                                 icon="ui-icon-arrowthichk-s">  
-                    <p:fileDownload value="#{fileDownloadController.file}" />  
-                </p:commandButton>  
-                <br></br>
-                <p:commandButton value="Feedback? Here!" onclick="bar.show();"/>  
-                <br></br>
-                <p:commandButton value="New Search" action="index?faces-redirect=true" rendered="#{!controllerBean.wereThereCoAuthorsFound()}" />  
-
-            </h:form>
-            <p:notificationBar position="bottom" effect="slide" widgetVar="bar">  
-                <h:outputText value="Any comment you have, really!" style=" font-size:15px;" />  
-                <h:inputText value="#{controllerBean.feedback}"/>  
-            </p:notificationBar>  
-
-
-
-            <div id ="laius">
-                <p></p>
-                <h:outputText styleClass="ui-widget"  value="#{reportBean.getGeneralLaius()}" escape="false" /><br></br>
-                <h:outputText styleClass="ui-widget"  value="#{reportBean.getAge()}" escape="false" /><br></br>
-                <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentSource()}" escape="false" />
-                <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentCoAuthors()}" escape="false" />
-                <h:outputText styleClass="ui-widget"  value="#{reportBean.NYTLaius}" escape="false" />
-                <h:outputText styleClass="ui-widget"  value="#{reportBean.getListDocs()}" escape="false" />
-
-            </div>
-        </div>
-
-        <div id="circleCoAuthors" style="#{controllerBean.wereThereCoAuthorsFound()}margin-left: 700px; width:1200px; height:1200px; "></div>
-
-
-
-        <h:form id="form2" prependId="false">
-            <p:remoteCommand name="sendNameClicked" actionListener="#{reportBean.passName}"/>
-            <p:remoteCommand name="updateDialog" update=":form3:dialogBox" oncomplete="cd.show();"/>
-        </h:form>
-        <h:form id="form3">
-            <p:confirmDialog id ="dialogBox" message= "#{reportBean.getClickedAuthorLaius()}"
-                             header="#{reportBean.nameClicked}#{reportBean.authorClicked.mostRecentAffiliation}"
-                             widgetVar="cd"
-                             severity="info"
-                             >
-                <h:outputText styleClass="ui-widget"  value="" escape="false" />
-                <p:commandButton value="Go to the academiCV of #{reportBean.obtainFullName()}?" actionListener ="#{controllerBean.prepareNewSearch()}" action ="index?faces-redirect=true" oncomplete="cd.hide();"/>
-                <p:commandButton value="No, stay on this page" onclick="cd.hide();" type="button" />
-            </p:confirmDialog>
-        </h:form>
-
-        <p:notificationBar position="bottom" effect="slide" widgetVar="bar">  
-            <h:form>
-                <h:outputText value="Any comment you have, really!" style=" font-size:15px;" /><br></br>  
-                <p:inputTextarea value="#{controllerBean.feedback}" rows="2" cols="90" />
-                <p:commandButton value="Save" onclick="bar.hide();" type="button"/>  
-            </h:form>
-        </p:notificationBar>  
-
-
-
-
-
-        <canvas id ="canvasPDF" style="display:none" data-processing-sources="processingSketchForPDF.pde"></canvas>
 
 
 

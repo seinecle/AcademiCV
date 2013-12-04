@@ -33,7 +33,7 @@ import javax.faces.bean.ViewScoped;
 @ViewScoped
 public class ProgressBarMessenger implements Serializable {
 
-    private static StringBuilder sb = new StringBuilder();
+    private StringBuilder mainMessageStringBuilder = new StringBuilder();
     private List<Future<PairSimple<Set<Document>, Author>>> futures;
     private Callable<PairSimple<Set<Document>, Author>> currCall;
     private List<Callable<PairSimple<Set<Document>, Author>>> calls;
@@ -43,9 +43,13 @@ public class ProgressBarMessenger implements Serializable {
     private ExecutorService pool;
     private List<Future<PairSimple<Set<Document>, Author>>> listResults;
     private static StringBuilder msg;
+    
+    //progressMessage is a dummy String variable (the real String is in the msg StringBuilder) - necessary because called from the HTML.
     private String progressMessage = "not set yet";
+    
     @ManagedProperty("#{controllerBean}")
     private ControllerBean controllerBean;
+    
     private boolean firstProcessingUpdate = true;
     private boolean toggleButtonCorrections = false;
     private String nextPage = null;
@@ -64,27 +68,30 @@ public class ProgressBarMessenger implements Serializable {
 
     @PostConstruct
     private void init() {
-        sb = new StringBuilder();
-        msg = new StringBuilder();
-        countCalls = 0;
-        search = controllerBean.getSearch();
-        sb.append("<p>Looking up information on ").append(controllerBean.getSearch().getFullname()).append(" on very large databases... </p>");
-//        sb.append("<p>Currently searching WorldCat: a catalogue of publications in thousands of libraries in the world </p>");
-//        sb.append("<p>(please be patient while it loads...)</p>");
-        System.out.println("new ProgressBarMessenger initialized!");
-
+        try {
+            mainMessageStringBuilder = new StringBuilder();
+            msg = new StringBuilder();
+            countCalls = 0;
+            search = controllerBean.getSearch();
+            mainMessageStringBuilder.append("<p>Looking up information on ").append(controllerBean.getSearch().getFullname()).append(" on distant databases... </p>");
+            System.out.println("new ProgressBarMessenger initialized!");
+            
+            processCalls();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ProgressBarMessenger.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public String returnMsg() {
-        return sb.toString();
+        return mainMessageStringBuilder.toString();
     }
 
-    public static void updateMsg(String msg) {
-        sb.append(msg);
-        sb.append(" ");
+    public void updateMsg(String msg) {
+        mainMessageStringBuilder.append(msg);
+        mainMessageStringBuilder.append(" ");
     }
 
-    public static String getProgress() {
+    public String getProgress() {
         return msg.toString();
     }
 
@@ -160,19 +167,16 @@ public class ProgressBarMessenger implements Serializable {
 
         if (!processingComplete) {
             nextPage = controllerBean.treatmentAPIresults();
-            if (nextPage.equals("pairscheck?faces-redirect=true")){
+            if (nextPage.equals("pairscheck?faces-redirect=true")) {
                 nbCase = 1;
-                }
-            else if(nextPage.equals("report?faces-redirect=true")){
+            } else if (nextPage.equals("report?faces-redirect=true")) {
                 nbCase = 2;
-            }
-            else if (nextPage.equals("finalcheck?faces-redirect=true")){
+            } else if (nextPage.equals("finalcheck?faces-redirect=true")) {
                 nbCase = 3;
-            }
-            else {
+            } else {
                 nbCase = -1;
             }
-            
+
             System.out.println("treatment API data is over!");
             processingComplete = true;
         } else {
@@ -192,8 +196,8 @@ public class ProgressBarMessenger implements Serializable {
                     default:
                         return nextPage;
                 }
-                
-                
+
+
                 buttonsDisplayed = true;
             }
         }
@@ -201,13 +205,10 @@ public class ProgressBarMessenger implements Serializable {
     }
 
     public String getProgressMessage() {
-//        System.out.println("getting progress msg");
         return msg.toString();
     }
 
     public void setProgressMessage(String newMsg) {
-//        System.out.println("setting progress msg");
-        this.progressMessage = msg.toString();
     }
 
     public boolean isToggleButtonCorrections() {

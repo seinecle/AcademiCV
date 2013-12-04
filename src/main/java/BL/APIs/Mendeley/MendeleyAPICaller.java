@@ -32,7 +32,7 @@ public class MendeleyAPICaller {
         APIkey = APIkeys.getMendeleyAPIkey();
 
         if (!debug) {
-            String APIcall = "http://api.mendeley.com/oapi/documents/authored/" + "%22" + quidamFirstName + "%20" + quidamLastName + "%22" + "/" + "?consumer_key=" + APIkey + "&items=1000";
+            String APIcall = "http://api.mendeley.com/oapi/documents/authored/" + "%22" + quidamFirstName + "%20" + quidamLastName + "%22" + "/" + "?consumer_key=" + APIkey + "&items=500";
             System.out.println("Mendeley API call is:");
             System.out.println(APIcall);
 

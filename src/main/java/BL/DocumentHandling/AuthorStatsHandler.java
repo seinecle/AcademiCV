@@ -60,7 +60,7 @@ public class AuthorStatsHandler {
 
 
         // *********
-        // put the labels in the set into a more convenient map<String,String> form
+        // put the labels in the set into a more convenient map<Label1,Label2> form
         // *********
         setMapLabelsIterator = setMapLabels.iterator();
         MapLabels currMapLabels;
@@ -84,7 +84,7 @@ public class AuthorStatsHandler {
 
         // *********
         // loop through the docs in mapDocs. For each doc:
-        //    1. put the correct name as a FullnameWithComms
+        //    1. put the correct name as a FullnameWithCommas
         //    2. update the map of dates
         //    3. reinput the doc in the map
         // *********
@@ -174,7 +174,8 @@ public class AuthorStatsHandler {
     //-----------------------------------------------------------------------------------------------------------------------------
     // end of the aggregation work on authors. The following extracts features
     //-----------------------------------------------------------------------------------------------------------------------------
-    //find most frequent co-author
+
+    // 1. find most frequent co-author
 
     public Author findMostFrequentCoauthor(Set<Document> setDocs, Set<Author> setAuthors, Author search) {
 
@@ -201,7 +202,8 @@ public class AuthorStatsHandler {
         }
 
         search.setSetMostFrequentCoAuthors(setMostFrequentCoAuthors);
-        //find earliest and latest dates of publication
+
+        // 2.   find earliest and latest dates of publication
         int earliest = 3000;
         int latest = 0;
         for (Document element : setDocs) {

@@ -28,6 +28,7 @@ public class WorldCatAPIController implements Callable, Serializable {
     private int currBirthYear;
     private Author search;
     private Set<Document> setWorldCatDocs;
+    
 
     public WorldCatAPIController(Author search) {
         this.search = search;

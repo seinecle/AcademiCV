@@ -72,7 +72,6 @@ public class TableMatchesBean implements Serializable {
 
 
             //RETRIEVE MATCHES FROM THIS UUID
-//            setClosematchesOriginal.addAll(controllerBean.ds.find(CloseMatchBean.class).field("uuid").equal(controllerBean.uuid.toString()).asList());
             setClosematchesOriginal.addAll(controllerBean.getSetCloseMatches());
             initialNumberMatches = setClosematchesOriginal.size();
 
@@ -96,7 +95,7 @@ public class TableMatchesBean implements Serializable {
 
     }
 
-    public String next_() {
+    public String nextCase() {
 
 
         System.out.println("curr button selected is: " + optionChosen);
@@ -261,8 +260,6 @@ public class TableMatchesBean implements Serializable {
 
 //                System.out.println("global counter of edits after a merge: " + controllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter());
 
-
-
                 break;
 
             case 4: //merge them the two, but don't persist them.
@@ -329,7 +326,7 @@ public class TableMatchesBean implements Serializable {
     }
 
     public String getInitialNumberMatches() {
-        String toReturn = "<b>We found " + initialNumberMatches + " cases where names look strangely similar. Ready for a tiny bit of data cleaning?</b><br>";
+        String toReturn = "<b>We found " + initialNumberMatches + " cases that require your attention.</b><br>";
         return toReturn;
     }
 
@@ -344,13 +341,4 @@ public class TableMatchesBean implements Serializable {
         String toReturn = casesLeft + singularPlural;
         return toReturn;
     }
-//    public synchronized boolean pushCounter() {
-//        countUpdated = controllerBean.ds.find(GlobalEditsCounter.class).get().getGlobalCounter();
-////        countUpdated++;
-//        System.out.println("counter in pushCounter method is:" + countUpdated);
-//
-//        pushContext.push("/counter", String.valueOf(countUpdated));
-//
-//        return true;
-//    }
 }

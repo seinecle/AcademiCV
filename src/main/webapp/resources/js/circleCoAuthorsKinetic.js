@@ -171,11 +171,10 @@ function addSegments(json){
 
             //context.quadraticCurveTo(SKETCH_CENTER_X-(INNER_CIRCLE_RADIUS+OUTER_CIRCLE_RADIUS)/2,SKETCH_CENTER_Y,xLine2,yLine2);
             context.closePath();
-            this.fill(context);
-        //            this.stroke(context);
+            context.fillStrokeShape(this);
         },
         fill: 'red',
-        stroke: 'black',
+        stroke: 'red',
         strokeWidth: 4
     });
     layerArcBandMain.add(arcBandMain);
@@ -185,34 +184,34 @@ function addSegments(json){
     
     //ADDS LABEL FOR MAIN SEGMENT
     labelMain = new Kinetic.Text({
-        x: SKETCH_CENTER_X-OUTER_CIRCLE_RADIUS-5 - widthLabel,
+        x: SKETCH_CENTER_X - OUTER_CIRCLE_RADIUS - 5 - widthLabel,
         y: SKETCH_CENTER_Y,
         text: mainSegmentLabel,
-        align:'right',
-        width:widthLabel,
+        align: 'right',
+        width: widthLabel,
         fontSize: 15,
         fontFamily: 'Calibri',
-        textFill: 'red'
+        fill: 'red'
     });
     labelMain.x = labelMain.x - labelMain.getSize();
     layerLabelMain.add(labelMain);
     stage.add(layerLabelMain);
     console.log("label for main author drawn");
-    
+
 
     // DRAWING ALL OTHER SEGMENTS
     var countSegments = 0;
     var countBasicUnits = 0;
     var segmentsArr = [];
-    
-    
+
+
     for (i = 0; i < nbSegments; i++) {
-        
+
         var currCountBasicUnits = segments[i].count;
         funcDrawSegment(i);
         countSegments = countSegments + 1;
         countBasicUnits = countBasicUnits + currCountBasicUnits;
-    //            println("accumulated count of total basic units treated so far: " + countBasicUnits);
+        //            println("accumulated count of total basic units treated so far: " + countBasicUnits);
     }
     stage.add(layerArcBandsRegular);
     console.log("all segments for other authors drawn");
@@ -220,22 +219,23 @@ function addSegments(json){
 
     countSegments = 0;
     countBasicUnits = 0;
-    
+
 
     // DRAWING LABELS FOR OTHER SEGMENTS    
     var labelsArr = [];
     var bezierArr = [];
-    
+
     // START POINT FOR THE BEZIER CURVES (THAT IS, CLOSE TO THE MAIN SEGMENT)
     var x1 = SKETCH_CENTER_X + Math.cos(PI) * (INNER_CIRCLE_RADIUS - INTERSTICE_BEZIER);
     var y1 = SKETCH_CENTER_Y + Math.sin(PI) * (INNER_CIRCLE_RADIUS - INTERSTICE_BEZIER);
-  
+
 
 
     for (i = 0; i < nbSegments; i++) {
-        
-        if (segments[i].isMain == true) continue;
-    
+
+        if (segments[i].isMain == true)
+            continue;
+
         var theta = TWO_PI * (0.5 + radiusUnitAuthor / 2 + interstice * (countSegments + 1) + radiusUnitSegment * countBasicUnits + radiusUnitSegment * segments[i].count / 2);
         funcDrawBezier(i);
         funcDrawLabel(i);
@@ -253,40 +253,39 @@ function addSegments(json){
         //        console.log("label of the curr segment: "+segments[i].label);
 
         segmentColor = listColors[i];
-          
+
 
         var startArcRadius = TWO_PI * (0.5 + radiusUnitAuthor / 2 + interstice * (countSegments + 1) + radiusUnitSegment * countBasicUnits);
-        var endArcRadius   = TWO_PI * (0.5 + radiusUnitAuthor / 2 + interstice * (countSegments + 1) + radiusUnitSegment * (countBasicUnits + currCountBasicUnits));
+        var endArcRadius = TWO_PI * (0.5 + radiusUnitAuthor / 2 + interstice * (countSegments + 1) + radiusUnitSegment * (countBasicUnits + currCountBasicUnits));
         //        console.log("startArcRadius: "+startArcRadius);
         //        console.log("endArcRadius: "+endArcRadius);
 
         xLine1 = (SKETCH_CENTER_X
-            + Math.cos(endArcRadius)
-            * (INNER_CIRCLE_RADIUS));
-    
+                + Math.cos(endArcRadius)
+                * (INNER_CIRCLE_RADIUS));
+
         yLine1 = SKETCH_CENTER_Y
-        + Math.sin(endArcRadius)
-        * (INNER_CIRCLE_RADIUS + INTERSTICE_LABEL);
-   
+                + Math.sin(endArcRadius)
+                * (INNER_CIRCLE_RADIUS + INTERSTICE_LABEL);
+
         segmentsArr[i] = new Kinetic.Shape({
             drawFunc: function(context) {
                 context.beginPath();
                 context.arc(SKETCH_CENTER_X, SKETCH_CENTER_Y, OUTER_CIRCLE_RADIUS, startArcRadius, endArcRadius, false);
-                context.arc(SKETCH_CENTER_X, SKETCH_CENTER_Y, INNER_CIRCLE_RADIUS,endArcRadius, startArcRadius, true);
+                context.arc(SKETCH_CENTER_X, SKETCH_CENTER_Y, INNER_CIRCLE_RADIUS, endArcRadius, startArcRadius, true);
                 context.closePath();
-                this.fill(context);
-            //                            this.stroke(context);
+                context.fillStrokeShape(this);
             },
             fill: listColors[i],
-            stroke: 'black',
+            stroke: listColors[i],
             strokeWidth: 4,
-            opacity:0.9
-            
+            opacity: 0.9
+
 
         });
-        
+
         segmentsArr[i].on("mouseover", function() {
-            for (var j = 0;j<segmentsArr.length;j++){
+            for (var j = 0; j < segmentsArr.length; j++) {
                 segmentsArr[j].setOpacity(opacityDecrease);
                 bezierArr[j].setOpacity(opacityDecrease);
                 labelsArr[j].setOpacity(opacityDecrease);
@@ -300,7 +299,7 @@ function addSegments(json){
         });
 
         segmentsArr[i].on("mouseout", function() {
-            for (var j = 0;j<segmentsArr.length;j++){
+            for (var j = 0; j < segmentsArr.length; j++) {
                 segmentsArr[j].setOpacity(0.9);
                 bezierArr[j].setOpacity(0.9);
                 labelsArr[j].setOpacity(0.9);
@@ -312,53 +311,53 @@ function addSegments(json){
 
         segmentsArr[i].on("click", function() {
             currClickedAuthor = labelsArr[i].getText();
-            console.log("author clicked: "+currClickedAuthor);
-            console.log("count of docs for this co-author: "+segments[i].count);
+            console.log("author clicked: " + currClickedAuthor);
+            console.log("count of docs for this co-author: " + segments[i].count);
 
             sendNameClicked([{
-                name: 'nameClicked', 
-                value: currClickedAuthor
-            },{
-                name:'countDocs',
-                value:segments[i].count
-            }]);
+                    name: 'nameClicked',
+                    value: currClickedAuthor
+                }, {
+                    name: 'countDocs',
+                    value: segments[i].count
+                }]);
             updateDialog();
-        
-            setTimeout(displayDialogJS,150);
+
+            setTimeout(displayDialogJS, 150);
 
             $("#dialogTest").dialog({
                 resizable: false,
-                height:140,
+                height: 140,
                 modal: true,
                 buttons: {
                     "Delete all items": function() {
-                        $( this ).dialog( "close" );
+                        $(this).dialog("close");
                     },
                     "Cancel": function() {
-                        $( this ).dialog( "close" );
+                        $(this).dialog("close");
                     }
                 }
             });
-            
+
         });
 
 
         layerArcBandsRegular.add(segmentsArr[i]);
-        
+
     }
 
 
-    function funcDrawBezier(i){
+    function funcDrawBezier(i) {
         var strokeThickness = segments[i].count * MAXSTROKEWEIGHT / segments.length;
 
         var x2 = (SKETCH_CENTER_X
-            + Math.cos(theta)
-            * (INNER_CIRCLE_RADIUS - INTERSTICE_BEZIER));
+                + Math.cos(theta)
+                * (INNER_CIRCLE_RADIUS - INTERSTICE_BEZIER));
         var y2 = SKETCH_CENTER_Y
-        + Math.sin(theta)
-        * (INNER_CIRCLE_RADIUS - INTERSTICE_BEZIER);
+                + Math.sin(theta)
+                * (INNER_CIRCLE_RADIUS - INTERSTICE_BEZIER);
 
-    
+
         var hx1 = x1 + (x2 - x1) * (1 / 4);
         var hy1 = y1 + ((y2 - y1) / ((x2 - x1)) * (hx1 - x1)) - ((y2 - y1) / 4);
         var hx2 = x1 + (x2 - x1) * (4 / 5);
@@ -367,13 +366,12 @@ function addSegments(json){
         bezierArr[i] = new Kinetic.Shape({
             drawFunc: function(context) {
                 context.beginPath();
-                context.moveTo(x1,y1);
+                context.moveTo(x1, y1);
                 context.bezierCurveTo(hx1, hy1, hx2, hy2, x2, y2);
                 //                context.closePath();
-                //                this.fill(context);
-                this.stroke(context);
+                context.fillStrokeShape(this);
             },
-            fill: listColors[i],
+//            fill: listColors[i],
             stroke: 'red',
             strokeWidth: strokeThickness
 
@@ -381,58 +379,58 @@ function addSegments(json){
         layerLabelSegments.add(bezierArr[i]);
 
     }
-    
-    function funcDrawLabel(i){
+
+    function funcDrawLabel(i) {
 
         //        console.log("theta: "+theta);
         var thetaLabel;
-    
+
         //           println("theta: " + theta);
         //           println("segment: " + segments.get(i).label);
-    
+
         var minLimit = (3 / 4 * TWO_PI);
         var maxLimit = (5 / 4 * TWO_PI);
         var offsetLabel;
         var allo = 'left';
-    
+
         //this condition orients the labels for easier read
         if (theta < minLimit | theta > maxLimit) {
             thetaLabel = theta + PI;
             offsetLabel = widthLabel;
             allo = 'right';
-        //                textAlign(RIGHT,CENTER);
+            //                textAlign(RIGHT,CENTER);
         } else {
             thetaLabel = theta;
             offsetLabel = 0;
             allo = 'left';
 
-        //                textAlign(LEFT,CENTER);
+            //                textAlign(LEFT,CENTER);
         }
 
         //COORDINATES OF THE LABEL FOR THE CURRENT SEGMENT
         var xLabelSegment = (SKETCH_CENTER_X
-            + Math.cos(theta)
-            * (OUTER_CIRCLE_RADIUS + INTERSTICE_LABEL + offsetLabel));
+                + Math.cos(theta)
+                * (OUTER_CIRCLE_RADIUS + INTERSTICE_LABEL + offsetLabel));
         var yLabelSegment = SKETCH_CENTER_Y
-        + Math.sin(theta)
-        * (OUTER_CIRCLE_RADIUS + INTERSTICE_LABEL + offsetLabel);
-     
+                + Math.sin(theta)
+                * (OUTER_CIRCLE_RADIUS + INTERSTICE_LABEL + offsetLabel);
+
         labelsArr[i] = new Kinetic.Text({
             x: xLabelSegment,
             y: yLabelSegment,
             text: segments[i].label,
-            align:allo,
-            width:widthLabel,
-            offset:[0,(textSize/2)],
+            align: allo,
+            width: widthLabel,
+            offset: [0, (textSize / 2)],
             fontSize: textSize,
             fontFamily: 'Calibri',
-            textFill: 'black',
+            fill: 'black',
             rotation: thetaLabel
-         
+
         });
 
         labelsArr[i].on("mouseover", function() {
-            for (var j = 0;j<segmentsArr.length;j++){
+            for (var j = 0; j < segmentsArr.length; j++) {
                 labelsArr[j].setOpacity(opacityDecrease);
                 bezierArr[j].setOpacity(opacityDecrease);
                 segmentsArr[j].setOpacity(opacityDecrease);
@@ -446,7 +444,7 @@ function addSegments(json){
         });
 
         labelsArr[i].on("mouseout", function() {
-            for (var j = 0;j<segmentsArr.length;j++){
+            for (var j = 0; j < segmentsArr.length; j++) {
                 segmentsArr[j].setOpacity(0.9);
                 bezierArr[j].setOpacity(0.9);
                 labelsArr[j].setOpacity(0.9);
@@ -458,28 +456,28 @@ function addSegments(json){
 
         labelsArr[i].on("click", function() {
             currClickedAuthor = labelsArr[i].getText();
-            console.log("author clicked: "+currClickedAuthor);
-            console.log("count of docs for this co-author: "+segments[i].count);
+            console.log("author clicked: " + currClickedAuthor);
+            console.log("count of docs for this co-author: " + segments[i].count);
 
-            
+
             sendNameClicked([{
-                name: 'nameClicked', 
-                value: currClickedAuthor
-            },{
-                name:'countDocs',
-                value:segments[i].count
-            }]);
+                    name: 'nameClicked',
+                    value: currClickedAuthor
+                }, {
+                    name: 'countDocs',
+                    value: segments[i].count
+                }]);
             updateDialog();
-        
+
         });
 
 
 
         layerLabelSegments.add(labelsArr[i]);
     }
-    
 
-    function getCurrClickedAuthor(){
+
+    function getCurrClickedAuthor() {
         return currClickedAuthor;
     }
 
