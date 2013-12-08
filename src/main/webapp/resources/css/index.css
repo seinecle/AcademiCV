@@ -12,6 +12,7 @@ ul li {
 
 .home_page{ 
     background-image:url("../img/bkg1.jpg");
+    overflow-y: hidden;
 }
 /* MAIN HOME */
 .main_home{

@@ -4,18 +4,59 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui">
     <h:head>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"></meta>
-        <h:outputStylesheet name="css/otherpages.css" />
-
-
         <title>AcademiCV</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"></meta>
+       <h:outputStylesheet name="css/main.css" />       
+       <h:outputStylesheet name="css/show.css" />
     </h:head>
-    <h:body>
-
-        <div style="float: left; width:590px; border: 1px solid blue;">
-            <h1>#{controllerBean.forename} #{controllerBean.surname}'s AcademicCV</h1>
-            <p>#{controllerBean.getSearch().mostRecentAffiliation}</p>
-
+    <h:body class="report">
+        <div id="header"> 
+        <div id="header_top" class="top_bar_menu">
+            <div class="logo_left"><a href="/AcademiCV#menu1"><img src="../resources/img/logo_AC_top_left.png" /></a></div>
+            <ul class="top_menu">
+                <li class="menu_home2">
+                    <a href="/AcademiCV#menu1">New Research
+                        <div class="pointresearch"></div>
+                    </a>
+                    
+                </li>
+                <li class="menu_about">
+                    <a href='/AcademiCV#menu2'>About
+                        <div class="point"></div>
+                    </a>
+                </li>
+                <li class="menu_credits">
+                    <a href='/AcademiCV#menu3'>Credits
+                        <div class="point2"></div>
+                    </a>
+                </li>
+                <!--<li class="menu_facebook">
+                    <div>
+                        <a><img src="resources/img/faceb.png" /></a>
+                      </div>
+                </li> -->
+                <li class="menu_twitter">
+                    <div>
+                        <a href="http://twitter.com/academiCV" target="_blank"><img src="resources/img/twitter.png" /></a>
+                     </div>
+                </li>     
+                <li class="search">
+                    <div>search 3/3
+                        
+                     </div>
+                </li>
+            </ul>
+          </div>
+            <div class="menu_under">
+                <div id="top"><a href="#header_top">Top</a></div>
+                <ul class="top_menu2">
+                    <li><a href="#main_research">Main Research Fields</a></li>
+                    <li><a href="#key">Key Facts</a></li>
+                    <li><a href="#bench">Benchmarks</a></li>
+                    <li><a href="#media">Media Presence</a></li>
+                    <li><a href="#graph">Graph</a></li>
+                </ul>
+            <div class="list_middle">
             <h:form id ="form">
                 <h:inputHidden id="dataURL" value="#{fileDownloadController.dataURL}" />
 
@@ -23,32 +64,75 @@
                                  icon="ui-icon-arrowthichk-s">  
                     <p:fileDownload value="#{fileDownloadController.file}" />  
                 </p:commandButton>  
-                <br></br>
+                <!--<br></br>
                 <p:commandButton value="Feedback? Here!" onclick="bar.show();"/>  
                 <br></br>
                 <p:commandButton value="New Search" action="index?faces-redirect=true" rendered="#{!controllerBean.wereThereCoAuthorsFound()}" />  
-
+-->
             </h:form>
+                <!--
             <p:notificationBar position="bottom" effect="slide" widgetVar="bar">  
                 <h:outputText value="Any comment you have, really!" style=" font-size:15px;" />  
                 <h:inputText value="#{controllerBean.feedback}"/>  
             </p:notificationBar>  
+-->
 
-
-
-            <div id ="laius">
-                <p></p>
+            </div></div>
+ </div>
+<div id="content">
+    <div class="main_part">
+        <div class="line_top"></div>
+        <div class="left">
+            <div class="top_left"></div>
+            <div class="left_middle"></div>
+            <div class="top_left"></div>
+          </div>
+        <div class="right">
+            <div class="top_left"></div>
+            <div class="left_middle"></div>
+            <div class="top_left"></div>
+          </div>
+        <div class="content_list">
+                       <div id="list_top">
+                <div id="cv_logo_black"><img src="../resources/img/cv-fiche.gif" /></div>
+               <div class="cv_title_up"> 
+                   <div class="cv_title">
+                    <div>#{controllerBean.forename} #{controllerBean.surname}'s AcademicCV</div>
+                    <ul><li class="first"></li>
+                        <li class="second"></li>
+                        <li class="third"></li>
+                   </ul> 
+                   </div>
+                    <p>#{controllerBean.getSearch().mostRecentAffiliation}</p>
+                </div>
+</div>
+            
+            <div id="laius">
+                <div class="upten" id="main_research"></div>
+                <h2>Main research fields</h2>
+                <div class="upten" id="key"></div>
+                <h3>KEY FACTS:</h3>
                 <h:outputText styleClass="ui-widget"  value="#{reportBean.getGeneralLaius()}" escape="false" /><br></br>
                 <h:outputText styleClass="ui-widget"  value="#{reportBean.getAge()}" escape="false" /><br></br>
+                <div class="upten" id="bench"></div>
+                <h3>OUR BENCHMARKS SHOW THAT:</h3>
                 <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentSource()}" escape="false" />
                 <h:outputText styleClass="ui-widget"  value="#{reportBean.getMostFrequentCoAuthors()}" escape="false" />
+                <div class="upten" id="media"></div>
+                <h3>MEDIA PRESENCE:</h3>
                 <h:outputText styleClass="ui-widget"  value="#{reportBean.NYTLaius}" escape="false" />
                 <h:outputText styleClass="ui-widget"  value="#{reportBean.getListDocs()}" escape="false" />
 
             </div>
+            <div class="clear"></div>
         </div>
-
-        <div id="circleCoAuthors" style="#{controllerBean.wereThereCoAuthorsFound()} margin-left: 700px; width:1200px; height:1200px; "></div>
+    </div>
+    <div class="graph">
+        <div class="upten" id="graph"></div>
+                <h3>GRAPH:</h3>
+    <div id="circleCoAuthors"> 
+    </div>
+    </div>
 
 
 
@@ -79,6 +163,7 @@
 
 
         <canvas id ="canvasPDF" style="display:none" data-processing-sources="processingSketchForPDF.pde"></canvas>
+</div>
 
         <h:outputScript library="js" name="processing-1.4.1.js" />
         <h:outputScript library="js" name="kinetic-v4.7.2.js" />
@@ -137,8 +222,37 @@
 
             }
         </script>
-
-
+<script type="text/javascript">
+$(document).ready(function(){
+	$('a[href^="#"]').bind('click.smoothscroll',function (e) {
+	    e.preventDefault();
+	 
+	    var target = this.hash,
+	    $target = $(target);
+	 
+	    $('html, body').stop().animate({
+	        'scrollTop': $target.offset().top
+	    }, 600, 'swing', function () {
+	        window.location.hash = target;
+	    });
+	});
+});
+ </script>
+<script type="text/javascript">
+            jQuery("document").ready(function($){
+    
+    var nav = $('.menu_under');
+    
+    $(window).scroll(function () {
+        if ($(this).scrollTop() > 136) {
+            nav.addClass("f-nav");
+        } else {
+            nav.removeClass("f-nav");
+        }
+    });
+ 
+});
+            </script>
 
     </h:body>
 </html>

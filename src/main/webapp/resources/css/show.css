@@ -1,6 +1,5 @@
+/* LAST PAGE */
 
-
-.column1 { width: 33%; text-align: center;}
-.column2 { width: 33%; text-align: center; }
-.column3 { width: 33%; text-align: center;}
-
+.progress_bar {
+     background-image:url("../img/bgfinal.jpg");
+}

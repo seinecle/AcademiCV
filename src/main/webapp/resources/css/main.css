@@ -14,8 +14,7 @@ body {
     width: auto;
     font: 16px Georgia, sans-serif;
     color: white;
-    overflow-y: hidden;
-}
+    }
 .ui-widget {
     font: 16px Georgia, sans-serif;
     color: #000;
@@ -41,19 +40,17 @@ a, a:visited {
     right: 7px;
 }
 /* TOP MENU */
-#menu1 {
-    position: absolute;
-    top:0;
-    left:0;
-}
 .top_bar_menu {
     background: rgba(0, 0, 0, 0.35);
     height: 65px;
     position: absolute;
     top: 0;
+    left:0;
     width: 100%;
     box-shadow: 0 3px 13px rgba(0, 0, 0, 0.63);
-    background-image:url("../img/logo_AC_top_left.png");
+}
+#menu1 {
+        background-image:url("../img/logo_AC_top_left.png");
     background-repeat: no-repeat;
     background-position: 10px center;
 }
@@ -64,9 +61,6 @@ a, a:visited {
     top: 1572px;
     width: 100%;
     box-shadow: 0 3px 13px rgba(0, 0, 0, 0.63);
-    background-image:url("../img/logo_AC_top_left.png");
-    background-repeat: no-repeat;
-    background-position: 10px center;
 }
 .top_bar_menu3 {
     background: rgba(0, 0, 0, 0.35);
@@ -75,28 +69,55 @@ a, a:visited {
     top: 3072px;
     width: 100%;
     box-shadow: 0 3px 13px rgba(0, 0, 0, 0.63);
-    background-image:url("../img/logo_AC_top_left.png");
-    background-repeat: no-repeat;
-    background-position: 10px center;
+}
+.logo_left {
+    position: absolute;
+    left:10px;
+    top:13px;
 }
 .top_menu {
     text-align: center; 
     margin-top: 23px;
-    margin-left: -47px;
+    margin-left: -60px;
 }
-.top_menu li {
+.top_menu li, .top_menu2 li {
     display: inline-block;
     cursor:pointer;
+}
+.top_menu2 li {
+color: #000;
+padding: 0 20px;
+text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.28);
+}
+.top_menu2 li a {
+color:#000; 
+}
+.top_menu2 {
+    text-align: center; 
+    margin-top: 9px;
+    margin-left: -60px;
+}
+.menu_under {
+background: rgba(0, 0, 0, 0.35);
+height: 34px;
+position: absolute;
+top: 79px;
+left: 0;
+width: 100%;
+box-shadow: 0 3px 13px rgba(0, 0, 0, 0.63);
 }
 .menu_about, .menu_credits, .menu_home, .menu_about2, .menu_credits2, .menu_home2 {
     display: inline-block;
     border-right: 1px solid #ffffff;
     padding: 0 20px;
 }
-.menu_about a:hover .point,.menu_credits a:hover .point2, .menu_home a:hover .point, .menu_home a:hover .point, .menu_about2 a .point,.menu_credits2 a .point2, .menu_home2 a .point, .menu_home2 a .pointresearch{
+.menu_about a:hover .point,.menu_credits a:hover .point2, .menu_home a:hover .point, .menu_home a:hover .point,  .menu_home2 a:hover .point, .menu_about2 a .point, .menu_credits2 a .point2, .menu_home2 a .point, .menu_home2 a:hover .pointresearch{
     display: block;
 }
-
+.search {
+position: absolute;
+right: 26px;
+}
 .point {
 background-image: url("../img/mini_point.png");
 background-repeat: no-repeat;
@@ -120,9 +141,9 @@ background-image: url("../img/mini_point.png");
 background-repeat: no-repeat;
 display: none;
 position: absolute;
-width: 54px;
+width: 101px;
 height: 15px;
-background-position: 31px 11px;
+background-position: center;
 }
 .menu_facebook div, .menu_twitter div {
     position: absolute;
@@ -141,3 +162,169 @@ background-position: 31px 11px;
 #about_page_1 {
     height: 1420px;
 }
+
+/* .menu_home2 a .pointresearch */  
+
+/* REPORT PAGE */
+.report {
+     background-image:url("../img/bgfinal.jpg");
+}
+
+#content {
+width: 940px;
+margin: 150px auto 0;
+}
+.main_part {
+background: #fff;
+box-shadow: 0 3px 30px rgba(0, 0, 0, 0.80);
+padding: 20px;
+margin-bottom: 33px;
+}
+.content_list {
+padding: 15px 55px;
+}
+#cv_logo_black{
+margin: 25px 0 0 315px;
+}
+#list_top {
+color: #000;
+margin-bottom: 70px;
+}
+.line_top {
+position: absolute;
+width: 828px;
+background: #000;
+height: 2px;
+margin-left: 35px;
+margin-top: 1px;    
+}
+.left {
+    float: left;
+}
+.right {
+    float: right;
+}
+.left, .right {
+position: relative;
+z-index: 1;    
+}
+.top_left {
+    background: #000;
+border-radius: 5px;
+width: 4px;
+height: 4px;
+float: left;
+}
+#list_top h1 {
+font-size: 19px;
+font-weight: normal;
+text-align: center;
+}
+.left_middle {
+background: #000;
+width: 2px;
+height: 1000px;
+border-radius: 5px;
+margin-bottom: 25px;
+margin-left: 1px;
+margin-top: 35px;
+overflow: hidden;  
+}
+.cv_title_up p {
+    text-align: center;
+}
+.cv_title {
+      width: 282px;
+overflow: hidden;
+margin: 0 auto;
+text-align: center;
+
+padding-top: 6px; 
+}
+.cv_title div {
+   line-height: 9px; 
+}
+.content_list ul {
+padding-left: 0;
+margin: 0;
+}
+li.first {
+ display: inline-block;
+    width: 40%;
+    border-bottom: 1px solid #000;
+    margin: 0 5px;
+    box-shadow: 1px 3px 9px rgba(0, 0, 0, 1);   
+}
+li.second {
+    display: inline-block; 
+    width: 2px; border-bottom: 1px solid #000;
+    margin: 0 5px;
+}
+li.third {
+   display: inline-block; 
+   width: 40%; 
+   border-bottom: 1px solid #000;
+    margin: 0 5px;
+    box-shadow: 1px 3px 9px rgba(0, 0, 0, 1); 
+}
+/* MIDDLE (buttons) */
+.list_middle {
+}
+
+.report .ui-button {
+position: absolute;
+right: 25px;
+background: none;
+box-shadow: none;
+border: none;
+border-bottom: 1px solid #000;
+border-radius: 0;
+top: 3px;
+text-shadow: none;    
+}
+.ui-button-text-icon-left .ui-icon {display: none;}
+.ui-button-text-icon-left .ui-button-text {padding:0!important;}
+/* LAIUS */
+#laius h2 {
+color: #000;
+border-bottom: 1px solid #000;
+padding-bottom: 4px;    
+}
+.report .kineticjs-content {
+    margin-left: -134px;
+}
+.graph h3, #laius h3 {
+text-align: center;
+color: #000;
+font-size: 17px;    
+}
+.report #laius .ui-widget {
+background: #f1f1f1;
+width: 790px;
+display: block;
+padding: 16px 75px 16px 75px;
+position: relative;
+margin-left: -75px;
+text-align: justify;
+}
+.report #laius .ui-widget div {
+ font-size: 100%!important;   
+}
+.graph {
+background: #fff;
+box-shadow: 0 3px 30px rgba(0, 0, 0, 0.80);
+padding: 20px;
+}
+ .f-nav{ z-index: 9999; position: fixed; left: 0; top: 0; width: 100%; background: rgba(247, 247, 247, 0.98);
+} 
+#top {
+    position: fixed;
+    color: #000;
+    padding: 7px 7px 7px 26px;
+    }
+    #top a {
+        color:#000;
+    }    
+.report #top {display: none;}
+ .f-nav  #top {display: block!important;}    
+ .upten {margin-top: -50px; position: absolute}
