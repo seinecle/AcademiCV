@@ -11,27 +11,12 @@ ul li {
 }
 
 .pairscheck{ 
-    background-image:url("../img/bkg3.jpg");
+    background-image:url("../img/bkg2.jpg");
 }
-/* MAIN HOME */
-.main_home{
-    width: 990px;
-    height: 500px;
-    margin: 90px auto;
-    background-image:url("../img/logo_AC_middle.png");
-    background-repeat: no-repeat;
-    background-position: center 410px;
-}
-#logo_home{
-    background-image:url("../img/logo_lauriers_home.png");
-    background-repeat: no-repeat;
-    background-position: center;
-    width: 990px;
-    height: 265px;
-}
+
 #header {
     width: 900px;
-    margin: 0 auto;
+    margin: 79px auto;
     height: 272px;
     background-image:url("../img/logo_lauriers.png");
     background-repeat: no-repeat;
@@ -85,7 +70,7 @@ top: 90px;
 left: 40px;
 }
 #editCounterId .testPush {
-    color: #000;
+    color: #fff;
 }
 .tableau {
  margin: 0 auto 3px;
@@ -97,11 +82,11 @@ margin-left: 9px;
 }
 
 .ui-widget {
-    font-size: 21px;
+    font-size: 17px;
 }
 #helpPairs {
 color: #000;   
-font-size:11px;
+font-size:14px;
 text-align: center;
 }
 form input[type="submit"] {
@@ -118,12 +103,39 @@ border: none;
 #editCounterId input[type="submit"] {
 color: white;
 border-radius: 28px;
-width: 28px;
 box-shadow: -2px 2px 4px 1px rgba(0, 0, 0, 0.25);
 background: rgba(0, 0, 0, 0.39);
-font-size: 18px;
-margin-left: 212px;
+font-size: 13px;
 cursor: pointer;
 border: none;
-margin-top: -73px;
+margin-top: 7px;
+position: absolute;
 }
+#matches {
+position: absolute;
+margin-top: -146px;
+width: 896px;
+text-align: center;
+font-size: 25px;    
+}
+#matches_left {
+ position: absolute;
+margin-top: -91px;
+width: 896px;
+text-align: center;   
+}
+#matches .ui-widget {
+color: #FFF;
+padding: 8px 17px;
+box-shadow: 0px 0px 10px #FFF;
+border-radius: 5px;
+}
+#matches_left .ui-widget {
+color: #FFF;
+font-size: 37px;
+}
+.edit_zone {
+ position: absolute;
+ margin: 98px 0 0 418px;
+}
+

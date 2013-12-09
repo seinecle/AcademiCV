@@ -5,42 +5,54 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
     <h:head>
-        <h:outputStylesheet name="css/otherpages.css" />
-        <h:outputStylesheet name="css/show.css" />
         <title>AcademiCV - data cleaning</title>
+          <h:outputStylesheet name="css/main.css" />
+         <h:outputStylesheet name="css/pairscheck.css" />
     </h:head>
 
-    <h:body style ="width:100%">
+    <h:body class="pairscheck">
+        <div id="header"> 
+        <div class="top_bar_menu" id="menu1">
+            <div class="logo_left"><a href="/AcademiCV#menu1"><img src="../resources/img/logo_AC_top_left.png" /></a></div>
+            <ul class="top_menu">
+                <li class="menu_home2">
+                    <a href="/AcademiCV#menu1">New Research
+                        <div class="pointresearch"></div>
+                    </a>
+                    
+                </li>
+                <li class="menu_about">
+                    <a href='/AcademiCV#menu2'>About
+                        <div class="point"></div>
+                    </a>
+                </li>
+                <li class="menu_credits">
+                    <a href='/AcademiCV#menu3'>Credits
+                        <div class="point2"></div>
+                    </a>
+                </li>
+                <!--<li class="menu_facebook">
+                    <div>
+                        <a><img src="resources/img/faceb.png" /></a>
+                      </div>
+                </li> -->
+                <li class="menu_twitter">
+                    <div>
+                        <a href="http://twitter.com/academiCV" target="_blank"><img src="resources/img/twitter.png" /></a>
+                     </div>
+                </li>     
+                <li class="search">
+                    <div>search 2/3
+                        
+                     </div>
+                </li>
+            </ul>
+          </div>
+            <div class="edit_zone">Edit zone</div>
+ </div>
 
-        <!--        <script type="text/javascript">
-                    //<![CDATA[
-                    function handleMessage(data) {
-                        console.log("in the handle function");
-                        console.log(data);
-                        $('.testPush').html("live counter of edits made by the community: "+data);
-                    }
-                    //]]>
-        
-                </script>-->
 
-
-        <div id ="bannerTitleBackground"></div>
-        <div id ="bannerTitle">
-            <h:outputText  style="padding-left: 5px;" value="academiCV"/>
-        </div>
-        <h:panelGroup id ="editCounterId" style="    background-color:rgba(0,0,0,0);
-                      position:fixed;
-                      top:1%;
-                      left:1%;
-                      text-align: left;
-                      font-size: 100%;
-                      margin: 0px auto;
-                      width:96%;
-                      height:80px;
-                      padding-left: 50px;
-                      padding-top: 70px;
-                      z-index: 2;
-                      ">
+               <h:panelGroup id ="editCounterId">
             <h:outputText styleClass="testPush" style="padding-left: 5px;" value="live counter of edits made by the community: #{controllerBean.getCount()}" rendered ="#{controllerBean.wisdomCrowds}" />
             <br></br>
             <h:commandButton value="Feedback? Here!" onclick="bar.show();" />  
@@ -49,8 +61,8 @@
         <h:form id ="currMatch">
 
             <div id="containerOutside">
-                <h:outputText styleClass="ui-widget" style="padding-left: 5px;" escape ="false" value="#{tableMatchesBean.getInitialNumberMatches()}" />
-                <h:outputText styleClass="ui-widget" style="padding-left: 5px;" value="#{tableMatchesBean.getNumberPairs()}"/>
+                <div id="matches"> <h:outputText styleClass="ui-widget" escape ="false" value="#{tableMatchesBean.getInitialNumberMatches()}" /></div>
+                <div id="matches_left"><h:outputText styleClass="ui-widget" value="#{tableMatchesBean.getNumberPairs()}"/></div>
                 <div id="containerShow">
 
                     <h:panelGrid columns="4" style="margin-bottom:10px; margin-left: auto; margin-right: auto;" cellpadding="5">

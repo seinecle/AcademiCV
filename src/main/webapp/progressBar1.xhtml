@@ -57,10 +57,10 @@
             <h:inputHidden id="counter" value="#{progressBarMessenger.progressMessage}"/>
 
            <div>
+               <div class="load_center1"> <img src="resources/img/spiffygif_32x32.gif"/></div>
+                   <div class="load_center2"><img src="resources/img/spiffygif_32x32.gif"/></div>
                 <div id="container">
-                   <div class="load_center1"> <img src="resources/img/ajax-loader2.gif" /></div>
-                   <div class="load_center2"><img src="resources/img/ajax-loader3.gif" /></div>
-                </div>
+                      </div>
                 <h:panelGrid id="text">
                     <h:outputText id="txt" value="#{progressBarMessenger.returnMsg()}" escape="false"/>
                     <h:commandButton id="button1" value="Look at probable mistakes" action ="#{progressBarMessenger.getNextPage()}" rendered ="#{progressBarMessenger.toggleButtonCorrections}"/>
